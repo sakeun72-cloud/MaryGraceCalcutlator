@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cami Poco - Preis- & Gewinnrechner</title>
+    <title>Cami Poco - Flexibler Preis- & Gewinnrechner</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans pb-12">
@@ -11,53 +11,61 @@
     <div class="max-w-5xl mx-auto p-4 sm:p-6 my-6 bg-white shadow-xl rounded-2xl">
         <header class="border-b pb-4 mb-6">
             <h1 class="text-2xl sm:text-3xl font-extrabold text-indigo-600">Cami Poco - Preis- & Gewinnrechner</h1>
-            <p class="text-sm text-gray-500">Passe die Staffelpreise oben an – die Berechnung erfolgt in Echtzeit.</p>
+            <p class="text-sm text-gray-500">Passe oben sowohl die Mengen-Grenzen als auch die Staffelpreise flexibel an.</p>
         </header>
 
-        <!-- Sektion 1: Editierbare Staffelpreise (Grundpreis-Übersicht) -->
+        <!-- Sektion 1: Editierbare Staffelpreise & Mengen-Grenzen -->
         <section class="mb-8 bg-indigo-50/60 p-4 sm:p-6 rounded-xl border border-indigo-100">
-            <h2 class="text-md font-bold text-indigo-900 mb-4">Gültige Staffelpreise (Grundpreis) - Hier direkt anpassbar:</h2>
+            <h2 class="text-md font-bold text-indigo-900 mb-4">Staffelgrenzen & Grundpreise (Hier frei anpassbar):</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-gray-700">
                 
-                <!-- Produkt A Staffelpreise -->
-                <div class="bg-white p-4 rounded-lg border shadow-sm space-y-2">
+                <!-- Produkt A Staffelpreise & Grenzen -->
+                <div class="bg-white p-4 rounded-lg border shadow-sm space-y-3">
                     <strong class="text-indigo-600 block border-b pb-1">Produkt A</strong>
-                    <div class="flex items-center justify-between text-xs">
-                        <span>1–5 Stk.:</span>
+                    <div class="flex items-center justify-between text-xs gap-1">
+                        <span>1 bis</span>
+                        <input type="number" id="limA1" value="5" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
+                        <span>Stk. :</span>
                         <input type="number" id="baseA1" value="10.00" step="0.01" oninput="calculate()" class="w-20 p-1 border rounded text-right"> €
                     </div>
-                    <div class="flex items-center justify-between text-xs">
-                        <span>6–10 Stk.:</span>
+                    <div class="flex items-center justify-between text-xs gap-1">
+                        <span>bis</span>
+                        <input type="number" id="limA2" value="10" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
+                        <span>Stk. :</span>
                         <input type="number" id="baseA2" value="8.00" step="0.01" oninput="calculate()" class="w-20 p-1 border rounded text-right"> €
                     </div>
                     <div class="flex items-center justify-between text-xs">
-                        <span>ab 11 Stk.:</span>
+                        <span>Darüber :</span>
                         <input type="number" id="baseA3" value="6.00" step="0.01" oninput="calculate()" class="w-20 p-1 border rounded text-right"> €
                     </div>
                 </div>
 
-                <!-- Produkt B Staffelpreise -->
-                <div class="bg-white p-4 rounded-lg border shadow-sm space-y-2">
+                <!-- Produkt B Staffelpreise & Grenzen -->
+                <div class="bg-white p-4 rounded-lg border shadow-sm space-y-3">
                     <strong class="text-indigo-600 block border-b pb-1">Produkt B</strong>
-                    <div class="flex items-center justify-between text-xs">
-                        <span>1–3 Stk.:</span>
+                    <div class="flex items-center justify-between text-xs gap-1">
+                        <span>1 bis</span>
+                        <input type="number" id="limB1" value="3" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
+                        <span>Stk. :</span>
                         <input type="number" id="baseB1" value="15.00" step="0.01" oninput="calculate()" class="w-20 p-1 border rounded text-right"> €
                     </div>
-                    <div class="flex items-center justify-between text-xs">
-                        <span>ab 4 Stk.:</span>
+                    <div class="flex items-center justify-between text-xs pt-4">
+                        <span>Darüber :</span>
                         <input type="number" id="baseB2" value="12.00" step="0.01" oninput="calculate()" class="w-20 p-1 border rounded text-right"> €
                     </div>
                 </div>
 
-                <!-- Produkt C Staffelpreise -->
-                <div class="bg-white p-4 rounded-lg border shadow-sm space-y-2">
+                <!-- Produkt C Staffelpreise & Grenzen -->
+                <div class="bg-white p-4 rounded-lg border shadow-sm space-y-3">
                     <strong class="text-indigo-600 block border-b pb-1">Produkt C</strong>
-                    <div class="flex items-center justify-between text-xs">
-                        <span>1–5 Stk.:</span>
+                    <div class="flex items-center justify-between text-xs gap-1">
+                        <span>1 bis</span>
+                        <input type="number" id="limC1" value="5" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
+                        <span>Stk. :</span>
                         <input type="number" id="baseC1" value="20.00" step="0.01" oninput="calculate()" class="w-20 p-1 border rounded text-right"> €
                     </div>
-                    <div class="flex items-center justify-between text-xs">
-                        <span>ab 6 Stk.:</span>
+                    <div class="flex items-center justify-between text-xs pt-4">
+                        <span>Darüber :</span>
                         <input type="number" id="baseC2" value="18.00" step="0.01" oninput="calculate()" class="w-20 p-1 border rounded text-right"> €
                     </div>
                 </div>
@@ -145,7 +153,13 @@
 
     <script>
         function calculate() {
-            // Staffelpreise von oben auslesen
+            // Staffelgrenzen auslesen
+            const limA1 = parseInt(document.getElementById('limA1').value) || 5;
+            const limA2 = parseInt(document.getElementById('limA2').value) || 10;
+            const limB1 = parseInt(document.getElementById('limB1').value) || 3;
+            const limC1 = parseInt(document.getElementById('limC1').value) || 5;
+
+            // Staffelpreise auslesen
             const bA1 = parseFloat(document.getElementById('baseA1').value) || 0;
             const bA2 = parseFloat(document.getElementById('baseA2').value) || 0;
             const bA3 = parseFloat(document.getElementById('baseA3').value) || 0;
@@ -166,10 +180,10 @@
             const qtyC = parseInt(document.getElementById('qtyC').value) || 0;
             const vkC = parseFloat(document.getElementById('vkC').value) || 0;
 
-            // Staffelpreis automatisch anhand Menge bestimmen
-            let priceA = qtyA <= 5 ? bA1 : (qtyA <= 10 ? bA2 : bA3);
-            let priceB = qtyB <= 3 ? bB1 : bB2;
-            let priceC = qtyC <= 5 ? bC1 : bC2;
+            // Staffelpreis dynamisch anhand der veränderten Grenzen bestimmen
+            let priceA = qtyA <= limA1 ? bA1 : (qtyA <= limA2 ? bA2 : bA3);
+            let priceB = qtyB <= limB1 ? bB1 : bB2;
+            let priceC = qtyC <= limC1 ? bC1 : bC2;
 
             // Berechnungen
             let costA = qtyA * priceA;
