@@ -8,62 +8,100 @@
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans pb-12">
 
-    <div class="max-w-3xl mx-auto p-4 sm:p-6 my-6 bg-white shadow-xl rounded-2xl">
+    <div class="max-w-4xl mx-auto p-4 sm:p-6 my-6 bg-white shadow-xl rounded-2xl">
         <header class="border-b pb-4 mb-6">
             <h1 class="text-2xl sm:text-3xl font-extrabold text-indigo-600">Cami Poco - Preis- & Gewinnrechner</h1>
-            <p class="text-sm text-gray-500">Passe Mengen-Grenzen, Staffelpreise und zusätzliche Kosten flexibel an.</p>
+            <p class="text-sm text-gray-500">Zentrale Staffelpreise oben definieren und für mehrere Bestellungen gleichzeitig nutzen.</p>
         </header>
 
-        <!-- Sektion 1: Editierbare Staffelpreise & Mengen-Grenzen für Produkt A -->
+        <!-- Sektion 1: Zentraler Master-Staffelpreise-Block -->
         <section class="mb-8 bg-indigo-50/60 p-4 sm:p-6 rounded-xl border border-indigo-100">
-            <h2 class="text-md font-bold text-indigo-900 mb-4">Staffelgrenzen & Grundpreise (Produkt A):</h2>
+            <h2 class="text-md font-bold text-indigo-900 mb-4">Master-Staffelpreise & Mengen-Grenzen (Gilt für alle Bestellungen):</h2>
             <div class="max-w-md mx-auto bg-white p-4 rounded-lg border shadow-sm space-y-2 text-sm text-gray-700">
-                <strong class="text-indigo-600 block border-b pb-1">Produkt A (4 Staffeln)</strong>
+                <strong class="text-indigo-600 block border-b pb-1">Staffelpreis-Tabelle (4 Stufen)</strong>
                 <div class="flex items-center justify-between text-xs gap-1">
                     <span>1 bis</span>
-                    <input type="number" id="limA1" value="3" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
+                    <input type="number" id="lim1" value="3" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
                     <span>Stk. :</span>
-                    <input type="number" id="baseA1" value="10.00" step="0.01" oninput="calculate()" class="w-24 p-1 border rounded text-right"> PHP
+                    <input type="number" id="base1" value="10.00" step="0.01" oninput="calculate()" class="w-24 p-1 border rounded text-right"> PHP
                 </div>
                 <div class="flex items-center justify-between text-xs gap-1">
                     <span>bis</span>
-                    <input type="number" id="limA2" value="6" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
+                    <input type="number" id="lim2" value="6" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
                     <span>Stk. :</span>
-                    <input type="number" id="baseA2" value="9.00" step="0.01" oninput="calculate()" class="w-24 p-1 border rounded text-right"> PHP
+                    <input type="number" id="base2" value="9.00" step="0.01" oninput="calculate()" class="w-24 p-1 border rounded text-right"> PHP
                 </div>
                 <div class="flex items-center justify-between text-xs gap-1">
                     <span>bis</span>
-                    <input type="number" id="limA3" value="10" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
+                    <input type="number" id="lim3" value="10" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
                     <span>Stk. :</span>
-                    <input type="number" id="baseA3" value="8.00" step="0.01" oninput="calculate()" class="w-24 p-1 border rounded text-right"> PHP
+                    <input type="number" id="base3" value="8.00" step="0.01" oninput="calculate()" class="w-24 p-1 border rounded text-right"> PHP
                 </div>
                 <div class="flex items-center justify-between text-xs">
                     <span>Darüber :</span>
-                    <input type="number" id="baseA4" value="6.00" step="0.01" oninput="calculate()" class="w-24 p-1 border rounded text-right"> PHP
+                    <input type="number" id="base4" value="6.00" step="0.01" oninput="calculate()" class="w-24 p-1 border rounded text-right"> PHP
                 </div>
             </div>
         </section>
         
-        <!-- Sektion 2: Bestellmengen, VK & Zusatzkosten -->
+        <!-- Sektion 2: Bestellmengenblöcke & Ergebnisbereich -->
         <main class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-4">
-                <h2 class="text-lg font-semibold text-gray-700">Bestellmenge & Preise</h2>
+                <h2 class="text-lg font-semibold text-gray-700">Bestellmengen & Preise</h2>
                 
-                <!-- Produkt A Bestellung -->
+                <!-- Bestellung 1 -->
                 <div class="p-4 bg-gray-50 rounded-xl border space-y-3">
-                    <div class="font-bold text-gray-800 text-sm border-b pb-1">Produkt A</div>
+                    <div class="font-bold text-gray-800 text-sm border-b pb-1">Bestellung 1</div>
                     <div class="space-y-2 text-xs">
                         <div class="flex items-center justify-between">
                             <label class="text-gray-600">Menge:</label>
-                            <input type="number" id="qtyA" value="5" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm font-bold">
+                            <input type="number" id="qty1" value="3" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm font-bold">
                         </div>
                         <div class="flex items-center justify-between">
                             <label class="text-gray-600">Verkaufspreis (VK) / Stk.:</label>
-                            <input type="number" id="vkA" value="14.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
+                            <input type="number" id="vk1" value="14.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
                         </div>
                         <div class="flex items-center justify-between">
                             <label class="text-gray-600">Zusatzkosten:</label>
-                            <input type="number" id="extraA" value="0.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
+                            <input type="number" id="extra1" value="0.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bestellung 2 -->
+                <div class="p-4 bg-gray-50 rounded-xl border space-y-3">
+                    <div class="font-bold text-gray-800 text-sm border-b pb-1">Bestellung 2</div>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center justify-between">
+                            <label class="text-gray-600">Menge:</label>
+                            <input type="number" id="qty2" value="5" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm font-bold">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="text-gray-600">Verkaufspreis (VK) / Stk.:</label>
+                            <input type="number" id="vk2" value="15.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="text-gray-600">Zusatzkosten:</label>
+                            <input type="number" id="extra2" value="0.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bestellung 3 -->
+                <div class="p-4 bg-gray-50 rounded-xl border space-y-3">
+                    <div class="font-bold text-gray-800 text-sm border-b pb-1">Bestellung 3</div>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center justify-between">
+                            <label class="text-gray-600">Menge:</label>
+                            <input type="number" id="qty3" value="8" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm font-bold">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="text-gray-600">Verkaufspreis (VK) / Stk.:</label>
+                            <input type="number" id="vk3" value="12.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="text-gray-600">Zusatzkosten:</label>
+                            <input type="number" id="extra3" value="0.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
                         </div>
                     </div>
                 </div>
@@ -98,54 +136,111 @@
 
     <script>
         function calculate() {
-            // Staffelgrenzen auslesen
-            const limA1 = parseInt(document.getElementById('limA1').value) || 3;
-            const limA2 = parseInt(document.getElementById('limA2').value) || 6;
-            const limA3 = parseInt(document.getElementById('limA3').value) || 10;
+            // Master-Staffelgrenzen auslesen
+            const lim1 = parseInt(document.getElementById('lim1').value) || 3;
+            const lim2 = parseInt(document.getElementById('lim2').value) || 6;
+            const lim3 = parseInt(document.getElementById('lim3').value) || 10;
 
-            // Staffelpreise auslesen
-            const bA1 = parseFloat(document.getElementById('baseA1').value) || 0;
-            const bA2 = parseFloat(document.getElementById('baseA2').value) || 0;
-            const bA3 = parseFloat(document.getElementById('baseA3').value) || 0;
-            const bA4 = parseFloat(document.getElementById('baseA4').value) || 0;
+            // Master-Staffelpreise auslesen
+            const b1 = parseFloat(document.getElementById('base1').value) || 0;
+            const b2 = parseFloat(document.getElementById('base2').value) || 0;
+            const b3 = parseFloat(document.getElementById('base3').value) || 0;
+            const b4 = parseFloat(document.getElementById('base4').value) || 0;
 
-            // Bestellmenge, VK & Zusatzkosten auslesen
-            const qtyA = parseInt(document.getElementById('qtyA').value) || 0;
-            const vkA = parseFloat(document.getElementById('vkA').value) || 0;
-            const extraA = parseFloat(document.getElementById('extraA').value) || 0;
+            // --- Bestellung 1 ---
+            const qty1 = parseInt(document.getElementById('qty1').value) || 0;
+            const vk1 = parseFloat(document.getElementById('vk1').value) || 0;
+            const extra1 = parseFloat(document.getElementById('extra1').value) || 0;
+            let price1 = qty1 <= lim1 ? b1 : (qty1 <= lim2 ? b2 : (qty1 <= lim3 ? b3 : b4));
+            let ekaTotal1 = qty1 * price1;
+            let rev1 = qty1 * vk1;
+            let cost1 = ekaTotal1 + extra1;
+            let profit1 = rev1 - cost1;
 
-            // Staffelpreis dynamisch bestimmen
-            let priceA = qtyA <= limA1 ? bA1 : (qtyA <= limA2 ? bA2 : (qtyA <= limA3 ? bA3 : bA4));
+            // --- Bestellung 2 ---
+            const qty2 = parseInt(document.getElementById('qty2').value) || 0;
+            const vk2 = parseFloat(document.getElementById('vk2').value) || 0;
+            const extra2 = parseFloat(document.getElementById('extra2').value) || 0;
+            let price2 = qty2 <= lim1 ? b1 : (qty2 <= lim2 ? b2 : (qty2 <= lim3 ? b3 : b4));
+            let ekaTotal2 = qty2 * price2;
+            let rev2 = qty2 * vk2;
+            let cost2 = ekaTotal2 + extra2;
+            let profit2 = rev2 - cost2;
 
-            // Berechnungen
-            let ekaTotalA = qtyA * priceA;
-            let revA = qtyA * vkA;
-            let costA = ekaTotalA + extraA;
-            let profitA = revA - costA;
+            // --- Bestellung 3 ---
+            const qty3 = parseInt(document.getElementById('qty3').value) || 0;
+            const vk3 = parseFloat(document.getElementById('vk3').value) || 0;
+            const extra3 = parseFloat(document.getElementById('extra3').value) || 0;
+            let price3 = qty3 <= lim1 ? b1 : (qty3 <= lim2 ? b2 : (qty3 <= lim3 ? b3 : b4));
+            let ekaTotal3 = qty3 * price3;
+            let rev3 = qty3 * vk3;
+            let cost3 = ekaTotal3 + extra3;
+            let profit3 = rev3 - cost3;
 
-            let totalCost = costA;
-            let totalRevenue = revA;
-            let totalProfit = profitA;
+            // Gesamtsummen
+            let totalCost = cost1 + cost2 + cost3;
+            let totalRevenue = rev1 + rev2 + rev3;
+            let totalProfit = profit1 + profit2 + profit3;
 
             // HTML-Ausgabe
             document.getElementById('results').innerHTML = `
                 <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700/50 space-y-1">
-                    <div class="font-bold text-white text-sm mb-1">Produkt A (${qtyA} Stk.)</div>
+                    <div class="font-bold text-white text-sm mb-1">Bestellung 1 (${qty1} Stk.)</div>
                     <div class="flex justify-between text-slate-300">
                         <span>Umsatz (Menge × VK):</span>
-                        <span>+ ${revA.toFixed(2)} PHP</span>
+                        <span>+ ${rev1.toFixed(2)} PHP</span>
                     </div>
                     <div class="flex justify-between text-red-300">
-                        <span>- Gesamt EKA (${qtyA} × ${priceA.toFixed(2)} PHP):</span>
-                        <span>- ${ekaTotalA.toFixed(2)} PHP</span>
+                        <span>- Gesamt EKA (${qty1} × ${price1.toFixed(2)} PHP):</span>
+                        <span>- ${ekaTotal1.toFixed(2)} PHP</span>
                     </div>
                     <div class="flex justify-between text-red-300 border-b border-slate-700 pb-1">
                         <span>- Zusatzkosten:</span>
-                        <span>- ${extraA.toFixed(2)} PHP</span>
+                        <span>- ${extra1.toFixed(2)} PHP</span>
                     </div>
                     <div class="flex justify-between font-bold text-emerald-400 pt-1">
                         <span>= Gewinn:</span>
-                        <span>${profitA.toFixed(2)} PHP</span>
+                        <span>${profit1.toFixed(2)} PHP</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700/50 space-y-1">
+                    <div class="font-bold text-white text-sm mb-1">Bestellung 2 (${qty2} Stk.)</div>
+                    <div class="flex justify-between text-slate-300">
+                        <span>Umsatz (Menge × VK):</span>
+                        <span>+ ${rev2.toFixed(2)} PHP</span>
+                    </div>
+                    <div class="flex justify-between text-red-300">
+                        <span>- Gesamt EKA (${qty2} × ${price2.toFixed(2)} PHP):</span>
+                        <span>- ${ekaTotal2.toFixed(2)} PHP</span>
+                    </div>
+                    <div class="flex justify-between text-red-300 border-b border-slate-700 pb-1">
+                        <span>- Zusatzkosten:</span>
+                        <span>- ${extra2.toFixed(2)} PHP</span>
+                    </div>
+                    <div class="flex justify-between font-bold text-emerald-400 pt-1">
+                        <span>= Gewinn:</span>
+                        <span>${profit2.toFixed(2)} PHP</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700/50 space-y-1">
+                    <div class="font-bold text-white text-sm mb-1">Bestellung 3 (${qty3} Stk.)</div>
+                    <div class="flex justify-between text-slate-300">
+                        <span>Umsatz (Menge × VK):</span>
+                        <span>+ ${rev3.toFixed(2)} PHP</span>
+                    </div>
+                    <div class="flex justify-between text-red-300">
+                        <span>- Gesamt EKA (${qty3} × ${price3.toFixed(2)} PHP):</span>
+                        <span>- ${ekaTotal3.toFixed(2)} PHP</span>
+                    </div>
+                    <div class="flex justify-between text-red-300 border-b border-slate-700 pb-1">
+                        <span>- Zusatzkosten:</span>
+                        <span>- ${extra3.toFixed(2)} PHP</span>
+                    </div>
+                    <div class="flex justify-between font-bold text-emerald-400 pt-1">
+                        <span>= Gewinn:</span>
+                        <span>${profit3.toFixed(2)} PHP</span>
                     </div>
                 </div>
             `;
