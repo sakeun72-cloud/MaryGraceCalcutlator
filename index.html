@@ -1,144 +1,144 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="tl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cami Poco - Flexibler Preis- & Gewinnrechner</title>
+    <title>Cami Poco - Calculator ng Presyo at Tubo</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans pb-12">
 
     <div class="max-w-4xl mx-auto p-4 sm:p-6 my-6 bg-white shadow-xl rounded-2xl">
         <header class="border-b pb-4 mb-6">
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-indigo-600">Cami Poco - Preis- & Gewinnrechner</h1>
-            <p class="text-sm text-gray-500">Staffelpreise definieren, Wareneingang erfassen und auf Bestellungen anwenden.</p>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-indigo-600">Cami Poco - Calculator ng Presyo at Tubo</h1>
+            <p class="text-sm text-gray-500">I-ayos ang presyong bulto, dami ng paninda, at mga order.</p>
         </header>
 
-        <!-- Sektion 1: Zentraler Master-Staffelpreise-Block -->
+        <!-- Sektion 1: Master-Staffelpreise -->
         <section class="mb-6 bg-indigo-50/60 p-4 sm:p-6 rounded-xl border border-indigo-100">
-            <h2 class="text-md font-bold text-indigo-900 mb-4">1. Master-Staffelpreise & Mengen-Grenzen:</h2>
+            <h2 class="text-md font-bold text-indigo-900 mb-4">1. Presyong Bulto at Limitasyon:</h2>
             <div class="max-w-md mx-auto bg-white p-4 rounded-lg border shadow-sm space-y-2 text-sm text-gray-700">
-                <strong class="text-indigo-600 block border-b pb-1">Staffelpreis-Tabelle (4 Stufen)</strong>
+                <strong class="text-indigo-600 block border-b pb-1">Talaan ng Bulto (4 na Antas)</strong>
                 
-                <!-- Stufe 1 -->
+                <!-- Antas 1 -->
                 <div class="flex items-center justify-between text-xs gap-1">
-                    <span>1 bis</span>
+                    <span>1 hanggang</span>
                     <input type="number" id="lim1" value="3" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
                     <span>Stk. :</span>
                     <input type="number" id="base1" value="1300.00" step="0.01" oninput="calculate()" class="w-24 p-1 border rounded text-right"> PHP
                 </div>
 
-                <!-- Stufe 2 -->
+                <!-- Antas 2 -->
                 <div class="flex items-center justify-between text-xs gap-1">
                     <span id="labelStart2" class="font-bold text-indigo-700">4</span>
-                    <span>bis</span>
+                    <span>hanggang</span>
                     <input type="number" id="lim2" value="6" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
                     <span>Stk. :</span>
                     <input type="number" id="base2" value="1250.00" step="0.01" oninput="calculate()" class="w-24 p-1 border rounded text-right"> PHP
                 </div>
 
-                <!-- Stufe 3 -->
+                <!-- Antas 3 -->
                 <div class="flex items-center justify-between text-xs gap-1">
                     <span id="labelStart3" class="font-bold text-indigo-700">7</span>
-                    <span>bis</span>
+                    <span>hanggang</span>
                     <input type="number" id="lim3" value="10" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
                     <span>Stk. :</span>
                     <input type="number" id="base3" value="1200.00" step="0.01" oninput="calculate()" class="w-24 p-1 border rounded text-right"> PHP
                 </div>
 
-                <!-- Stufe 4 (Darüber) -->
+                <!-- Antas 4 -->
                 <div class="flex items-center justify-between text-xs">
                     <div>
                         <span id="labelStart4" class="font-bold text-indigo-700">11</span>
-                        <span>Stk. und darüber :</span>
+                        <span>Stk. pataas :</span>
                     </div>
                     <input type="number" id="base4" value="1180.00" step="0.01" oninput="calculate()" class="w-24 p-1 border rounded text-right"> PHP
                 </div>
             </div>
         </section>
 
-        <!-- Sektion 2: Zwischenblock Wareneingang -->
+        <!-- Sektion 2: Wareneingang -->
         <section class="mb-8 bg-blue-50/60 p-4 sm:p-6 rounded-xl border border-blue-100">
-            <h2 class="text-md font-bold text-blue-900 mb-4">2. Wareneingang (Grundlage für Bestellungen):</h2>
+            <h2 class="text-md font-bold text-blue-900 mb-4">2. Pasok ng Paninda (Batayan ng Presyo):</h2>
             <div class="max-w-md mx-auto bg-white p-4 rounded-lg border shadow-sm space-y-3 text-sm text-gray-700">
                 <div class="flex items-center justify-between text-xs">
-                    <span class="font-bold text-blue-600">Wareneingangs-Menge:</span>
+                    <span class="font-bold text-blue-600">Dami ng Dumating:</span>
                     <input type="number" id="warenQty" value="10" min="1" oninput="calculate()" class="w-28 p-1.5 border rounded-md text-right text-sm font-bold">
                 </div>
                 <div class="flex items-center justify-between text-xs border-t pt-2">
-                    <span class="text-gray-600">Ermittelter Einkaufspreis (EK / Stk.):</span>
+                    <span class="text-gray-600">Presyo ng Pagbili (EK / Stk.):</span>
                     <span id="warenUnitPrice" class="font-bold text-indigo-600 text-sm">0.00 PHP</span>
                 </div>
             </div>
         </section>
         
-        <!-- Sektion 3: Bestellmengenblöcke & Ergebnisbereich -->
+        <!-- Sektion 3: Bestellmengen & Ergebnisse -->
         <main class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-4">
-                <h2 class="text-lg font-semibold text-gray-700">3. Bestellmengen & Preise</h2>
+                <h2 class="text-lg font-semibold text-gray-700">3. Mga Order at Presyo</h2>
                 
-                <!-- Bestellung 1 -->
+                <!-- Order 1 -->
                 <div class="p-4 bg-gray-50 rounded-xl border space-y-3">
-                    <div class="font-bold text-gray-800 text-sm border-b pb-1">Bestellung 1</div>
+                    <div class="font-bold text-gray-800 text-sm border-b pb-1">Order 1</div>
                     <div class="space-y-2 text-xs">
                         <div class="flex items-center justify-between">
-                            <label class="text-gray-600">Menge:</label>
+                            <label class="text-gray-600">Dami:</label>
                             <input type="number" id="qty1" value="3" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm font-bold">
                         </div>
                         <div class="flex items-center justify-between">
-                            <label class="text-gray-600">Verkaufspreis (VK) / Stk.:</label>
+                            <label class="text-gray-600">Presyong Panbenta (VK) / Stk.:</label>
                             <input type="number" id="vk1" value="1400.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
                         </div>
                         <div class="flex items-center justify-between">
-                            <label class="text-gray-600">Zusatzkosten:</label>
+                            <label class="text-gray-600">Dagdag na Gastos:</label>
                             <input type="number" id="extra1" value="0.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
                         </div>
                     </div>
                 </div>
 
-                <!-- Bestellung 2 -->
+                <!-- Order 2 -->
                 <div class="p-4 bg-gray-50 rounded-xl border space-y-3">
-                    <div class="font-bold text-gray-800 text-sm border-b pb-1">Bestellung 2</div>
+                    <div class="font-bold text-gray-800 text-sm border-b pb-1">Order 2</div>
                     <div class="space-y-2 text-xs">
                         <div class="flex items-center justify-between">
-                            <label class="text-gray-600">Menge:</label>
+                            <label class="text-gray-600">Dami:</label>
                             <input type="number" id="qty2" value="5" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm font-bold">
                         </div>
                         <div class="flex items-center justify-between">
-                            <label class="text-gray-600">Verkaufspreis (VK) / Stk.:</label>
+                            <label class="text-gray-600">Presyong Panbenta (VK) / Stk.:</label>
                             <input type="number" id="vk2" value="1500.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
                         </div>
                         <div class="flex items-center justify-between">
-                            <label class="text-gray-600">Zusatzkosten:</label>
+                            <label class="text-gray-600">Dagdag na Gastos:</label>
                             <input type="number" id="extra2" value="0.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
                         </div>
                     </div>
                 </div>
 
-                <!-- Bestellung 3 -->
+                <!-- Order 3 -->
                 <div class="p-4 bg-gray-50 rounded-xl border space-y-3">
-                    <div class="font-bold text-gray-800 text-sm border-b pb-1">Bestellung 3</div>
+                    <div class="font-bold text-gray-800 text-sm border-b pb-1">Order 3</div>
                     <div class="space-y-2 text-xs">
                         <div class="flex items-center justify-between">
-                            <label class="text-gray-600">Menge:</label>
+                            <label class="text-gray-600">Dami:</label>
                             <input type="number" id="qty3" value="8" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm font-bold">
                         </div>
                         <div class="flex items-center justify-between">
-                            <label class="text-gray-600">Verkaufspreis (VK) / Stk.:</label>
+                            <label class="text-gray-600">Presyong Panbenta (VK) / Stk.:</label>
                             <input type="number" id="vk3" value="1350.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
                         </div>
                         <div class="flex items-center justify-between">
-                            <label class="text-gray-600">Zusatzkosten:</label>
+                            <label class="text-gray-600">Dagdag na Gastos:</label>
                             <input type="number" id="extra3" value="0.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Ergebnisbereich -->
+            <!-- Ergebnisse -->
             <div class="bg-slate-900 text-white p-6 rounded-2xl flex flex-col justify-between shadow-lg">
                 <div>
-                    <h2 class="text-lg font-semibold text-indigo-400 mb-4 border-b border-slate-800 pb-2">Ergebnis- & Gewinnanalyse</h2>
+                    <h2 class="text-lg font-semibold text-indigo-400 mb-4 border-b border-slate-800 pb-2">Pagsusuri ng Kita at Tubo</h2>
                     <div id="results" class="space-y-4 text-xs text-slate-300">
                         <!-- Dynamisch -->
                     </div>
@@ -146,15 +146,15 @@
                 
                 <div class="mt-6 pt-4 border-t border-slate-800 space-y-2">
                     <div class="flex justify-between text-sm text-slate-400">
-                        <span>Gesamt-Kosten (EK + Extras):</span>
+                        <span>Kabuuang Gastusin (EK + Dagdag):</span>
                         <span id="totalCost">0.00 PHP</span>
                     </div>
                     <div class="flex justify-between text-sm text-slate-400">
-                        <span>Gesamt-Umsatz (VK):</span>
+                        <span>Kabuuang Benta (VK):</span>
                         <span id="totalRevenue">0.00 PHP</span>
                     </div>
                     <div class="flex justify-between font-bold text-xl text-emerald-400 pt-2 border-t border-slate-800">
-                        <span>Gesamt-Gewinn:</span>
+                        <span>Kabuuang Tubo:</span>
                         <span id="totalProfit">0.00 PHP</span>
                     </div>
                 </div>
@@ -189,28 +189,24 @@
         function calculate() {
             saveValues();
 
-            // Master-Staffelgrenzen auslesen
             const lim1 = parseInt(document.getElementById('lim1').value) || 3;
             const lim2 = parseInt(document.getElementById('lim2').value) || 6;
             const lim3 = parseInt(document.getElementById('lim3').value) || 10;
 
-            // Dynamische Labels aktualisieren (+1 Logik)
             document.getElementById('labelStart2').innerText = (lim1 + 1);
             document.getElementById('labelStart3').innerText = (lim2 + 1);
             document.getElementById('labelStart4').innerText = (lim3 + 1);
 
-            // Master-Staffelpreise auslesen
             const b1 = parseFloat(document.getElementById('base1').value) || 0;
             const b2 = parseFloat(document.getElementById('base2').value) || 0;
             const b3 = parseFloat(document.getElementById('base3').value) || 0;
             const b4 = parseFloat(document.getElementById('base4').value) || 0;
 
-            // Wareneingang auslesen & Basis-EK-Preis ermitteln
             const warenQty = parseInt(document.getElementById('warenQty').value) || 1;
             let warenPrice = warenQty <= lim1 ? b1 : (warenQty <= lim2 ? b2 : (warenQty <= lim3 ? b3 : b4));
             document.getElementById('warenUnitPrice').innerText = warenPrice.toFixed(2) + ' PHP';
 
-            // --- Bestellung 1 ---
+            // Order 1
             const qty1 = parseInt(document.getElementById('qty1').value) || 0;
             const vk1 = parseFloat(document.getElementById('vk1').value) || 0;
             const extra1 = parseFloat(document.getElementById('extra1').value) || 0;
@@ -219,7 +215,7 @@
             let cost1 = ekaTotal1 + extra1;
             let profit1 = rev1 - cost1;
 
-            // --- Bestellung 2 ---
+            // Order 2
             const qty2 = parseInt(document.getElementById('qty2').value) || 0;
             const vk2 = parseFloat(document.getElementById('vk2').value) || 0;
             const extra2 = parseFloat(document.getElementById('extra2').value) || 0;
@@ -228,7 +224,7 @@
             let cost2 = ekaTotal2 + extra2;
             let profit2 = rev2 - cost2;
 
-            // --- Bestellung 3 ---
+            // Order 3
             const qty3 = parseInt(document.getElementById('qty3').value) || 0;
             const vk3 = parseFloat(document.getElementById('vk3').value) || 0;
             const extra3 = parseFloat(document.getElementById('extra3').value) || 0;
@@ -237,69 +233,67 @@
             let cost3 = ekaTotal3 + extra3;
             let profit3 = rev3 - cost3;
 
-            // Gesamtsummen
             let totalCost = cost1 + cost2 + cost3;
             let totalRevenue = rev1 + rev2 + rev3;
             let totalProfit = profit1 + profit2 + profit3;
 
-            // HTML-Ausgabe
             document.getElementById('results').innerHTML = `
                 <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700/50 space-y-1">
-                    <div class="font-bold text-white text-sm mb-1">Bestellung 1 (${qty1} Stk.)</div>
+                    <div class="font-bold text-white text-sm mb-1">Order 1 (${qty1} Stk.)</div>
                     <div class="flex justify-between text-slate-300">
-                        <span>Umsatz (Menge × VK):</span>
+                        <span>Benta (Dami × VK):</span>
                         <span>+ ${rev1.toFixed(2)} PHP</span>
                     </div>
                     <div class="flex justify-between text-red-300">
-                        <span>- Gesamt EKA (${qty1} × ${warenPrice.toFixed(2)} PHP):</span>
+                        <span>- Kabuuang EK (${qty1} × ${warenPrice.toFixed(2)} PHP):</span>
                         <span>- ${ekaTotal1.toFixed(2)} PHP</span>
                     </div>
                     <div class="flex justify-between text-red-300 border-b border-slate-700 pb-1">
-                        <span>- Zusatzkosten:</span>
+                        <span>- Dagdag na Gastos:</span>
                         <span>- ${extra1.toFixed(2)} PHP</span>
                     </div>
                     <div class="flex justify-between font-bold text-emerald-400 pt-1">
-                        <span>= Gewinn:</span>
+                        <span>= Tubo:</span>
                         <span>${profit1.toFixed(2)} PHP</span>
                     </div>
                 </div>
 
                 <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700/50 space-y-1">
-                    <div class="font-bold text-white text-sm mb-1">Bestellung 2 (${qty2} Stk.)</div>
+                    <div class="font-bold text-white text-sm mb-1">Order 2 (${qty2} Stk.)</div>
                     <div class="flex justify-between text-slate-300">
-                        <span>Umsatz (Menge × VK):</span>
+                        <span>Benta (Dami × VK):</span>
                         <span>+ ${rev2.toFixed(2)} PHP</span>
                     </div>
                     <div class="flex justify-between text-red-300">
-                        <span>- Gesamt EKA (${qty2} × ${warenPrice.toFixed(2)} PHP):</span>
+                        <span>- Kabuuang EK (${qty2} × ${warenPrice.toFixed(2)} PHP):</span>
                         <span>- ${ekaTotal2.toFixed(2)} PHP</span>
                     </div>
                     <div class="flex justify-between text-red-300 border-b border-slate-700 pb-1">
-                        <span>- Zusatzkosten:</span>
+                        <span>- Dagdag na Gastos:</span>
                         <span>- ${extra2.toFixed(2)} PHP</span>
                     </div>
                     <div class="flex justify-between font-bold text-emerald-400 pt-1">
-                        <span>= Gewinn:</span>
+                        <span>= Tubo:</span>
                         <span>${profit2.toFixed(2)} PHP</span>
                     </div>
                 </div>
 
                 <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700/50 space-y-1">
-                    <div class="font-bold text-white text-sm mb-1">Bestellung 3 (${qty3} Stk.)</div>
+                    <div class="font-bold text-white text-sm mb-1">Order 3 (${qty3} Stk.)</div>
                     <div class="flex justify-between text-slate-300">
-                        <span>Umsatz (Menge × VK):</span>
+                        <span>Benta (Dami × VK):</span>
                         <span>+ ${rev3.toFixed(2)} PHP</span>
                     </div>
                     <div class="flex justify-between text-red-300">
-                        <span>- Gesamt EKA (${qty3} × ${warenPrice.toFixed(2)} PHP):</span>
+                        <span>- Kabuuang EK (${qty3} × ${warenPrice.toFixed(2)} PHP):</span>
                         <span>- ${ekaTotal3.toFixed(2)} PHP</span>
                     </div>
                     <div class="flex justify-between text-red-300 border-b border-slate-700 pb-1">
-                        <span>- Zusatzkosten:</span>
+                        <span>- Dagdag na Gastos:</span>
                         <span>- ${extra3.toFixed(2)} PHP</span>
                     </div>
                     <div class="flex justify-between font-bold text-emerald-400 pt-1">
-                        <span>= Gewinn:</span>
+                        <span>= Tubo:</span>
                         <span>${profit3.toFixed(2)} PHP</span>
                     </div>
                 </div>
