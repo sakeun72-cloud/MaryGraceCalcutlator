@@ -26,23 +26,23 @@
                         <span>1 bis</span>
                         <input type="number" id="limA1" value="3" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
                         <span>Stk. :</span>
-                        <input type="number" id="baseA1" value="10.00" step="0.01" oninput="calculate()" class="w-20 p-1 border rounded text-right"> €
+                        <input type="number" id="baseA1" value="10.00" step="0.01" oninput="calculate()" class="w-20 p-1 border rounded text-right"> PHP
                     </div>
                     <div class="flex items-center justify-between text-xs gap-1">
                         <span>bis</span>
                         <input type="number" id="limA2" value="6" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
                         <span>Stk. :</span>
-                        <input type="number" id="baseA2" value="9.00" step="0.01" oninput="calculate()" class="w-20 p-1 border rounded text-right"> €
+                        <input type="number" id="baseA2" value="9.00" step="0.01" oninput="calculate()" class="w-20 p-1 border rounded text-right"> PHP
                     </div>
                     <div class="flex items-center justify-between text-xs gap-1">
                         <span>bis</span>
                         <input type="number" id="limA3" value="10" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
                         <span>Stk. :</span>
-                        <input type="number" id="baseA3" value="8.00" step="0.01" oninput="calculate()" class="w-20 p-1 border rounded text-right"> €
+                        <input type="number" id="baseA3" value="8.00" step="0.01" oninput="calculate()" class="w-20 p-1 border rounded text-right"> PHP
                     </div>
                     <div class="flex items-center justify-between text-xs">
                         <span>Darüber :</span>
-                        <input type="number" id="baseA4" value="6.00" step="0.01" oninput="calculate()" class="w-20 p-1 border rounded text-right"> €
+                        <input type="number" id="baseA4" value="6.00" step="0.01" oninput="calculate()" class="w-20 p-1 border rounded text-right"> PHP
                     </div>
                 </div>
 
@@ -53,11 +53,11 @@
                         <span>1 bis</span>
                         <input type="number" id="limB1" value="3" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
                         <span>Stk. :</span>
-                        <input type="number" id="baseB1" value="15.00" step="0.01" oninput="calculate()" class="w-20 p-1 border rounded text-right"> €
+                        <input type="number" id="baseB1" value="15.00" step="0.01" oninput="calculate()" class="w-20 p-1 border rounded text-right"> PHP
                     </div>
                     <div class="flex items-center justify-between text-xs pt-4">
                         <span>Darüber :</span>
-                        <input type="number" id="baseB2" value="12.00" step="0.01" oninput="calculate()" class="w-20 p-1 border rounded text-right"> €
+                        <input type="number" id="baseB2" value="12.00" step="0.01" oninput="calculate()" class="w-20 p-1 border rounded text-right"> PHP
                     </div>
                 </div>
 
@@ -68,75 +68,75 @@
                         <span>1 bis</span>
                         <input type="number" id="limC1" value="5" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
                         <span>Stk. :</span>
-                        <input type="number" id="baseC1" value="20.00" step="0.01" oninput="calculate()" class="w-20 p-1 border rounded text-right"> €
+                        <input type="number" id="baseC1" value="20.00" step="0.01" oninput="calculate()" class="w-20 p-1 border rounded text-right"> PHP
                     </div>
                     <div class="flex items-center justify-between text-xs pt-4">
                         <span>Darüber :</span>
-                        <input type="number" id="baseC2" value="18.00" step="0.01" oninput="calculate()" class="w-20 p-1 border rounded text-right"> €
+                        <input type="number" id="baseC2" value="18.00" step="0.01" oninput="calculate()" class="w-20 p-1 border rounded text-right"> PHP
                     </div>
                 </div>
 
             </div>
         </section>
         
-        <!-- Sektion 2: Bestellmengen, VK & Zusatzkosten -->
+        <!-- Sektion 2: Bestellmengen, VK & Zusatzkosten (Untereinander angeordnet) -->
         <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div class="space-y-4">
                 <h2 class="text-lg font-semibold text-gray-700">Bestellmengen, Preise & Zusatzkosten</h2>
                 
                 <!-- Produkt A Bestellung -->
                 <div class="p-4 bg-gray-50 rounded-xl border space-y-3">
-                    <div class="font-bold text-gray-800 text-sm">Produkt A</div>
-                    <div class="grid grid-cols-3 gap-2">
-                        <div>
-                            <label class="block text-xs text-gray-600 mb-1">Menge</label>
-                            <input type="number" id="qtyA" value="5" min="0" oninput="calculate()" class="w-full p-2 border rounded-md text-sm">
+                    <div class="font-bold text-gray-800 text-sm border-b pb-1">Produkt A</div>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center justify-between">
+                            <label class="text-gray-600">Menge:</label>
+                            <input type="number" id="qtyA" value="5" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm font-bold">
                         </div>
-                        <div>
-                            <label class="block text-xs text-gray-600 mb-1">VK / Stk.</label>
-                            <input type="number" id="vkA" value="14.00" step="0.01" min="0" oninput="calculate()" class="w-full p-2 border rounded-md text-sm">
+                        <div class="flex items-center justify-between">
+                            <label class="text-gray-600">Verkaufspreis (VK) / Stk.:</label>
+                            <input type="number" id="vkA" value="14.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
                         </div>
-                        <div>
-                            <label class="block text-xs text-gray-600 mb-1">Zusatzkosten</label>
-                            <input type="number" id="extraA" value="0.00" step="0.01" min="0" oninput="calculate()" class="w-full p-2 border rounded-md text-sm">
+                        <div class="flex items-center justify-between">
+                            <label class="text-gray-600">Zusatzkosten:</label>
+                            <input type="number" id="extraA" value="0.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
                         </div>
                     </div>
                 </div>
 
                 <!-- Produkt B Bestellung -->
                 <div class="p-4 bg-gray-50 rounded-xl border space-y-3">
-                    <div class="font-bold text-gray-800 text-sm">Produkt B</div>
-                    <div class="grid grid-cols-3 gap-2">
-                        <div>
-                            <label class="block text-xs text-gray-600 mb-1">Menge</label>
-                            <input type="number" id="qtyB" value="3" min="0" oninput="calculate()" class="w-full p-2 border rounded-md text-sm">
+                    <div class="font-bold text-gray-800 text-sm border-b pb-1">Produkt B</div>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center justify-between">
+                            <label class="text-gray-600">Menge:</label>
+                            <input type="number" id="qtyB" value="3" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm font-bold">
                         </div>
-                        <div>
-                            <label class="block text-xs text-gray-600 mb-1">VK / Stk.</label>
-                            <input type="number" id="vkB" value="20.00" step="0.01" min="0" oninput="calculate()" class="w-full p-2 border rounded-md text-sm">
+                        <div class="flex items-center justify-between">
+                            <label class="text-gray-600">Verkaufspreis (VK) / Stk.:</label>
+                            <input type="number" id="vkB" value="20.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
                         </div>
-                        <div>
-                            <label class="block text-xs text-gray-600 mb-1">Zusatzkosten</label>
-                            <input type="number" id="extraB" value="0.00" step="0.01" min="0" oninput="calculate()" class="w-full p-2 border rounded-md text-sm">
+                        <div class="flex items-center justify-between">
+                            <label class="text-gray-600">Zusatzkosten:</label>
+                            <input type="number" id="extraB" value="0.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
                         </div>
                     </div>
                 </div>
 
                 <!-- Produkt C Bestellung -->
                 <div class="p-4 bg-gray-50 rounded-xl border space-y-3">
-                    <div class="font-bold text-gray-800 text-sm">Produkt C</div>
-                    <div class="grid grid-cols-3 gap-2">
-                        <div>
-                            <label class="block text-xs text-gray-600 mb-1">Menge</label>
-                            <input type="number" id="qtyC" value="6" min="0" oninput="calculate()" class="w-full p-2 border rounded-md text-sm">
+                    <div class="font-bold text-gray-800 text-sm border-b pb-1">Produkt C</div>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center justify-between">
+                            <label class="text-gray-600">Menge:</label>
+                            <input type="number" id="qtyC" value="6" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm font-bold">
                         </div>
-                        <div>
-                            <label class="block text-xs text-gray-600 mb-1">VK / Stk.</label>
-                            <input type="number" id="vkC" value="25.00" step="0.01" min="0" oninput="calculate()" class="w-full p-2 border rounded-md text-sm">
+                        <div class="flex items-center justify-between">
+                            <label class="text-gray-600">Verkaufspreis (VK) / Stk.:</label>
+                            <input type="number" id="vkC" value="25.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
                         </div>
-                        <div>
-                            <label class="block text-xs text-gray-600 mb-1">Grabkosten</label>
-                            <input type="number" id="extraC" value="0.00" step="0.01" min="0" oninput="calculate()" class="w-full p-2 border rounded-md text-sm">
+                        <div class="flex items-center justify-between">
+                            <label class="text-gray-600">Grabkosten:</label>
+                            <input type="number" id="extraC" value="0.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
                         </div>
                     </div>
                 </div>
@@ -146,7 +146,7 @@
             <div class="bg-slate-900 text-white p-6 rounded-2xl flex flex-col justify-between shadow-lg">
                 <div>
                     <h2 class="text-lg font-semibold text-indigo-400 mb-4 border-b border-slate-800 pb-2">Ergebnis- & Gewinnanalyse</h2>
-                    <div id="results" class="space-y-3 text-sm text-slate-300">
+                    <div id="results" class="space-y-4 text-xs text-slate-300">
                         <!-- Dynamisch -->
                     </div>
                 </div>
@@ -154,15 +154,15 @@
                 <div class="mt-6 pt-4 border-t border-slate-800 space-y-2">
                     <div class="flex justify-between text-sm text-slate-400">
                         <span>Gesamt-Kosten (EK + Extras):</span>
-                        <span id="totalCost">0,00 €</span>
+                        <span id="totalCost">0.00 PHP</span>
                     </div>
                     <div class="flex justify-between text-sm text-slate-400">
                         <span>Gesamt-Umsatz (VK):</span>
-                        <span id="totalRevenue">0,00 €</span>
+                        <span id="totalRevenue">0.00 PHP</span>
                     </div>
                     <div class="flex justify-between font-bold text-xl text-emerald-400 pt-2 border-t border-slate-800">
                         <span>Gesamt-Gewinn:</span>
-                        <span id="totalProfit">0,00 €</span>
+                        <span id="totalProfit">0.00 PHP</span>
                     </div>
                 </div>
             </div>
@@ -203,47 +203,97 @@
             const vkC = parseFloat(document.getElementById('vkC').value) || 0;
             const extraC = parseFloat(document.getElementById('extraC').value) || 0; // Grabkosten
 
-            // Staffelpreis dynamisch bestimmen (Produkt A hat nun 4 Stufen)
+            // Staffelpreis dynamisch bestimmen
             let priceA = qtyA <= limA1 ? bA1 : (qtyA <= limA2 ? bA2 : (qtyA <= limA3 ? bA3 : bA4));
             let priceB = qtyB <= limB1 ? bB1 : bB2;
             let priceC = qtyC <= limC1 ? bC1 : bC2;
 
-            // Berechnungen (Einkaufswert der Gesamtmenge + Zusatzkosten)
-            let costA = (qtyA * priceA) + extraA;
+            // Berechnungen pro Produkt
+            let ekaTotalA = qtyA * priceA;
             let revA = qtyA * vkA;
+            let costA = ekaTotalA + extraA;
             let profitA = revA - costA;
 
-            let costB = (qtyB * priceB) + extraB;
+            let ekaTotalB = qtyB * priceB;
             let revB = qtyB * vkB;
+            let costB = ekaTotalB + extraB;
             let profitB = revB - costB;
 
-            let costC = (qtyC * priceC) + extraC;
+            let ekaTotalC = qtyC * priceC;
             let revC = qtyC * vkC;
+            let costC = ekaTotalC + extraC;
             let profitC = revC - costC;
 
             let totalCost = costA + costB + costC;
             let totalRevenue = revA + revB + revC;
             let totalProfit = totalRevenue - totalCost;
 
-            // HTML-Ausgabe
+            // HTML-Ausgabe mit übersichtlicher Untereinander-Struktur (Umsatz, Minus EKA, Minus Extras, Ergebnis)
             document.getElementById('results').innerHTML = `
-                <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700/50">
-                    <div class="font-bold text-white flex justify-between"><span>Produkt A (${qtyA} Stk.)</span> <span>Gewinn: ${profitA.toFixed(2)} €</span></div>
-                    <div class="text-xs text-slate-400 mt-1 flex justify-between"><span>Grundpreis: ${priceA.toFixed(2)} €/Stk. (+ ${extraA.toFixed(2)} € Extra)</span> <span>VK: ${vkA.toFixed(2)} €</span></div>
+                <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700/50 space-y-1">
+                    <div class="font-bold text-white text-sm mb-1">Produkt A (${qtyA} Stk.)</div>
+                    <div class="flex justify-between text-slate-300">
+                        <span>Umsatz (Menge × VK):</span>
+                        <span>+ ${revA.toFixed(2)} PHP</span>
+                    </div>
+                    <div class="flex justify-between text-red-300">
+                        <span>- Gesamt EKA (${qtyA} × ${priceA.toFixed(2)} PHP):</span>
+                        <span>- ${ekaTotalA.toFixed(2)} PHP</span>
+                    </div>
+                    <div class="flex justify-between text-red-300 border-b border-slate-700 pb-1">
+                        <span>- Zusatzkosten:</span>
+                        <span>- ${extraA.toFixed(2)} PHP</span>
+                    </div>
+                    <div class="flex justify-between font-bold text-emerald-400 pt-1">
+                        <span>= Gewinn:</span>
+                        <span>${profitA.toFixed(2)} PHP</span>
+                    </div>
                 </div>
-                <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700/50">
-                    <div class="font-bold text-white flex justify-between"><span>Produkt B (${qtyB} Stk.)</span> <span>Gewinn: ${profitB.toFixed(2)} €</span></div>
-                    <div class="text-xs text-slate-400 mt-1 flex justify-between"><span>Grundpreis: ${priceB.toFixed(2)} €/Stk. (+ ${extraB.toFixed(2)} € Extra)</span> <span>VK: ${vkB.toFixed(2)} €</span></div>
+
+                <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700/50 space-y-1">
+                    <div class="font-bold text-white text-sm mb-1">Produkt B (${qtyB} Stk.)</div>
+                    <div class="flex justify-between text-slate-300">
+                        <span>Umsatz (Menge × VK):</span>
+                        <span>+ ${revB.toFixed(2)} PHP</span>
+                    </div>
+                    <div class="flex justify-between text-red-300">
+                        <span>- Gesamt EKA (${qtyB} × ${priceB.toFixed(2)} PHP):</span>
+                        <span>- ${ekaTotalB.toFixed(2)} PHP</span>
+                    </div>
+                    <div class="flex justify-between text-red-300 border-b border-slate-700 pb-1">
+                        <span>- Zusatzkosten:</span>
+                        <span>- ${extraB.toFixed(2)} PHP</span>
+                    </div>
+                    <div class="flex justify-between font-bold text-emerald-400 pt-1">
+                        <span>= Gewinn:</span>
+                        <span>${profitB.toFixed(2)} PHP</span>
+                    </div>
                 </div>
-                <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700/50">
-                    <div class="font-bold text-white flex justify-between"><span>Produkt C (${qtyC} Stk.)</span> <span>Gewinn: ${profitC.toFixed(2)} €</span></div>
-                    <div class="text-xs text-slate-400 mt-1 flex justify-between"><span>Grundpreis: ${priceC.toFixed(2)} €/Stk. (+ ${extraC.toFixed(2)} € Grabkosten)</span> <span>VK: ${vkC.toFixed(2)} €</span></div>
+
+                <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700/50 space-y-1">
+                    <div class="font-bold text-white text-sm mb-1">Produkt C (${qtyC} Stk.)</div>
+                    <div class="flex justify-between text-slate-300">
+                        <span>Umsatz (Menge × VK):</span>
+                        <span>+ ${revC.toFixed(2)} PHP</span>
+                    </div>
+                    <div class="flex justify-between text-red-300">
+                        <span>- Gesamt EKA (${qtyC} × ${priceC.toFixed(2)} PHP):</span>
+                        <span>- ${ekaTotalC.toFixed(2)} PHP</span>
+                    </div>
+                    <div class="flex justify-between text-red-300 border-b border-slate-700 pb-1">
+                        <span>- Grabkosten:</span>
+                        <span>- ${extraC.toFixed(2)} PHP</span>
+                    </div>
+                    <div class="flex justify-between font-bold text-emerald-400 pt-1">
+                        <span>= Gewinn:</span>
+                        <span>${profitC.toFixed(2)} PHP</span>
+                    </div>
                 </div>
             `;
 
-            document.getElementById('totalCost').innerText = totalCost.toFixed(2) + ' €';
-            document.getElementById('totalRevenue').innerText = totalRevenue.toFixed(2) + ' €';
-            document.getElementById('totalProfit').innerText = totalProfit.toFixed(2) + ' €';
+            document.getElementById('totalCost').innerText = totalCost.toFixed(2) + ' PHP';
+            document.getElementById('totalRevenue').innerText = totalRevenue.toFixed(2) + ' PHP';
+            document.getElementById('totalProfit').innerText = totalProfit.toFixed(2) + ' PHP';
         }
 
         window.onload = calculate;
