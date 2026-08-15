@@ -19,26 +19,39 @@
             <h2 class="text-md font-bold text-indigo-900 mb-4">1. Master-Staffelpreise & Mengen-Grenzen:</h2>
             <div class="max-w-md mx-auto bg-white p-4 rounded-lg border shadow-sm space-y-2 text-sm text-gray-700">
                 <strong class="text-indigo-600 block border-b pb-1">Staffelpreis-Tabelle (4 Stufen)</strong>
+                
+                <!-- Stufe 1 -->
                 <div class="flex items-center justify-between text-xs gap-1">
                     <span>1 bis</span>
                     <input type="number" id="lim1" value="3" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
                     <span>Stk. :</span>
                     <input type="number" id="base1" value="1300.00" step="0.01" oninput="calculate()" class="w-24 p-1 border rounded text-right"> PHP
                 </div>
+
+                <!-- Stufe 2 -->
                 <div class="flex items-center justify-between text-xs gap-1">
+                    <span id="labelStart2" class="font-bold text-indigo-700">4</span>
                     <span>bis</span>
                     <input type="number" id="lim2" value="6" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
                     <span>Stk. :</span>
                     <input type="number" id="base2" value="1250.00" step="0.01" oninput="calculate()" class="w-24 p-1 border rounded text-right"> PHP
                 </div>
+
+                <!-- Stufe 3 -->
                 <div class="flex items-center justify-between text-xs gap-1">
+                    <span id="labelStart3" class="font-bold text-indigo-700">7</span>
                     <span>bis</span>
                     <input type="number" id="lim3" value="10" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
                     <span>Stk. :</span>
                     <input type="number" id="base3" value="1200.00" step="0.01" oninput="calculate()" class="w-24 p-1 border rounded text-right"> PHP
                 </div>
+
+                <!-- Stufe 4 (Darüber) -->
                 <div class="flex items-center justify-between text-xs">
-                    <span>Darüber :</span>
+                    <div>
+                        <span id="labelStart4" class="font-bold text-indigo-700">11</span>
+                        <span>Stk. und darüber :</span>
+                    </div>
                     <input type="number" id="base4" value="1180.00" step="0.01" oninput="calculate()" class="w-24 p-1 border rounded text-right"> PHP
                 </div>
             </div>
@@ -180,6 +193,11 @@
             const lim1 = parseInt(document.getElementById('lim1').value) || 3;
             const lim2 = parseInt(document.getElementById('lim2').value) || 6;
             const lim3 = parseInt(document.getElementById('lim3').value) || 10;
+
+            // Dynamische Labels aktualisieren (+1 Logik)
+            document.getElementById('labelStart2').innerText = (lim1 + 1);
+            document.getElementById('labelStart3').innerText = (lim2 + 1);
+            document.getElementById('labelStart4').innerText = (lim3 + 1);
 
             // Master-Staffelpreise auslesen
             const b1 = parseFloat(document.getElementById('base1').value) || 0;
