@@ -25,8 +25,19 @@
                             <input type="date" class="form-control" id="date" required>
                         </div>
                         <div class="col-md-4">
-                            <label for="article" class="form-label">Artikeltext</label>
-                            <input type="text" class="form-control" id="article" placeholder="z. B. Schrauben M8" required>
+                            <label for="article" class="form-label">Artikel</label>
+                            <select class="form-select" id="article" required>
+                                <option value="" disabled selected>Bitte wählen...</option>
+                                <option value="Fuji">Fuji</option>
+                                <option value="Perfect">Perfect</option>
+                                <option value="Master Aroma">Master Aroma</option>
+                                <option value="Sweet Hasmin">Sweet Hasmin</option>
+                                <option value="Coco pandan">Coco pandan</option>
+                                <option value="Jasmine original">Jasmine original</option>
+                                <option value="Master Alsa">Master Alsa</option>
+                                <option value="Brown rice">Brown rice</option>
+                                <option value="Malagkit/k">Malagkit/k</option>
+                            </select>
                         </div>
                         <div class="col-md-2">
                             <label for="quantity" class="form-label">Menge</label>
@@ -82,10 +93,10 @@
             </div>
         </div>
 
-        <!-- Chronologisches Logbuch (Einzeltabelle) -->
+        <!-- Chronologisches Logbuch -->
         <div class="card shadow-sm">
             <div class="card-header bg-secondary text-white">
-                <h5 class="mb-0">Chronologisches Logbuch (Alle Einzeleinträge)</h5>
+                <h5 class="mb-0">Chronologisches Logbuch</h5>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -110,22 +121,17 @@
         </div>
     </div>
 
-    <!-- JavaScript Logik -->
     <script>
-        // Daten aus dem localStorage laden oder leeres Array erstellen
         let entries = JSON.parse(localStorage.getItem('wareneingänge')) || [];
-
-        // Datum auf heute vorausfüllen
         document.getElementById('date').valueAsDate = new Date();
 
-        // Formular abschicken
         document.getElementById('entryForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
             const newEntry = {
                 id: Date.now(),
                 date: document.getElementById('date').value,
-                article: document.getElementById('article').value.trim(),
+                article: document.getElementById('article').value,
                 quantity: parseInt(document.getElementById('quantity').value),
                 price: parseFloat(document.getElementById('price').value)
             };
@@ -133,37 +139,30 @@
             entries.push(newEntry);
             saveAndRefresh();
             
-            // Felder zurücksetzen (Datum beibehalten)
+            // Felder zurücksetzen
             document.getElementById('article').value = '';
             document.getElementById('quantity').value = '';
             document.getElementById('price').value = '';
-            document.getElementById('article').focus();
         });
 
-        // Daten speichern und Ansichten aktualisieren
         function saveAndRefresh() {
             localStorage.setItem('wareneingänge', JSON.stringify(entries));
             renderLog();
         }
 
-        // Chronologisches Logbuch rendern
         function renderLog() {
             const tbody = document.getElementById('logTableBody');
             tbody.innerHTML = '';
-
             if (entries.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Noch keine Einträge vorhanden.</td></tr>';
                 return;
             }
-
-            // Nach Datum absteigend sortieren für die Anzeige
             const sortedEntries = [...entries].sort((a, b) => new Date(b.date) - new Date(a.date));
-
             sortedEntries.forEach(entry => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    󠁳<td>${entry.date}</td>
-                    <td>${escapeHtml(entry.article)}</td>
+                    <td>${entry.date}</td>
+                    <td>${entry.article}</td>
                     <td>${entry.quantity}</td>
                     <td>${entry.price.toFixed(2)} €</td>
                     <td><button class="btn btn-danger btn-sm" onclick="deleteEntry(${entry.id})">Löschen</button></td>
@@ -172,54 +171,43 @@
             });
         }
 
-        // Eintrag löschen
         function deleteEntry(id) {
-            if (confirm('Möchten Sie diesen Eintrag wirklich löschen?')) {
+            if (confirm('Eintrag löschen?')) {
                 entries = entries.filter(entry => entry.id !== id);
                 saveAndRefresh();
-                // Wenn Filter aktiv war, diesen ebenfalls aktualisieren
                 document.getElementById('filterBtn').click();
             }
         }
 
-        // Auswertung generieren
         document.getElementById('filterBtn').addEventListener('click', function() {
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
             const tbody = document.getElementById('reportTableBody');
             tbody.innerHTML = '';
 
-            // Filtern
             let filtered = entries;
-            if (startDate) {
-                filtered = filtered.filter(e => e.date >= startDate);
-            }
-            if (endDate) {
-                filtered = filtered.filter(e => e.date <= endDate);
-            }
+            if (startDate) filtered = filtered.filter(e => e.date >= startDate);
+            if (endDate) filtered = filtered.filter(e => e.date <= endDate);
 
             if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Keine Wareneingänge im gewählten Zeitraum gefunden.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Keine Wareneingänge gefunden.</td></tr>';
                 return;
             }
 
-            // Aggregation nach Artikeltext
             const aggregated = {};
             filtered.forEach(entry => {
-                const name = entry.article;
-                if (!aggregated[name]) {
-                    aggregated[name] = { totalQty: 0, totalPriceSum: 0, count: 0 };
+                if (!aggregated[entry.article]) {
+                    aggregated[entry.article] = { totalQty: 0, totalPriceSum: 0 };
                 }
-                aggregated[name].totalQty += entry.quantity;
-                aggregated[name].totalPriceSum += (entry.price * entry.quantity);
-                aggregated[name].count += 1;
+                aggregated[entry.article].totalQty += entry.quantity;
+                aggregated[entry.article].totalPriceSum += (entry.price * entry.quantity);
             });
 
             for (const [article, data] of Object.entries(aggregated)) {
                 const avgPrice = data.totalPriceSum / data.totalQty;
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><strong>${escapeHtml(article)}</strong></td>
+                    <td><strong>${article}</strong></td>
                     <td>${data.totalQty}</td>
                     <td>${avgPrice.toFixed(2)} €</td>
                     <td>${data.totalPriceSum.toFixed(2)} €</td>
@@ -228,19 +216,6 @@
             }
         });
 
-        // XSS-Schutz Hilfsfunktion
-        function escapeHtml(text) {
-            const map = {
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#039;'
-            };
-            return text.replace(/[&<>"']/g, m => map[m]);
-        }
-
-        // Initiales Laden beim Start der Seite
         renderLog();
     </script>
 </body>
