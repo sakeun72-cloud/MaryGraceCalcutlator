@@ -2,30 +2,38 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Facebook Post Creator</title>
+    <title>Facebook Post Creator - 4 Oben / 2 Unten</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #e9ecef; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         
-        /* Das zu exportierende Bild-Layout */
+        /* Das zu exportierende Bild-Layout (4-Spalten-Grid) */
         #post-container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(4, 1fr);
             gap: 5px;
             background: #fff;
             padding: 10px;
-            width: 600px;
+            width: 800px;
             border: 1px solid #ddd;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         
-        .card { padding: 10px; text-align: center; border: 1px solid #eee; }
-        .card img { width: 100%; height: 250px; object-fit: cover; background: #f8f9fa; margin-bottom: 10px; }
-        .card h3 { margin: 5px 0; font-size: 16px; color: #333; }
-        .card p { margin: 0; font-weight: bold; color: #d9534f; font-size: 18px; }
+        .card { padding: 10px; text-align: center; border: 1px solid #eee; background: #fff; }
+        .card img { width: 100%; height: 150px; object-fit: cover; background: #f8f9fa; margin-bottom: 10px; }
+        .card h3 { margin: 5px 0; font-size: 14px; color: #333; }
+        .card p { margin: 0; font-weight: bold; color: #d9534f; font-size: 16px; }
+
+        /* Die unteren 2 Kacheln erstrecken sich über jeweils 2 Spalten (doppelte Breite) */
+        .card-bottom {
+            grid-column: span 2;
+        }
+        .card-bottom img {
+            height: 250px;
+        }
         
-        /* Steuerung */
-        .controls { margin-top: 30px; background: white; padding: 20px; border-radius: 8px; width: 600px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        /* Steuerung / Bearbeitungsbereich */
+        .controls { margin-top: 30px; background: white; padding: 20px; border-radius: 8px; width: 800px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); box-sizing: border-box; }
         .control-group { border-bottom: 1px solid #ddd; padding: 10px 0; }
         .control-group input { display: block; margin: 5px 0; width: 100%; padding: 8px; box-sizing: border-box; }
         
@@ -37,15 +45,38 @@
 
 <!-- Bereich, der als Bild exportiert wird -->
 <div id="post-container">
+    <!-- Obere 4 Kacheln -->
     <div class="card">
-        <img id="img1" src="https://via.placeholder.com/250x250?text=Bild+1" alt="Bild 1">
+        <img id="img1" src="https://via.placeholder.com/200x200?text=Bild+1" alt="Bild 1">
         <h3 id="title1">Produkt 1</h3>
         <p id="price1">0,00 €</p>
     </div>
     <div class="card">
-        <img id="img2" src="https://via.placeholder.com/250x250?text=Bild+2" alt="Bild 2">
+        <img id="img2" src="https://via.placeholder.com/200x200?text=Bild+2" alt="Bild 2">
         <h3 id="title2">Produkt 2</h3>
         <p id="price2">0,00 €</p>
+    </div>
+    <div class="card">
+        <img id="img3" src="https://via.placeholder.com/200x200?text=Bild+3" alt="Bild 3">
+        <h3 id="title3">Produkt 3</h3>
+        <p id="price3">0,00 €</p>
+    </div>
+    <div class="card">
+        <img id="img4" src="https://via.placeholder.com/200x200?text=Bild+4" alt="Bild 4">
+        <h3 id="title4">Produkt 4</h3>
+        <p id="price4">0,00 €</p>
+    </div>
+
+    <!-- Untere 2 Kacheln (jeweils doppelbreit) -->
+    <div class="card card-bottom">
+        <img id="img5" src="https://via.placeholder.com/400x250?text=Bild+5" alt="Bild 5">
+        <h3 id="title5">Produkt 5</h3>
+        <p id="price5">0,00 €</p>
+    </div>
+    <div class="card card-bottom">
+        <img id="img6" src="https://via.placeholder.com/400x250?text=Bild+6" alt="Bild 6">
+        <h3 id="title6">Produkt 6</h3>
+        <p id="price6">0,00 €</p>
     </div>
 </div>
 
@@ -53,20 +84,41 @@
 <div class="controls">
     <h2>Bearbeitung</h2>
     
-    <!-- Kachel 1 Steuerung -->
     <div class="control-group">
-        <strong>Kachel 1:</strong>
+        <strong>Kachel 1 (Oben links):</strong>
         <input type="file" onchange="loadFile(event, 'img1')">
         <input type="text" placeholder="Titel 1" oninput="document.getElementById('title1').innerText = this.value">
         <input type="text" placeholder="Preis 1" oninput="document.getElementById('price1').innerText = this.value">
     </div>
-
-    <!-- Kachel 2 Steuerung -->
     <div class="control-group">
-        <strong>Kachel 2:</strong>
+        <strong>Kachel 2 (Oben Mitte-Links):</strong>
         <input type="file" onchange="loadFile(event, 'img2')">
         <input type="text" placeholder="Titel 2" oninput="document.getElementById('title2').innerText = this.value">
         <input type="text" placeholder="Preis 2" oninput="document.getElementById('price2').innerText = this.value">
+    </div>
+    <div class="control-group">
+        <strong>Kachel 3 (Oben Mitte-Rechts):</strong>
+        <input type="file" onchange="loadFile(event, 'img3')">
+        <input type="text" placeholder="Titel 3" oninput="document.getElementById('title3').innerText = this.value">
+        <input type="text" placeholder="Preis 3" oninput="document.getElementById('price3').innerText = this.value">
+    </div>
+    <div class="control-group">
+        <strong>Kachel 4 (Oben rechts):</strong>
+        <input type="file" onchange="loadFile(event, 'img4')">
+        <input type="text" placeholder="Titel 4" oninput="document.getElementById('title4').innerText = this.value">
+        <input type="text" placeholder="Preis 4" oninput="document.getElementById('price4').innerText = this.value">
+    </div>
+    <div class="control-group">
+        <strong>Kachel 5 (Unten links):</strong>
+        <input type="file" onchange="loadFile(event, 'img5')">
+        <input type="text" placeholder="Titel 5" oninput="document.getElementById('title5').innerText = this.value">
+        <input type="text" placeholder="Preis 5" oninput="document.getElementById('price5').innerText = this.value">
+    </div>
+    <div class="control-group">
+        <strong>Kachel 6 (Unten rechts):</strong>
+        <input type="file" onchange="loadFile(event, 'img6')">
+        <input type="text" placeholder="Titel 6" oninput="document.getElementById('title6').innerText = this.value">
+        <input type="text" placeholder="Preis 6" oninput="document.getElementById('price6').innerText = this.value">
     </div>
 
     <button onclick="downloadImage()">Bild für Facebook exportieren</button>
@@ -82,7 +134,6 @@
     }
 
     function downloadImage() {
-        // Wir exportieren nur den Container mit dem Bild
         html2canvas(document.querySelector("#post-container")).then(canvas => {
             let link = document.createElement("a");
             link.download = "facebook-post.png";
