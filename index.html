@@ -49,11 +49,11 @@
                 </div>
                 <div class="card-body">
                     <div class="row g-3 mb-3">
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label class="form-label">Petsa (Date)</label>
                             <input type="date" class="form-control" id="pDate" required>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label class="form-label">Produkto / Artikel</label>
                             <select class="form-select" id="pArticle">
                                 <option value="" disabled selected>Pumili...</option>
@@ -73,12 +73,16 @@
                             <input type="number" class="form-control" id="pQuantity" min="1" step="1" placeholder="Sacks">
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label">Kilo Gesamt (Editable)</label>
+                            <label class="form-label">Kilo Gesamt</label>
                             <input type="number" class="form-control fw-bold text-success" id="pTotalKg" min="0.1" step="any" placeholder="kg">
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label">Presyo / Sako</label>
-                            <input type="number" class="form-control" id="pPrice" min="0.01" step="0.01" placeholder="0.00">
+                            <label class="form-label">Presyo / Sako (25kg)</label>
+                            <input type="number" class="form-control" id="pSackPrice" min="0.01" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Presyo / Kilo</label>
+                            <input type="number" class="form-control" id="pPricePerKg" min="0.01" step="0.01" placeholder="0.00">
                         </div>
                     </div>
 
@@ -102,13 +106,14 @@
                                         <th>Produkto</th>
                                         <th>Dami (Sako)</th>
                                         <th>Kilogramm Gesamt</th>
-                                        <th>Presyo (25 kg Sako)</th>
+                                        <th>Presyo / Sako</th>
+                                        <th>Presyo / Kilo</th>
                                         <th>Kabuuan</th>
                                         <th>Aksyon</th>
                                     </tr>
                                 </thead>
                                 <tbody id="pBatchTableBody">
-                                    <tr><td colspan="6" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>
+                                    <tr><td colspan="7" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -176,12 +181,13 @@
                                     <th>Produkto</th>
                                     <th>Dami (Sako)</th>
                                     <th>Kilogramm Gesamt</th>
-                                    <th>Presyo (25 kg)</th>
+                                    <th>Presyo / Sako</th>
+                                    <th>Presyo / Kilo</th>
                                     <th>Aksyon</th>
                                 </tr>
                             </thead>
                             <tbody id="pLogTableBody">
-                                <tr><td colspan="6" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>
+                                <tr><td colspan="7" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -419,7 +425,17 @@
             updateRowTotal('purchase');
         });
 
-        document.getElementById('pPrice').addEventListener('input', () => updateRowTotal('purchase'));
+        document.getElementById('pSackPrice').addEventListener('input', () => {
+            const sackPrice = parseFloat(document.getElementById('pSackPrice').value) || 0;
+            document.getElementById('pPricePerKg').value = sackPrice > 0 ? (sackPrice / 25).toFixed(2) : '';
+            updateRowTotal('purchase');
+        });
+
+        document.getElementById('pPricePerKg').addEventListener('input', () => {
+            const pricePerKg = parseFloat(document.getElementById('pPricePerKg').value) || 0;
+            document.getElementById('pSackPrice').value = pricePerKg > 0 ? (pricePerKg * 25).toFixed(2) : '';
+            updateRowTotal('purchase');
+        });
 
         // Live-Berechnung Zeilensumme für Sell
         document.getElementById('sQuantity').addEventListener('input', () => updateRowTotal('sale'));
@@ -427,10 +443,17 @@
 
         function updateRowTotal(type) {
             const prefix = type === 'purchase' ? 'p' : 's';
-            const qty = parseFloat(document.getElementById(prefix + 'Quantity').value) || 0;
-            const price = parseFloat(document.getElementById(prefix + 'Price').value) || 0;
-            const total = qty * price;
-            document.getElementById(prefix + 'RowTotal').value = total.toFixed(2) + ' PHP';
+            if (type === 'purchase') {
+                const totalKg = parseFloat(document.getElementById('pTotalKg').value) || 0;
+                const pricePerKg = parseFloat(document.getElementById('pPricePerKg').value) || 0;
+                const total = totalKg * pricePerKg;
+                document.getElementById('pRowTotal').value = total.toFixed(2) + ' PHP';
+            } else {
+                const qty = parseFloat(document.getElementById('sQuantity').value) || 0;
+                const price = parseFloat(document.getElementById('sPrice').value) || 0;
+                const total = qty * price;
+                document.getElementById('sRowTotal').value = total.toFixed(2) + ' PHP';
+            }
         }
 
         // Position zur temporären Batch-Liste hinzufügen
@@ -439,36 +462,60 @@
             const date = document.getElementById(prefix + 'Date').value;
             const article = document.getElementById(prefix + 'Article').value;
             const quantity = parseFloat(document.getElementById(prefix + 'Quantity').value);
-            const price = parseFloat(document.getElementById(prefix + 'Price').value);
 
-            if (!date || !article || isNaN(quantity) || quantity <= 0 || isNaN(price) || price <= 0) {
-                alert('Mangyaring punan nang tama ang lahat ng mga patlang.');
+            if (!date || !article || isNaN(quantity) || quantity <= 0) {
+                alert('Mangyaring punan nang tama ang lahat ng mga pangunahing patlang.');
                 return;
             }
 
-            let position = {
-                id: Date.now() + Math.random(),
-                date, article, quantity, price,
-                total: quantity * price
-            };
-
             if (type === 'purchase') {
                 const totalKg = parseFloat(document.getElementById('pTotalKg').value) || (quantity * 25);
-                position.totalKg = totalKg;
+                const sackPrice = parseFloat(document.getElementById('pSackPrice').value);
+                const pricePerKg = parseFloat(document.getElementById('pPricePerKg').value);
+
+                if (isNaN(sackPrice) && isNaN(pricePerKg)) {
+                    alert('Mangyaring maglagay ng presyo (Sackpreis o Kilopreis).');
+                    return;
+                }
+
+                const finalPricePerKg = !isNaN(pricePerKg) ? pricePerKg : (sackPrice / 25);
+                const finalSackPrice = !isNaN(sackPrice) ? sackPrice : (pricePerKg * 25);
+                const total = totalKg * finalPricePerKg;
+
+                const position = {
+                    id: Date.now() + Math.random(),
+                    date, article, quantity, totalKg,
+                    sackPrice: finalSackPrice,
+                    pricePerKg: finalPricePerKg,
+                    total
+                };
 
                 currentPurchaseBatch.push(position);
                 renderBatchTable('purchase');
                 document.getElementById('pTotalKg').value = '';
+                document.getElementById('pSackPrice').value = '';
+                document.getElementById('pPricePerKg').value = '';
                 manualKiloOverride = false;
             } else {
+                const price = parseFloat(document.getElementById('sPrice').value);
+                if (isNaN(price) || price <= 0) {
+                    alert('Mangyaring punan nang tama ang presyo.');
+                    return;
+                }
+                const position = {
+                    id: Date.now() + Math.random(),
+                    date, article, quantity, price,
+                    total: quantity * price
+                };
+
                 currentSalesBatch.push(position);
                 renderBatchTable('sale');
+                document.getElementById('sPrice').value = '';
             }
 
             // Felder leeren
             document.getElementById(prefix + 'Article').value = '';
             document.getElementById(prefix + 'Quantity').value = '';
-            document.getElementById(prefix + 'Price').value = '';
             document.getElementById(prefix + 'RowTotal').value = '0.00 PHP';
             document.getElementById(prefix + 'Article').focus();
         }
@@ -483,7 +530,7 @@
 
             if (batch.length === 0) {
                 if (type === 'purchase') {
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>';
                 } else {
                     tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>';
                 }
@@ -499,7 +546,8 @@
                         <td>${pos.article}</td>
                         <td>${pos.quantity} Sako</td>
                         <td><strong>${pos.totalKg} kg</strong></td>
-                        <td>${pos.price.toFixed(2)} PHP</td>
+                        <td>${pos.sackPrice.toFixed(2)} PHP</td>
+                        <td>${pos.pricePerKg.toFixed(2)} PHP</td>
                         <td><strong>${pos.total.toFixed(2)} PHP</strong></td>
                         <td><button type="button" class="btn btn-danger btn-sm" onclick="removeBatchItem('${type}', '${pos.id}')">Tanggalin</button></td>
                     `;
@@ -547,6 +595,8 @@
                 };
                 if (type === 'purchase') {
                     entry.totalKg = item.totalKg;
+                    entry.sackPrice = item.sackPrice;
+                    entry.pricePerKg = item.pricePerKg;
                 }
                 targetArray.push(entry);
             });
@@ -577,7 +627,7 @@
 
             if (dataArray.length === 0) {
                 if (type === 'purchase') {
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>';
                 } else {
                     tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>';
                 }
@@ -589,12 +639,15 @@
                 const tr = document.createElement('tr');
                 if (type === 'purchase') {
                     const kgValue = entry.totalKg !== undefined ? entry.totalKg : (entry.quantity * 25);
+                    const sackP = entry.sackPrice !== undefined ? entry.sackPrice : entry.price;
+                    const kgP = entry.pricePerKg !== undefined ? entry.pricePerKg : (entry.price / 25);
                     tr.innerHTML = `
                         <td>${entry.date}</td>
                         <td>${entry.article}</td>
                         <td>${entry.quantity} Sako</td>
                         <td><strong>${kgValue} kg</strong></td>
-                        <td>${entry.price.toFixed(2)} PHP</td>
+                        <td>${sackP.toFixed(2)} PHP</td>
+                        <td>${kgP.toFixed(2)} PHP</td>
                         <td><button class="btn btn-danger btn-sm" onclick="deleteEntry('${type}', ${entry.id})">Tanggalin</button></td>
                     `;
                 } else {
@@ -649,10 +702,15 @@
                 if (!aggregated[entry.article]) {
                     aggregated[entry.article] = { totalQtyKg: 0, totalPriceSum: 0 };
                 }
-                const qtyInKg = type === 'purchase' ? (entry.totalKg !== undefined ? entry.totalKg : entry.quantity * 25) : entry.quantity;
-                
-                aggregated[entry.article].totalQtyKg += qtyInKg;
-                aggregated[entry.article].totalPriceSum += (entry.price * entry.quantity);
+                if (type === 'purchase') {
+                    const qtyInKg = entry.totalKg !== undefined ? entry.totalKg : (entry.quantity * 25);
+                    const pricePerKgVal = entry.pricePerKg !== undefined ? entry.pricePerKg : (entry.price / 25);
+                    aggregated[entry.article].totalQtyKg += qtyInKg;
+                    aggregated[entry.article].totalPriceSum += (qtyInKg * pricePerKgVal);
+                } else {
+                    aggregated[entry.article].totalQtyKg += entry.quantity;
+                    aggregated[entry.article].totalPriceSum += (entry.price * entry.quantity);
+                }
             });
 
             let totalPeriodQtyKg = 0;
@@ -709,8 +767,9 @@
                 let inPhp = 0;
                 articlePurchases.forEach(p => {
                     const kgValue = p.totalKg !== undefined ? p.totalKg : (p.quantity * 25);
+                    const pricePerKgVal = p.pricePerKg !== undefined ? p.pricePerKg : (p.price / 25);
                     inKg += kgValue;
-                    inPhp += p.price * p.quantity;
+                    inPhp += (kgValue * pricePerKgVal);
                 });
 
                 // Sell
