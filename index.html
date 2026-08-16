@@ -230,15 +230,15 @@
                             <input type="number" class="form-control" id="sQuantity" min="0.1" step="any" placeholder="Kilo">
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Presyo bawat Kilo (PHP)</label>
-                            <input type="number" class="form-control" id="sPrice" min="0.01" step="0.01" placeholder="0.00">
+                            <label class="form-label">Gesamtwert des Auftrages (PHP)</label>
+                            <input type="number" class="form-control fw-bold text-warning bg-dark text-white" id="sTotalValue" min="0.01" step="0.01" placeholder="0.00">
                         </div>
                     </div>
 
                     <div class="row g-3 align-items-center border-top pt-3">
                         <div class="col-md-4">
-                            <label class="form-label text-muted">Gesamtwert / Kabuuang Halaga (PHP):</label>
-                            <input type="number" class="form-control fw-bold" id="sTotalValue" min="0.01" step="0.01" placeholder="0.00">
+                            <label class="form-label text-muted">Presyo bawat Kilo (PHP) - Berechnet:</label>
+                            <input type="number" class="form-control bg-white fw-bold" id="sPrice" min="0.01" step="0.01" placeholder="0.00">
                         </div>
                         <div class="col-md-8 text-end">
                             <button type="button" class="btn btn-secondary" onclick="addPosition('sale')">Idagdag sa Listahan (Add Position)</button>
@@ -396,7 +396,7 @@
         let currentPurchaseBatch = [];
         let currentSalesBatch = [];
         let manualKiloOverride = false;
-        let salesMode = 'price'; // 'price' oder 'total'
+        let salesMode = 'total'; // Standardmäßig auf Gesamtwert-Eingabe gesetzt
 
         // Datum vorbelegen
         document.getElementById('pDate').valueAsDate = new Date();
@@ -412,7 +412,7 @@
             }
         }
 
-        // Live-Berechnung Zeilensumme und automatisches Kilo für Buy
+        // Live-Berechnung für Buy
         document.getElementById('pQuantity').addEventListener('input', () => {
             const qty = parseFloat(document.getElementById('pQuantity').value) || 0;
             if (!manualKiloOverride) {
@@ -438,27 +438,27 @@
             updateRowTotal('purchase');
         });
 
-        // Live-Berechnung für Sell (Bidirektional: Kilopreis oder Gesamtwert eingeben)
-        document.getElementById('sQuantity').addEventListener('input', () => updateSalesCalculation());
-        document.getElementById('sPrice').addEventListener('input', () => updateSalesCalculation('price'));
+        // Live-Berechnung für Sell: Automatisches Berechnen des Kilopreises basierend auf dem Gesamtwert
+        document.getElementById('sQuantity').addEventListener('input', () => updateSalesCalculation('qty'));
         document.getElementById('sTotalValue').addEventListener('input', () => updateSalesCalculation('total'));
+        document.getElementById('sPrice').addEventListener('input', () => updateSalesCalculation('price'));
 
         function updateSalesCalculation(trigger) {
             const qty = parseFloat(document.getElementById('sQuantity').value) || 0;
             const priceInput = document.getElementById('sPrice');
             const totalInput = document.getElementById('sTotalValue');
 
-            if (trigger === 'price') salesMode = 'price';
-            if (trigger === 'total') salesMode = 'total';
-
-            if (salesMode === 'price') {
+            if (trigger === 'price') {
+                salesMode = 'price';
                 const price = parseFloat(priceInput.value) || 0;
                 if (qty > 0 && price > 0) {
                     totalInput.value = (qty * price).toFixed(2);
                 } else {
                     totalInput.value = '';
                 }
-            } else if (salesMode === 'total') {
+            } else {
+                // Standard-Verhalten: Gesamtwert eingeben -> Kilopreis errechnen
+                salesMode = 'total';
                 const totalVal = parseFloat(totalInput.value) || 0;
                 if (qty > 0 && totalVal > 0) {
                     priceInput.value = (totalVal / qty).toFixed(2);
@@ -518,22 +518,28 @@
                 document.getElementById('pPricePerKg').value = '';
                 manualKiloOverride = false;
             } else {
-                const price = parseFloat(document.getElementById('sPrice').value);
-                if (isNaN(price) || price <= 0) {
-                    alert('Mangyaring punan nang tama ang presyo.');
+                const totalVal = parseFloat(document.getElementById('sTotalValue').value);
+                const pricePerKg = parseFloat(document.getElementById('sPrice').value);
+
+                if (isNaN(totalVal) || totalVal <= 0 || isNaN(pricePerKg) || pricePerKg <= 0) {
+                    alert('Mangyaring punan nang tama ang kabuuang halaga o presyo.');
                     return;
                 }
+
                 const position = {
                     id: Date.now() + Math.random(),
-                    date, article, quantity, price,
-                    total: quantity * price
+                    date, 
+                    article, 
+                    quantity, // Dies entspricht hier den Kilos (kg)
+                    price: pricePerKg,
+                    total: totalVal
                 };
 
                 currentSalesBatch.push(position);
                 renderBatchTable('sale');
-                document.getElementById('sPrice').value = '';
                 document.getElementById('sTotalValue').value = '';
-                salesMode = 'price';
+                document.getElementById('sPrice').value = '';
+                salesMode = 'total';
             }
 
             // Felder leeren
@@ -630,22 +636,15 @@
                 localStorage.setItem('buy', JSON.stringify(purchases));
                 currentPurchaseBatch = [];
                 renderBatchTable('purchase');
-                renderLog('purchase');
                 document.getElementById('pDate').valueAsDate = new Date();
                 alert('Matagumpay na naitala ang pagtanggap!');
             } else {
                 localStorage.setItem('sell', JSON.stringify(sales));
                 currentSalesBatch = [];
                 renderBatchTable('sale');
-                renderLog('sale');
                 document.getElementById('sDate').valueAsDate = new Date();
                 alert('Matagumpay na naitala ang pagbebenta!');
             }
-        }
-
-        // Logbuch rendern (Stub für Vollständigkeit)
-        function renderLog(type) {
-            // Logik bleibt unverändert
         }
 
         function renderMarginSection() {
