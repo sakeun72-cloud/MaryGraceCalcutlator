@@ -153,7 +153,7 @@
                         </thead>
                         <tbody id="logTableBody">
                             <tr>
-                                <td colspan="5" class="text-center text-muted">Noch keine Einträge vorhanden.</td>
+                                <td colspan="5" class="text-center text-muted">Noch keine Einträge im Logbuch vorhanden.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -163,9 +163,7 @@
     </div>
 
     <script>
-        // Dauerhafter Speicher für das Logbuch
         let entries = JSON.parse(localStorage.getItem('wareneingänge')) || [];
-        // Temporäre Liste für den aktuellen Erfassungs-Vorgang
         let currentBatch = [];
 
         document.getElementById('date').valueAsDate = new Date();
@@ -205,7 +203,6 @@
             currentBatch.push(position);
             renderBatchTable();
 
-            // Nur die Eingabefelder für die nächste Position leeren
             document.getElementById('article').value = '';
             document.getElementById('quantity').value = '';
             document.getElementById('price').value = '';
@@ -213,7 +210,7 @@
             document.getElementById('article').focus();
         });
 
-        // Temporäre Batch-Tabelle rendern & Gesamtsumme berechnen
+        // Temporäre Batch-Tabelle rendern
         function renderBatchTable() {
             const tbody = document.getElementById('batchTableBody');
             tbody.innerHTML = '';
@@ -241,20 +238,18 @@
             document.getElementById('batchTotalDisplay').innerText = grandTotal.toFixed(2) + ' €';
         }
 
-        // Einzelne Position aus der temporären Liste entfernen
         function removeBatchItem(id) {
             currentBatch = currentBatch.filter(item => item.id != id);
             renderBatchTable();
         }
 
-        // Endgültig abschicken: Fügt Positionen zum Logbuch hinzu, ohne alte Einträge zu löschen
+        // Endgültig abschicken
         document.getElementById('submitBatchBtn').addEventListener('click', function() {
             if (currentBatch.length === 0) {
                 alert('Die Liste ist leer. Bitte fügen Sie mindestens eine Position hinzu.');
                 return;
             }
 
-            // Neue Positionen an das bestehende Logbuch anhängen
             currentBatch.forEach(item => {
                 entries.push({
                     id: item.id,
@@ -265,11 +260,9 @@
                 });
             });
 
-            // Im localStorage sichern und Logbuch-Anzeige aktualisieren
             localStorage.setItem('wareneingänge', JSON.stringify(entries));
             renderLog();
 
-            // Nur die temporäre Erfassung zurücksetzen (das Logbuch bleibt unberührt!)
             currentBatch = [];
             renderBatchTable();
             document.getElementById('date').valueAsDate = new Date();
@@ -277,7 +270,6 @@
             alert('Wareneingang wurde erfolgreich im Logbuch gespeichert!');
         });
 
-        // Logbuch-Tabelle rendern
         function renderLog() {
             const tbody = document.getElementById('logTableBody');
             tbody.innerHTML = '';
@@ -299,7 +291,6 @@
             });
         }
 
-        // Einzelnen Eintrag aus dem Logbuch löschen
         function deleteEntry(id) {
             if (confirm('Möchten Sie diesen Eintrag wirklich aus dem Logbuch löschen?')) {
                 entries = entries.filter(entry => entry.id !== id);
@@ -310,7 +301,7 @@
             }
         }
 
-        // Auswertung nach Zeitraum
+        // Auswertung nach Zeitraum mit Gesamtsummen-Berechnung
         document.getElementById('filterBtn').addEventListener('click', function() {
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
@@ -335,8 +326,14 @@
                 aggregated[entry.article].totalPriceSum += (entry.price * entry.quantity);
             });
 
+            let totalPeriodQty = 0;
+            let totalPeriodValue = 0;
+
             for (const [article, data] of Object.entries(aggregated)) {
                 const avgPrice = data.totalPriceSum / data.totalQty;
+                totalPeriodQty += data.totalQty;
+                totalPeriodValue += data.totalPriceSum;
+
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><strong>${article}</strong></td>
@@ -346,9 +343,19 @@
                 `;
                 tbody.appendChild(tr);
             }
+
+            // Hinzufügen der Gesamtsummen-Zeile am Ende der Auswertungstabelle
+            const summaryTr = document.createElement('tr');
+            summaryTr.className = 'table-dark fw-bold';
+            summaryTr.innerHTML = `
+                <td>GESAMT / ZEITRAUM</td>
+                <td>${totalPeriodQty}</td>
+                <td>-</td>
+                <td>${totalPeriodValue.toFixed(2)} €</td>
+            `;
+            tbody.appendChild(summaryTr);
         });
 
-        // Initiales Laden beim Seitenaufruf
         renderLog();
     </script>
 </body>
