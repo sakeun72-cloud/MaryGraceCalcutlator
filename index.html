@@ -231,7 +231,7 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Gesamtwert des Auftrages (PHP)</label>
-                            <!-- Gelber Hintergrund wie gewünscht -->
+                            <!-- Gelber Hintergrund -->
                             <input type="number" class="form-control fw-bold text-dark" id="sTotalValue" style="background-color: #fff3cd;" min="0.01" step="0.01" placeholder="0.00">
                         </div>
                     </div>
@@ -404,16 +404,26 @@
         document.getElementById('pDate').valueAsDate = new Date();
         document.getElementById('sDate').valueAsDate = new Date();
 
-        // Beim Laden direkt die Historie anzeigen
+        // Beim Laden Historie laden und letzten Reiter wiederherstellen
         window.addEventListener('DOMContentLoaded', () => {
             renderLog('purchase');
             renderLog('sale');
+
+            const savedSection = localStorage.getItem('activeSection');
+            if (savedSection && document.getElementById(savedSection)) {
+                showSection(savedSection);
+            } else {
+                showSection('purchaseSection');
+            }
         });
 
-        // Ansichten umschalten
+        // Ansichten umschalten und aktiv speichern
         function showSection(sectionId) {
             document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active-view'));
             document.getElementById(sectionId).classList.add('active-view');
+            
+            // Aktiven Reiter im localStorage speichern
+            localStorage.setItem('activeSection', sectionId);
 
             if (sectionId === 'marginSection') {
                 renderMarginSection();
@@ -730,7 +740,6 @@
             let hasData = false;
 
             articles.forEach(article => {
-                // Buy Daten aggregieren
                 const articlePurchases = purchases.filter(p => p.article === article);
                 const totalBuyKg = articlePurchases.reduce((sum, p) => sum + (p.totalKg || 0), 0);
                 const totalBuyPhp = articlePurchases.reduce((sum, p) => {
@@ -740,7 +749,6 @@
                 }, 0);
                 const avgBuyPerKg = totalBuyKg > 0 ? totalBuyPhp / totalBuyKg : 0;
 
-                // Sell Daten aggregieren
                 const articleSales = sales.filter(s => s.article === article);
                 const totalSellKg = articleSales.reduce((sum, s) => sum + (s.quantity || 0), 0);
                 const totalSellPhp = articleSales.reduce((sum, s) => {
@@ -750,7 +758,6 @@
                 }, 0);
                 const avgSellPerKg = totalSellKg > 0 ? totalSellPhp / totalSellKg : 0;
 
-                // Stock & Turbo berechnen
                 const stockKg = totalBuyKg - totalSellKg;
                 let turboPerKg = 0;
                 if (totalSellKg > 0 && totalBuyKg > 0) {
