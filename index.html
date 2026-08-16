@@ -3,230 +3,415 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wareneingangsbuch / Purchase Log</title>
+    <title>Rice Inventory System</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .section-view { display: none; }
+        .active-view { display: block; }
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            background-color: #f8f9fa;
+            z-index: 1000;
+            padding: 10px;
+            border-bottom: 2px solid #dee2e6;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+    </style>
 </head>
 <body class="bg-light">
 
-    <div class="container my-5">
-        <h1 class="mb-2 text-center">Aklat sa Pagtanggap ng Kalakal (Purchase Log)</h1>
-        
-        <!-- Button zum Preis-Check -->
-        <div class="text-center mb-4">
-            <a href="http://www.bantaypresyo.da.gov.ph/" target="_blank" class="btn btn-info text-white shadow-sm">
-                Tignan ang Bantay Presyo (DA)
-            </a>
+    <!-- Sticky Navigation (Immer sichtbar) -->
+    <div class="sticky-nav text-center">
+        <div class="btn-group w-100 mb-2" role="group">
+            <button class="btn btn-primary" onclick="showSection('purchaseSection')">Einkauf (Purchase)</button>
+            <button class="btn btn-warning text-dark fw-bold" onclick="showSection('salesSection')">Verkauf (Sales)</button>
         </div>
+        <a href="http://www.bantaypresyo.da.gov.ph/" target="_blank" class="btn btn-outline-info btn-sm">
+            Bantay Presyo (DA)
+        </a>
+    </div>
 
-        <!-- Eingabeformular für Positionen -->
-        <div class="card shadow-sm mb-5">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Mag-rekord ng Bagong Pagtanggap (Add Purchase)</h5>
+    <div class="container pb-5">
+        
+        <!-- ================= EINKAUF SEKTION ================= -->
+        <div id="purchaseSection" class="section-view active-view">
+            <h2 class="text-primary mb-4 text-center">Aklat sa Pagtanggap (Purchase Log)</h2>
+
+            <!-- Eingabeformular Einkauf -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Mag-rekord ng Bagong Pagtanggap (Add Purchase)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Petsa (Date)</label>
+                            <input type="date" class="form-control" id="pDate" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Produkto / Artikel</label>
+                            <select class="form-select" id="pArticle">
+                                <option value="" disabled selected>Pumili...</option>
+                                <option value="Fuji">Fuji</option>
+                                <option value="Perfect">Perfect</option>
+                                <option value="Master Aroma">Master Aroma</option>
+                                <option value="Sweet Hasmin">Sweet Hasmin</option>
+                                <option value="Coco pandan">Coco pandan</option>
+                                <option value="Jasmine original">Jasmine original</option>
+                                <option value="Master Alsa">Master Alsa</option>
+                                <option value="Brown rice">Brown rice</option>
+                                <option value="Malagkit/k">Malagkit/k</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Dami (Menge)</label>
+                            <input type="number" class="form-control" id="pQuantity" min="1" step="1" placeholder="Dami">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Presyo para sa 25 kg Gebinde</label>
+                            <input type="number" class="form-control" id="pPrice" min="0.01" step="0.01" placeholder="0.00">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 align-items-center border-top pt-3">
+                        <div class="col-md-4">
+                            <label class="form-label text-muted">Kalkuladong Halaga:</label>
+                            <input type="text" class="form-control bg-white fw-bold" id="pRowTotal" value="0.00 PHP" disabled>
+                        </div>
+                        <div class="col-md-8 text-end">
+                            <button type="button" class="btn btn-secondary" onclick="addPosition('purchase')">Idagdag sa Listahan (Add Position)</button>
+                        </div>
+                    </div>
+
+                    <!-- Temporäre Erfassungsliste Einkauf -->
+                    <div class="mt-4">
+                        <h6>Kasalukuyang Listahan (Current Batch):</h6>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Produkto</th>
+                                        <th>Dami</th>
+                                        <th>Presyo (25 kg)</th>
+                                        <th>Kabuuan</th>
+                                        <th>Aksyon</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pBatchTableBody">
+                                    <tr><td colspan="5" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded border">
+                            <h4 class="mb-0">Kabuuang Halaga para sa Pagsusuri:</h4>
+                            <h3 class="mb-0 text-primary" id="pBatchTotalDisplay">0.00 PHP</h3>
+                        </div>
+
+                        <div class="text-end mt-3">
+                            <button type="button" class="btn btn-success btn-lg" onclick="submitBatch('purchase')">Isumite nang Pinal (Save Purchase)</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="row g-3 mb-3">
-                    <div class="col-md-3">
-                        <label for="date" class="form-label">Petsa (Date)</label>
-                        <input type="date" class="form-control" id="date" required>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="article" class="form-label">Produkto / Artikel</label>
-                        <select class="form-select" id="article">
-                            <option value="" disabled selected>Pumili...</option>
-                            <option value="Fuji">Fuji</option>
-                            <option value="Perfect">Perfect</option>
-                            <option value="Master Aroma">Master Aroma</option>
-                            <option value="Sweet Hasmin">Sweet Hasmin</option>
-                            <option value="Coco pandan">Coco pandan</option>
-                            <option value="Jasmine original">Jasmine original</option>
-                            <option value="Master Alsa">Master Alsa</option>
-                            <option value="Brown rice">Brown rice</option>
-                            <option value="Malagkit/k">Malagkit/k</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label for="quantity" class="form-label">Dami (Menge)</label>
-                        <input type="number" class="form-control" id="quantity" min="1" step="1" placeholder="Dami">
-                    </div>
-                    <div class="col-md-3">
-                        <label for="price" class="form-label">Presyo para sa 25 kg Gebinde</label>
-                        <input type="number" class="form-control" id="price" min="0.01" step="0.01" placeholder="0.00">
-                    </div>
-                </div>
 
-                <div class="row g-3 align-items-center border-top pt-3">
-                    <div class="col-md-4">
-                        <label class="form-label text-muted">Kalkuladong Halaga ng Linya:</label>
-                        <input type="text" class="form-control bg-white fw-bold" id="rowTotal" value="0.00 PHP" disabled>
-                    </div>
-                    <div class="col-md-8 text-end">
-                        <button type="button" id="addPositionBtn" class="btn btn-secondary">Idagdag sa Listahan (Add Position)</button>
-                    </div>
+            <!-- Auswertung nach Zeitraum Einkauf -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Ulat ayon sa Panahon (Purchases by Period)</h5>
                 </div>
+                <div class="card-body">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label">Mula sa Petsa (Von)</label>
+                            <input type="date" class="form-control" id="pStartDate">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Hanggang sa Petsa (Bis)</label>
+                            <input type="date" class="form-control" id="pEndDate">
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button class="btn btn-outline-success w-100" onclick="filterReport('purchase')">Ipakita ang Ulat (Show Report)</button>
+                        </div>
+                    </div>
 
-                <!-- Temporäre Erfassungsliste für den aktuellen Beleg -->
-                <div class="mt-4">
-                    <h6>Kasalukuyang Listahan (Current Batch):</h6>
                     <div class="table-responsive">
-                        <table class="table table-bordered table-sm">
-                            <thead class="table-light">
+                        <table class="table table-striped table-hover">
+                            <thead>
                                 <tr>
-                                    <th>Produkto</th>
-                                    <th>Dami</th>
-                                    <th>Presyo (25 kg)</th>
-                                    <th>Kabuuan</th>
-                                    <th>Aksyon</th>
+                                    <th>Produkto / Artikel</th>
+                                    <th>Kabuuang Dami</th>
+                                    <th>Karaniwang Presyo / 25kg</th>
+                                    <th>Kabuuang Halaga (PHP)</th>
                                 </tr>
                             </thead>
-                            <tbody id="batchTableBody">
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted">Wala pang idinagdag na posisyon.</td>
-                                </tr>
+                            <tbody id="pReportTableBody">
+                                <tr><td colspan="4" class="text-center text-muted">Mangyaring pumili ng panahon at suriin.</td></tr>
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Gesamtbetrag zur Prüfung -->
-                    <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded border">
-                        <h4 class="mb-0">Kabuuang Halaga para sa Pagsusuri (Total Check):</h4>
-                        <h3 class="mb-0 text-primary" id="batchTotalDisplay">0.00 PHP</h3>
-                    </div>
-
-                    <!-- Endgültig Abschicken Button -->
-                    <div class="text-end mt-3">
-                        <button type="button" id="submitBatchBtn" class="btn btn-success btn-lg">Isumite nang Pinal ang Pagtanggap (Save)</button>
+            <!-- Logbuch Einkauf -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Talaan ng Kasaysayan (Purchase History)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Petsa</th>
+                                    <th>Produkto</th>
+                                    <th>Dami</th>
+                                    <th>Presyo (25 kg)</th>
+                                    <th>Aksyon</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pLogTableBody">
+                                <tr><td colspan="5" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Auswertung nach Zeitraum (Purchases by Period) -->
-        <div class="card shadow-sm mb-5">
-            <div class="card-header bg-success text-white">
-                <h5 class="mb-0">Ulat ayon sa Panahon (Purchases by Period)</h5>
-            </div>
-            <div class="card-body">
-                <div class="row g-3 mb-4">
-                    <div class="col-md-4">
-                        <label for="startDate" class="form-label">Mula sa Petsa (Von)</label>
-                        <input type="date" class="form-control" id="startDate">
+        <!-- ================= VERKAUF SEKTION ================= -->
+        <div id="salesSection" class="section-view">
+            <h2 class="text-warning mb-4 text-center">Aklat sa Pagbebenta (Sales Log)</h2>
+
+            <!-- Eingabeformular Verkauf -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">Mag-rekord ng Bagong Benta (Add Sale)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Petsa (Date)</label>
+                            <input type="date" class="form-control" id="sDate" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Produkto / Artikel</label>
+                            <select class="form-select" id="sArticle">
+                                <option value="" disabled selected>Pumili...</option>
+                                <option value="Fuji">Fuji</option>
+                                <option value="Perfect">Perfect</option>
+                                <option value="Master Aroma">Master Aroma</option>
+                                <option value="Sweet Hasmin">Sweet Hasmin</option>
+                                <option value="Coco pandan">Coco pandan</option>
+                                <option value="Jasmine original">Jasmine original</option>
+                                <option value="Master Alsa">Master Alsa</option>
+                                <option value="Brown rice">Brown rice</option>
+                                <option value="Malagkit/k">Malagkit/k</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Dami (Menge)</label>
+                            <input type="number" class="form-control" id="sQuantity" min="1" step="1" placeholder="Dami">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Presyo ng Benta (25 kg)</label>
+                            <input type="number" class="form-control" id="sPrice" min="0.01" step="0.01" placeholder="0.00">
+                        </div>
                     </div>
-                    <div class="col-md-4">
-                        <label for="endDate" class="form-label">Hanggang sa Petsa (Bis)</label>
-                        <input type="date" class="form-control" id="endDate">
+
+                    <div class="row g-3 align-items-center border-top pt-3">
+                        <div class="col-md-4">
+                            <label class="form-label text-muted">Kalkuladong Halaga:</label>
+                            <input type="text" class="form-control bg-white fw-bold" id="sRowTotal" value="0.00 PHP" disabled>
+                        </div>
+                        <div class="col-md-8 text-end">
+                            <button type="button" class="btn btn-secondary" onclick="addPosition('sale')">Idagdag sa Listahan (Add Position)</button>
+                        </div>
                     </div>
-                    <div class="col-md-4 d-flex align-items-end">
-                        <button id="filterBtn" class="btn btn-outline-success w-100">Ipakita ang Ulat (Show Report)</button>
+
+                    <!-- Temporäre Erfassungsliste Verkauf -->
+                    <div class="mt-4">
+                        <h6>Kasalukuyang Listahan (Current Batch):</h6>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Produkto</th>
+                                        <th>Dami</th>
+                                        <th>Presyo (25 kg)</th>
+                                        <th>Kabuuan</th>
+                                        <th>Aksyon</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sBatchTableBody">
+                                    <tr><td colspan="5" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded border">
+                            <h4 class="mb-0">Kabuuang Halaga para sa Pagsusuri:</h4>
+                            <h3 class="mb-0 text-warning text-dark" id="sBatchTotalDisplay">0.00 PHP</h3>
+                        </div>
+
+                        <div class="text-end mt-3">
+                            <button type="button" class="btn btn-success btn-lg" onclick="submitBatch('sale')">Isumite nang Pinal (Save Sale)</button>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th>Produkto / Artikel</th>
-                                <th>Kabuuang Dami</th>
-                                <th>Karaniwang Presyo / 25kg</th>
-                                <th>Kabuuang Halaga (PHP)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="reportTableBody">
-                            <tr>
-                                <td colspan="4" class="text-center text-muted">Mangyaring pumili ng panahon at suriin.</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <!-- Auswertung nach Zeitraum Verkauf -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">Ulat ayon sa Panahon (Sales by Period)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label">Mula sa Petsa (Von)</label>
+                            <input type="date" class="form-control" id="sStartDate">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Hanggang sa Petsa (Bis)</label>
+                            <input type="date" class="form-control" id="sEndDate">
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button class="btn btn-outline-warning text-dark w-100" onclick="filterReport('sale')">Ipakita ang Ulat (Show Report)</button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Produkto / Artikel</th>
+                                    <th>Kabuuang Dami</th>
+                                    <th>Karaniwang Presyo / 25kg</th>
+                                    <th>Kabuuang Halaga (PHP)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sReportTableBody">
+                                <tr><td colspan="4" class="text-center text-muted">Mangyaring pumili ng panahon at suriin.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logbuch Verkauf -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Talaan ng Kasaysayan (Sales History)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Petsa</th>
+                                    <th>Produkto</th>
+                                    <th>Dami</th>
+                                    <th>Presyo (25 kg)</th>
+                                    <th>Aksyon</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sLogTableBody">
+                                <tr><td colspan="5" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Chronologisches Logbuch -->
-        <div class="card shadow-sm">
-            <div class="card-header bg-secondary text-white">
-                <h5 class="mb-0">Talaan ng Kasaysayan / Logbook (Purchase History)</h5>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-sm table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Petsa</th>
-                                <th>Produkto</th>
-                                <th>Dami</th>
-                                <th>Presyo (25 kg)</th>
-                                <th>Aksyon</th>
-                            </tr>
-                        </thead>
-                        <tbody id="logTableBody">
-                            <tr>
-                                <td colspan="5" class="text-center text-muted">Wala pang mga tala sa logbook.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
     </div>
 
     <script>
-        let entries = JSON.parse(localStorage.getItem('wareneingänge')) || [];
-        let currentBatch = [];
+        // Speicher initialisieren
+        let purchases = JSON.parse(localStorage.getItem('wareneingänge')) || [];
+        let sales = JSON.parse(localStorage.getItem('warenausgänge')) || [];
 
-        document.getElementById('date').valueAsDate = new Date();
+        let currentPurchaseBatch = [];
+        let currentSalesBatch = [];
 
-        function updateRowTotal() {
-            const qty = parseFloat(document.getElementById('quantity').value) || 0;
-            const price = parseFloat(document.getElementById('price').value) || 0;
-            const total = qty * price;
-            document.getElementById('rowTotal').value = total.toFixed(2) + ' PHP';
+        // Datum vorbelegen
+        document.getElementById('pDate').valueAsDate = new Date();
+        document.getElementById('sDate').valueAsDate = new Date();
+
+        // Ansichten umschalten
+        function showSection(sectionId) {
+            document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active-view'));
+            document.getElementById(sectionId).classList.add('active-view');
         }
 
-        document.getElementById('quantity').addEventListener('input', updateRowTotal);
-        document.getElementById('price').addEventListener('input', updateRowTotal);
+        // Live-Berechnung Zeilensumme
+        function updateRowTotal(type) {
+            const prefix = type === 'purchase' ? 'p' : 's';
+            const qty = parseFloat(document.getElementById(prefix + 'Quantity').value) || 0;
+            const price = parseFloat(document.getElementById(prefix + 'Price').value) || 0;
+            const total = qty * price;
+            document.getElementById(prefix + 'RowTotal').value = total.toFixed(2) + ' PHP';
+        }
 
-        document.getElementById('addPositionBtn').addEventListener('click', function() {
-            const date = document.getElementById('date').value;
-            const article = document.getElementById('article').value;
-            const quantity = parseInt(document.getElementById('quantity').value);
-            const price = parseFloat(document.getElementById('price').value);
+        document.getElementById('pQuantity').addEventListener('input', () => updateRowTotal('purchase'));
+        document.getElementById('pPrice').addEventListener('input', () => updateRowTotal('purchase'));
+        document.getElementById('sQuantity').addEventListener('input', () => updateRowTotal('sale'));
+        document.getElementById('sPrice').addEventListener('input', () => updateRowTotal('sale'));
+
+        // Position zur temporären Batch-Liste hinzufügen
+        function addPosition(type) {
+            const prefix = type === 'purchase' ? 'p' : 's';
+            const date = document.getElementById(prefix + 'Date').value;
+            const article = document.getElementById(prefix + 'Article').value;
+            const quantity = parseInt(document.getElementById(prefix + 'Quantity').value);
+            const price = parseFloat(document.getElementById(prefix + 'Price').value);
 
             if (!date || !article || isNaN(quantity) || quantity <= 0 || isNaN(price) || price <= 0) {
-                alert('Mangyaring punan nang tama ang lahat ng mga patlang bago magdagdag.');
+                alert('Mangyaring punan nang tama ang lahat ng mga patlang.');
                 return;
             }
 
             const position = {
                 id: Date.now() + Math.random(),
-                date: date,
-                article: article,
-                quantity: quantity,
-                price: price,
+                date, article, quantity, price,
                 total: quantity * price
             };
 
-            currentBatch.push(position);
-            renderBatchTable();
+            if (type === 'purchase') {
+                currentPurchaseBatch.push(position);
+                renderBatchTable('purchase');
+            } else {
+                currentSalesBatch.push(position);
+                renderBatchTable('sale');
+            }
 
-            document.getElementById('article').value = '';
-            document.getElementById('quantity').value = '';
-            document.getElementById('price').value = '';
-            document.getElementById('rowTotal').value = '0.00 PHP';
-            document.getElementById('article').focus();
-        });
+            // Felder leeren
+            document.getElementById(prefix + 'Article').value = '';
+            document.getElementById(prefix + 'Quantity').value = '';
+            document.getElementById(prefix + 'Price').value = '';
+            document.getElementById(prefix + 'RowTotal').value = '0.00 PHP';
+            document.getElementById(prefix + 'Article').focus();
+        }
 
-        function renderBatchTable() {
-            const tbody = document.getElementById('batchTableBody');
+        // Temporäre Batch-Tabelle rendern
+        function renderBatchTable(type) {
+            const prefix = type === 'purchase' ? 'p' : 's';
+            const batch = type === 'purchase' ? currentPurchaseBatch : currentSalesBatch;
+            const tbody = document.getElementById(prefix + 'BatchTableBody');
             tbody.innerHTML = '';
             let grandTotal = 0;
 
-            if (currentBatch.length === 0) {
+            if (batch.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>';
-                document.getElementById('batchTotalDisplay').innerText = '0.00 PHP';
+                document.getElementById(prefix + 'BatchTotalDisplay').innerText = '0.00 PHP';
                 return;
             }
 
-            currentBatch.forEach(pos => {
+            batch.forEach(pos => {
                 grandTotal += pos.total;
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -234,27 +419,35 @@
                     <td>${pos.quantity}</td>
                     <td>${pos.price.toFixed(2)} PHP</td>
                     <td><strong>${pos.total.toFixed(2)} PHP</strong></td>
-                    <td><button type="button" class="btn btn-danger btn-sm" onclick="removeBatchItem('${pos.id}')">Tanggalin</button></td>
+                    <td><button type="button" class="btn btn-danger btn-sm" onclick="removeBatchItem('${type}', '${pos.id}')">Tanggalin</button></td>
                 `;
                 tbody.appendChild(tr);
             });
 
-            document.getElementById('batchTotalDisplay').innerText = grandTotal.toFixed(2) + ' PHP';
+            document.getElementById(prefix + 'BatchTotalDisplay').innerText = grandTotal.toFixed(2) + ' PHP';
         }
 
-        function removeBatchItem(id) {
-            currentBatch = currentBatch.filter(item => item.id != id);
-            renderBatchTable();
+        function removeBatchItem(type, id) {
+            if (type === 'purchase') {
+                currentPurchaseBatch = currentPurchaseBatch.filter(item => item.id != id);
+                renderBatchTable('purchase');
+            } else {
+                currentSalesBatch = currentSalesBatch.filter(item => item.id != id);
+                renderBatchTable('sale');
+            }
         }
 
-        document.getElementById('submitBatchBtn').addEventListener('click', function() {
-            if (currentBatch.length === 0) {
-                alert('Walang laman ang listahan. Mangyaring magdagdag muna ng kahit isang posisyon.');
+        // Endgültig abschicken (Ins Logbuch speichern)
+        function submitBatch(type) {
+            const batch = type === 'purchase' ? currentPurchaseBatch : currentSalesBatch;
+            if (batch.length === 0) {
+                alert('Walang laman ang listahan.');
                 return;
             }
 
-            currentBatch.forEach(item => {
-                entries.push({
+            const targetArray = type === 'purchase' ? purchases : sales;
+            batch.forEach(item => {
+                targetArray.push({
                     id: item.id,
                     date: item.date,
                     article: item.article,
@@ -263,59 +456,80 @@
                 });
             });
 
-            localStorage.setItem('wareneingänge', JSON.stringify(entries));
-            renderLog();
+            if (type === 'purchase') {
+                localStorage.setItem('wareneingänge', JSON.stringify(purchases));
+                currentPurchaseBatch = [];
+                renderBatchTable('purchase');
+                renderLog('purchase');
+                document.getElementById('pDate').valueAsDate = new Date();
+                alert('Matagumpay na naitala ang pagtanggap!');
+            } else {
+                localStorage.setItem('warenausgänge', JSON.stringify(sales));
+                currentSalesBatch = [];
+                renderBatchTable('sale');
+                renderLog('sale');
+                document.getElementById('sDate').valueAsDate = new Date();
+                alert('Matagumpay na naitala ang pagbebenta!');
+            }
+        }
 
-            currentBatch = [];
-            renderBatchTable();
-            document.getElementById('date').valueAsDate = new Date();
-            
-            alert('Matagumpay na naitala ang pagtanggap ng kalakal!');
-        });
-
-        function renderLog() {
-            const tbody = document.getElementById('logTableBody');
+        // Logbuch rendern
+        function renderLog(type) {
+            const prefix = type === 'purchase' ? 'p' : 's';
+            const dataArray = type === 'purchase' ? purchases : sales;
+            const tbody = document.getElementById(prefix + 'LogTableBody');
             tbody.innerHTML = '';
-            if (entries.length === 0) {
+
+            if (dataArray.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>';
                 return;
             }
-            const sortedEntries = [...entries].sort((a, b) => new Date(b.date) - new Date(a.date));
-            sortedEntries.forEach(entry => {
+
+            const sorted = [...dataArray].sort((a, b) => new Date(b.date) - new Date(a.date));
+            sorted.forEach(entry => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${entry.date}</td>
                     <td>${entry.article}</td>
                     <td>${entry.quantity}</td>
                     <td>${entry.price.toFixed(2)} PHP</td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteEntry(${entry.id})">Tanggalin</button></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteEntry('${type}', ${entry.id})">Tanggalin</button></td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        function deleteEntry(id) {
+        function deleteEntry(type, id) {
             if (confirm('Sigurado ka bang gusto mong tanggalin ang entry na ito?')) {
-                entries = entries.filter(entry => entry.id !== id);
-                localStorage.setItem('wareneingänge', JSON.stringify(entries));
-                renderLog();
-                const filterBtn = document.getElementById('filterBtn');
-                if (filterBtn) filterBtn.click();
+                if (type === 'purchase') {
+                    purchases = purchases.filter(e => e.id !== id);
+                    localStorage.setItem('wareneingänge', JSON.stringify(purchases));
+                    renderLog('purchase');
+                    filterReport('purchase');
+                } else {
+                    sales = sales.filter(e => e.id !== id);
+                    localStorage.setItem('warenausgänge', JSON.stringify(sales));
+                    renderLog('sale');
+                    filterReport('sale');
+                }
             }
         }
 
-        document.getElementById('filterBtn').addEventListener('click', function() {
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-            const tbody = document.getElementById('reportTableBody');
+        // Auswertung nach Zeitraum mit Gesamtsumme
+        function filterReport(type) {
+            const prefix = type === 'purchase' ? 'p' : 's';
+            const dataArray = type === 'purchase' ? purchases : sales;
+            const startDate = document.getElementById(prefix + 'StartDate').value;
+            const endDate = document.getElementById(prefix + 'EndDate').value;
+            const tbody = document.getElementById(prefix + 'ReportTableBody');
             tbody.innerHTML = '';
 
-            let filtered = entries;
+            let filtered = dataArray;
             if (startDate) filtered = filtered.filter(e => e.date >= startDate);
             if (endDate) filtered = filtered.filter(e => e.date <= endDate);
 
             if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Walang natagpuang pagtanggap sa napiling panahon.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Walang natagpuang tala sa napiling panahon.</td></tr>';
                 return;
             }
 
@@ -355,9 +569,11 @@
                 <td>${totalPeriodValue.toFixed(2)} PHP</td>
             `;
             tbody.appendChild(summaryTr);
-        });
+        }
 
-        renderLog();
+        // Beim Start initialisieren
+        renderLog('purchase');
+        renderLog('sale');
     </script>
 </body>
 </html>
