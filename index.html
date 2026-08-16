@@ -357,6 +357,7 @@
         <div id="marginSection" class="section-view">
             <h2 class="text-info mb-4 text-center">Tubo & Inventory Overview</h2>
             
+            <!-- 1. Artikelübersicht -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-info text-white">
                     <h5 class="mb-0">Tubo & Stock Analysis</h5>
@@ -381,6 +382,33 @@
                             </thead>
                             <tbody id="marginTableBody">
                                 <tr><td colspan="9" class="text-center text-muted">Wala pang sapat na datos para sa pagsusuri.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Taggenauer Rohertrag (Daily Profit) -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Rohertrag nach Tagen (Daily Profit / Tubo araw-araw)</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Übersicht über den erzielten Rohertrag (Umsatz minus Wareneinsatz) aufgeschlüsselt nach einzelnen Verkaufstagen.</p>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped align-middle text-center">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Datum (Petsa)</th>
+                                    <th>Verkaufte Menge (kg)</th>
+                                    <th>Umsatz (PHP)</th>
+                                    <th>Wareneinsatz (PHP)</th>
+                                    <th>Rohertrag / Tubo (PHP)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dailyProfitTableBody">
+                                <tr><td colspan="5" class="text-center text-muted">Wala pang sapat na datos ng benta para sa araw-araw na ulat.</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -726,7 +754,7 @@
             }
         }
 
-        // Tubo / Lager- und Margenanalyse mit korrigierter Gesamt- / Summenzeile rendern
+        // Tubo / Lager-, Margen- und tagesgenaue Analyse rendern
         function renderMarginSection() {
             const articles = [
                 "Fuji", "Perfect", "Master Aroma", "Sweet Hasmin", 
@@ -745,6 +773,9 @@
             let grandTotalStockKg = 0;
             let totalCostOfSoldGoods = 0;
 
+            // Durchschnittlichen Einkaufspreis pro Artikel vorbereiten für die tagesgenaue Berechnung
+            const articleAvgBuyPrice = {};
+
             articles.forEach(article => {
                 const articlePurchases = purchases.filter(p => p.article === article);
                 const totalBuyKg = articlePurchases.reduce((sum, p) => sum + (p.totalKg || 0), 0);
@@ -754,6 +785,8 @@
                     return sum + (kg * priceKg);
                 }, 0);
                 const avgBuyPerKg = totalBuyKg > 0 ? totalBuyPhp / totalBuyKg : 0;
+                
+                articleAvgBuyPrice[article] = avgBuyPerKg;
 
                 const articleSales = sales.filter(s => s.article === article);
                 const totalSellKg = articleSales.reduce((sum, s) => sum + (s.quantity || 0), 0);
@@ -801,8 +834,6 @@
             if (hasData) {
                 const overallAvgBuyPerKg = grandTotalBuyKg > 0 ? grandTotalBuyPhp / grandTotalBuyKg : 0;
                 const overallAvgSellPerKg = grandTotalSellKg > 0 ? grandTotalSellPhp / grandTotalSellKg : 0;
-                
-                // Korrekte Tubo-Gesamtberechnung auf Basis der tatsächlich verkauften Ware
                 const totalProfit = grandTotalSellPhp - totalCostOfSoldGoods;
                 const overallTurboPerKg = grandTotalSellKg > 0 ? totalProfit / grandTotalSellKg : 0;
 
@@ -822,6 +853,69 @@
                 tbody.appendChild(summaryTr);
             } else {
                 tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">Wala pang sapat na datos para sa pagsusuri.</td></tr>';
+            }
+
+            // --- ZWEITER BLOCK: Taggenauer Rohertrag (Daily Profit) ---
+            const dailyProfitTbody = document.getElementById('dailyProfitTableBody');
+            dailyProfitTbody.innerHTML = '';
+
+            const dailyData = {};
+            sales.forEach(s => {
+                const date = s.date;
+                if (!date) return;
+                if (!dailyData[date]) {
+                    dailyData[date] = { totalKg: 0, revenue: 0, cost: 0 };
+                }
+                const kg = s.quantity || 0;
+                const rev = s.total || (kg * (s.price || 0));
+                const avgCost = articleAvgBuyPrice[s.article] || 0;
+                const cost = kg * avgCost;
+
+                dailyData[date].totalKg += kg;
+                dailyData[date].revenue += rev;
+                dailyData[date].cost += cost;
+            });
+
+            const sortedDates = Object.keys(dailyData).sort();
+            let hasDailyData = false;
+            let totalDailyRevenue = 0;
+            let totalDailyCost = 0;
+            let totalDailyKg = 0;
+
+            sortedDates.forEach(date => {
+                hasDailyData = true;
+                const data = dailyData[date];
+                const profit = data.revenue - data.cost;
+
+                totalDailyRevenue += data.revenue;
+                totalDailyCost += data.cost;
+                totalDailyKg += data.totalKg;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${date}</strong></td>
+                    <td>${data.totalKg.toFixed(2)} kg</td>
+                    <td>${data.revenue.toFixed(2)} PHP</td>
+                    <td>${data.cost.toFixed(2)} PHP</td>
+                    <td class="${profit >= 0 ? 'text-success fw-bold' : 'text-danger fw-bold'}">${profit.toFixed(2)} PHP</td>
+                `;
+                dailyProfitTbody.appendChild(tr);
+            });
+
+            if (hasDailyData) {
+                const totalProfit = totalDailyRevenue - totalDailyCost;
+                const summaryTr = document.createElement('tr');
+                summaryTr.className = 'table-secondary fw-bold';
+                summaryTr.innerHTML = `
+                    <td>GESAMT / SUMMEN</td>
+                    <td>${totalDailyKg.toFixed(2)} kg</td>
+                    <td>${totalDailyRevenue.toFixed(2)} PHP</td>
+                    <td>${totalDailyCost.toFixed(2)} PHP</td>
+                    <td class="${totalProfit >= 0 ? 'text-success' : 'text-danger'}">${totalProfit.toFixed(2)} PHP</td>
+                `;
+                dailyProfitTbody.appendChild(summaryTr);
+            } else {
+                dailyProfitTbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Wala pang sapat na datos ng benta para sa araw-araw na ulat.</td></tr>';
             }
         }
     </script>
