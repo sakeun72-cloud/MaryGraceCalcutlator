@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rice Inventory System (Updated)</title>
+    <title>Rice Inventory System</title>
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .section-view { display: none; }
@@ -22,6 +23,7 @@
 </head>
 <body class="bg-light">
 
+    <!-- Sticky Navigation (Immer sichtbar) -->
     <div class="sticky-nav text-center">
         <div class="btn-group w-100 mb-2 flex-wrap" role="group">
             <button class="btn btn-primary m-1" onclick="showSection('purchaseSection')">Buy</button>
@@ -29,87 +31,31 @@
             <button class="btn btn-secondary m-1" onclick="showSection('ordersSection')">Orders</button>
             <button class="btn btn-info text-white m-1" onclick="showSection('marginSection')">Turbo</button>
         </div>
-        <a href="http://www.bantaypresyo.da.gov.ph/" target="_blank" class="btn btn-outline-info btn-sm">Bantay Presyo (DA)</a>
+        <a href="http://www.bantaypresyo.da.gov.ph/" target="_blank" class="btn btn-outline-info btn-sm">
+            Bantay Presyo (DA)
+        </a>
     </div>
 
     <div class="container pb-5">
         
-        <!-- ================= BUY SEKTION (SIMPLE) ================= -->
+        <!-- ================= BUY SEKTION ================= -->
         <div id="purchaseSection" class="section-view active-view">
-            <h2 class="text-primary mb-4 text-center">Buy Log (Simple)</h2>
+            <h2 class="text-primary mb-4 text-center">Buy Log (25kg Sacks)</h2>
+
+            <!-- Eingabeformular Buy -->
             <div class="card shadow-sm mb-4">
-                <div class="card-header bg-primary text-white"><h5>Mag-rekord ng Bagong Pagtanggap (Simple)</h5></div>
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Mag-rekord ng Bagong Pagtanggap (Add Buy)</h5>
+                </div>
                 <div class="card-body">
                     <div class="row g-3 mb-3">
-                        <div class="col-md-3">
-                            <label class="form-label">Petsa</label>
+                        <div class="col-md-2">
+                            <label class="form-label">Petsa (Date)</label>
                             <input type="date" class="form-control" id="pDate" required>
                         </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Produkto</label>
+                        <div class="col-md-2">
+                            <label class="form-label">Produkto / Artikel</label>
                             <select class="form-select" id="pArticle">
-                                <option value="" disabled selected>Pumili...</option>
-                                <option value="Fuji">Fuji</option>
-                                <option value="Perfect">Perfect</option>
-                                <option value="Master Aroma">Master Aroma</option>
-                                <option value="Sweet Hasmin">Sweet Hasmin</option>
-                                <option value="Coco pandan">Coco pandan</option>
-                                <option value="Jasmine original">Jasmine original</option>
-                                <option value="Master Alsa">Master Alsa</option>
-                                <option value="Brown rice">Brown rice</option>
-                                <option value="Malagkit/k">Malagkit/k</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Dami (Kilo)</label>
-                            <input type="number" class="form-control" id="pQuantity" min="0.1" step="any" placeholder="kg">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Presyo / Kilo</label>
-                            <input type="number" class="form-control" id="pPrice" min="0.01" step="0.01" placeholder="0.00">
-                        </div>
-                    </div>
-                    <div class="text-end">
-                        <button type="button" class="btn btn-secondary" onclick="addPosition('purchase')">Idagdag sa Listahan</button>
-                    </div>
-                    <div class="mt-4">
-                        <h6>Kasalukuyang Listahan:</h6>
-                        <table class="table table-bordered table-sm">
-                            <thead class="table-light"><tr><th>Produkto</th><th>Dami (kg)</th><th>Presyo/kg</th><th>Kabuuang</th><th>Aksyon</th></tr></thead>
-                            <tbody id="pBatchTableBody"><tr><td colspan="5" class="text-center">Wala pang idinagdag.</td></tr></tbody>
-                        </table>
-                        <div class="text-end mt-3"><button type="button" class="btn btn-success btn-lg" onclick="submitBatch('purchase')">Isumite nang Pinal</button></div>
-                    </div>
-                </div>
-            </div>
-            <!-- Logbuch Buy -->
-            <div class="card shadow-sm">
-                <div class="card-header bg-secondary text-white"><h5>Talaan ng Kasaysayan (Buy)</h5></div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-sm table-bordered">
-                            <thead><tr><th>Petsa</th><th>Produkto</th><th>Dami (kg)</th><th>Presyo/kg</th><th>Aksyon</th></tr></thead>
-                            <tbody id="pLogTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= SELL SEKTION (COMPLEX) ================= -->
-        <div id="salesSection" class="section-view">
-            <h2 class="text-warning mb-4 text-center">Sell Log (with 25kg Logic)</h2>
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-warning text-dark"><h5>Mag-rekord ng Bagong Benta (25kg Sack Logic)</h5></div>
-                <div class="card-body">
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-2">
-                            <label class="form-label">Petsa</label>
-                            <input type="date" class="form-control" id="sDate" required>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Produkto</label>
-                            <select class="form-select" id="sArticle">
                                 <option value="" disabled selected>Pumili...</option>
                                 <option value="Fuji">Fuji</option>
                                 <option value="Perfect">Perfect</option>
@@ -124,150 +70,773 @@
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">Bilang ng Sako</label>
-                            <input type="number" class="form-control" id="sSacks" min="1" step="1">
+                            <input type="number" class="form-control" id="pQuantity" min="1" step="1" placeholder="Sacks">
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label">Total Kg</label>
-                            <input type="number" class="form-control" id="sTotalKg" readonly>
+                            <label class="form-label">Kilo Gesamt</label>
+                            <input type="number" class="form-control fw-bold text-success" id="pTotalKg" min="0.1" step="any" placeholder="kg">
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label">Presyo / Sako</label>
-                            <input type="number" class="form-control" id="sSackPrice" step="0.01">
+                            <label class="form-label">Presyo / Sako (25kg)</label>
+                            <input type="number" class="form-control" id="pSackPrice" min="0.01" step="0.01" placeholder="0.00">
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">Presyo / Kilo</label>
-                            <input type="number" class="form-control" id="sPricePerKg" step="0.01">
+                            <input type="number" class="form-control" id="pPricePerKg" min="0.01" step="0.01" placeholder="0.00">
                         </div>
                     </div>
-                    <div class="text-end">
-                        <button type="button" class="btn btn-secondary" onclick="addPosition('sale')">Idagdag sa Listahan</button>
+
+                    <div class="row g-3 align-items-center border-top pt-3">
+                        <div class="col-md-4">
+                            <label class="form-label text-muted">Kalkuladong Halaga:</label>
+                            <input type="text" class="form-control bg-white fw-bold" id="pRowTotal" value="0.00 PHP" disabled>
+                        </div>
+                        <div class="col-md-8 text-end">
+                            <button type="button" class="btn btn-secondary" onclick="addPosition('purchase')">Idagdag sa Listahan (Add Position)</button>
+                        </div>
                     </div>
+
+                    <!-- Temporäre Erfassungsliste Buy -->
                     <div class="mt-4">
-                        <h6>Kasalukuyang Listahan:</h6>
-                        <table class="table table-bordered table-sm">
-                            <thead class="table-light"><tr><th>Produkto</th><th>Sako</th><th>Kilo</th><th>Presyo/Sako</th><th>Presyo/Kg</th><th>Kabuuang</th><th>Aksyon</th></tr></thead>
-                            <tbody id="sBatchTableBody"><tr><td colspan="7" class="text-center">Wala pang idinagdag.</td></tr></tbody>
-                        </table>
-                        <div class="text-end mt-3"><button type="button" class="btn btn-success btn-lg" onclick="submitBatch('sale')">Isumite nang Pinal</button></div>
+                        <h6>Kasalukuyang Listahan (Current Batch):</h6>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Produkto</th>
+                                        <th>Dami (Sako)</th>
+                                        <th>Kilogramm Gesamt</th>
+                                        <th>Presyo / Sako</th>
+                                        <th>Presyo / Kilo</th>
+                                        <th>Kabuuan</th>
+                                        <th>Aksyon</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pBatchTableBody">
+                                    <tr><td colspan="7" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded border">
+                            <h4 class="mb-0">Kabuuang Halaga para sa Pagsusuri:</h4>
+                            <h3 class="mb-0 text-primary" id="pBatchTotalDisplay">0.00 PHP</h3>
+                        </div>
+
+                        <div class="text-end mt-3">
+                            <button type="button" class="btn btn-success btn-lg" onclick="submitBatch('purchase')">Isumite nang Pinal (Save Buy)</button>
+                        </div>
                     </div>
                 </div>
             </div>
-            <!-- Logbuch Sell -->
+
+            <!-- Auswertung nach Zeitraum Buy -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Ulat ayon sa Panahon (Buy by Period - in kg)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label">Mula sa Petsa (Von)</label>
+                            <input type="date" class="form-control" id="pStartDate">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Hanggang sa Petsa (Bis)</label>
+                            <input type="date" class="form-control" id="pEndDate">
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button class="btn btn-outline-success w-100" onclick="filterReport('purchase')">Ipakita ang Ulat (Show Report)</button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Produkto / Artikel</th>
+                                    <th>Kabuuang Dami (Kilo)</th>
+                                    <th>Kabuuang Halaga (PHP)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pReportTableBody">
+                                <tr><td colspan="3" class="text-center text-muted">Mangyaring pumili ng panahon at suriin.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logbuch Buy -->
             <div class="card shadow-sm">
-                <div class="card-header bg-secondary text-white"><h5>Talaan ng Kasaysayan (Sell)</h5></div>
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Talaan ng Kasaysayan (Buy History)</h5>
+                </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-sm table-bordered">
-                            <thead><tr><th>Petsa</th><th>Produkto</th><th>Kilo</th><th>Presyo/kg</th><th>Aksyon</th></tr></thead>
-                            <tbody id="sLogTableBody"></tbody>
+                            <thead>
+                                <tr>
+                                    <th>Petsa</th>
+                                    <th>Produkto</th>
+                                    <th>Dami (Sako)</th>
+                                    <th>Kilogramm Gesamt</th>
+                                    <th>Presyo / Sako</th>
+                                    <th>Presyo / Kilo</th>
+                                    <th>Aksyon</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pLogTableBody">
+                                <tr><td colspan="7" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Placeholder Sektionen bleiben gleich -->
-        <div id="ordersSection" class="section-view"><h2 class="text-center">Orders</h2><p class="text-center">Work in progress.</p></div>
-        <div id="marginSection" class="section-view"><h2 class="text-center">Turbo & Inventory</h2><div class="table-responsive"><table class="table table-bordered" id="marginTableBody"></table></div></div>
+        <!-- ================= SELL SEKTION ================= -->
+        <div id="salesSection" class="section-view">
+            <h2 class="text-warning mb-4 text-center">Sell Log (in Kilo)</h2>
+
+            <!-- Eingabeformular Sell -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">Mag-rekord ng Bagong Benta (Add Sell in kg)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Petsa (Date)</label>
+                            <input type="date" class="form-control" id="sDate" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Produkto / Artikel</label>
+                            <select class="form-select" id="sArticle">
+                                <option value="" disabled selected>Pumili...</option>
+                                <option value="Fuji">Fuji</option>
+                                <option value="Perfect">Perfect</option>
+                                <option value="Master Aroma">Master Aroma</option>
+                                <option value="Sweet Hasmin">Sweet Hasmin</option>
+                                <option value="Coco pandan">Coco pandan</option>
+                                <option value="Jasmine original">Jasmine original</option>
+                                <option value="Master Alsa">Master Alsa</option>
+                                <option value="Brown rice">Brown rice</option>
+                                <option value="Malagkit/k">Malagkit/k</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Dami sa Kilo (kg)</label>
+                            <input type="number" class="form-control" id="sQuantity" min="0.1" step="any" placeholder="Kilo">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Presyo bawat Kilo (PHP)</label>
+                            <input type="number" class="form-control" id="sPrice" min="0.01" step="0.01" placeholder="0.00">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 align-items-center border-top pt-3">
+                        <div class="col-md-4">
+                            <label class="form-label text-muted">Kalkuladong Halaga:</label>
+                            <input type="text" class="form-control bg-white fw-bold" id="sRowTotal" value="0.00 PHP" disabled>
+                        </div>
+                        <div class="col-md-8 text-end">
+                            <button type="button" class="btn btn-secondary" onclick="addPosition('sale')">Idagdag sa Listahan (Add Position)</button>
+                        </div>
+                    </div>
+
+                    <!-- Temporäre Erfassungsliste Sell -->
+                    <div class="mt-4">
+                        <h6>Kasalukuyang Listahan (Current Batch):</h6>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Produkto</th>
+                                        <th>Kilogramm Gesamt</th>
+                                        <th>Presyo bawat Kilo</th>
+                                        <th>Kabuuan</th>
+                                        <th>Aksyon</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sBatchTableBody">
+                                    <tr><td colspan="5" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded border">
+                            <h4 class="mb-0">Kabuuang Halaga para sa Pagsusuri:</h4>
+                            <h3 class="mb-0 text-warning text-dark" id="sBatchTotalDisplay">0.00 PHP</h3>
+                        </div>
+
+                        <div class="text-end mt-3">
+                            <button type="button" class="btn btn-success btn-lg" onclick="submitBatch('sale')">Isumite nang Pinal (Save Sell)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Auswertung nach Zeitraum Sell -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">Ulat ayon sa Panahon (Sell by Period - in kg)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label">Mula sa Petsa (Von)</label>
+                            <input type="date" class="form-control" id="sStartDate">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Hanggang sa Petsa (Bis)</label>
+                            <input type="date" class="form-control" id="sEndDate">
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button class="btn btn-outline-warning text-dark w-100" onclick="filterReport('sale')">Ipakita ang Ulat (Show Report)</button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Produkto / Artikel</th>
+                                    <th>Kabuuang Dami (Kilo)</th>
+                                    <th>Kabuuang Halaga (PHP)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sReportTableBody">
+                                <tr><td colspan="3" class="text-center text-muted">Mangyaring pumili ng panahon at suriin.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logbuch Sell -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Talaan ng Kasaysayan (Sell History)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Petsa</th>
+                                    <th>Produkto</th>
+                                    <th>Kilogramm Gesamt</th>
+                                    <th>Presyo (bawat Kilo)</th>
+                                    <th>Aksyon</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sLogTableBody">
+                                <tr><td colspan="5" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= ORDERS SEKTION ================= -->
+        <div id="ordersSection" class="section-view">
+            <h2 class="text-secondary mb-4 text-center">Orders (Bestellungen)</h2>
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center text-muted py-5">
+                    <h4>Paparating na ang pamamahala ng Orders...</h4>
+                    <p class="mb-0">Hier wird im nächsten Schritt die Erfassung und Verwaltung von neuen Bestellungen eingerichtet.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TURBO SEKTION ================= -->
+        <div id="marginSection" class="section-view">
+            <h2 class="text-info mb-4 text-center">Turbo & Inventory Overview</h2>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Turbo & Stock Analysis</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Paghahambing ng pagpasok, paglabas, average na presyo kada kilo, at ang tubo (marge).</p>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped align-middle text-center">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Artikel</th>
+                                    <th>Buy (kg)</th>
+                                    <th>Buy (PHP)</th>
+                                    <th>Average Buy / kg</th>
+                                    <th>Sell (kg)</th>
+                                    <th>Sell (PHP)</th>
+                                    <th>Average Sell / kg</th>
+                                    <th>Stock (kg)</th>
+                                    <th>Turbo / kg</th>
+                                </tr>
+                            </thead>
+                            <tbody id="marginTableBody">
+                                <tr><td colspan="9" class="text-center text-muted">Wala pang sapat na datos para sa pagsusuri.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
+        // Speicher initialisieren
         let purchases = JSON.parse(localStorage.getItem('buy')) || [];
         let sales = JSON.parse(localStorage.getItem('sell')) || [];
 
         let currentPurchaseBatch = [];
         let currentSalesBatch = [];
+        let manualKiloOverride = false;
 
-        // Datum setzen
+        // Datum vorbelegen
         document.getElementById('pDate').valueAsDate = new Date();
         document.getElementById('sDate').valueAsDate = new Date();
 
-        function showSection(id) {
+        // Ansichten umschalten
+        function showSection(sectionId) {
             document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active-view'));
-            document.getElementById(id).classList.add('active-view');
+            document.getElementById(sectionId).classList.add('active-view');
+
+            if (sectionId === 'marginSection') {
+                renderMarginSection();
+            }
         }
 
-        // --- Logik für Sell (mit SACK-Logik) ---
-        document.getElementById('sSacks').addEventListener('input', () => {
-            const sacks = parseFloat(document.getElementById('sSacks').value) || 0;
-            document.getElementById('sTotalKg').value = (sacks * 25).toFixed(2);
+        // Live-Berechnung Zeilensumme und automatisches Kilo für Buy
+        document.getElementById('pQuantity').addEventListener('input', () => {
+            const qty = parseFloat(document.getElementById('pQuantity').value) || 0;
+            if (!manualKiloOverride) {
+                document.getElementById('pTotalKg').value = qty * 25;
+            }
+            updateRowTotal('purchase');
         });
 
-        document.getElementById('sSackPrice').addEventListener('input', () => {
-            const sp = parseFloat(document.getElementById('sSacks').value) || 0;
-            const sackPrice = parseFloat(document.getElementById('sSackPrice').value) || 0;
-            if (sp > 0) document.getElementById('sPricePerKg').value = (sackPrice / 25).toFixed(2);
+        document.getElementById('pTotalKg').addEventListener('input', () => {
+            manualKiloOverride = true;
+            updateRowTotal('purchase');
         });
 
-        document.getElementById('sPricePerKg').addEventListener('input', () => {
-            const pk = parseFloat(document.getElementById('sPricePerKg').value) || 0;
-            document.getElementById('sSackPrice').value = (pk * 25).toFixed(2);
+        document.getElementById('pSackPrice').addEventListener('input', () => {
+            const sackPrice = parseFloat(document.getElementById('pSackPrice').value) || 0;
+            document.getElementById('pPricePerKg').value = sackPrice > 0 ? (sackPrice / 25).toFixed(2) : '';
+            updateRowTotal('purchase');
         });
 
-        function addPosition(type) {
+        document.getElementById('pPricePerKg').addEventListener('input', () => {
+            const pricePerKg = parseFloat(document.getElementById('pPricePerKg').value) || 0;
+            document.getElementById('pSackPrice').value = pricePerKg > 0 ? (pricePerKg * 25).toFixed(2) : '';
+            updateRowTotal('purchase');
+        });
+
+        // Live-Berechnung Zeilensumme für Sell
+        document.getElementById('sQuantity').addEventListener('input', () => updateRowTotal('sale'));
+        document.getElementById('sPrice').addEventListener('input', () => updateRowTotal('sale'));
+
+        function updateRowTotal(type) {
+            const prefix = type === 'purchase' ? 'p' : 's';
             if (type === 'purchase') {
-                const date = document.getElementById('pDate').value;
-                const article = document.getElementById('pArticle').value;
-                const kg = parseFloat(document.getElementById('pQuantity').value);
-                const price = parseFloat(document.getElementById('pPrice').value);
-                if(!date || !article || !kg || !price) return alert("Punan ang lahat.");
-                currentPurchaseBatch.push({id: Date.now(), date, article, kg, price, total: kg * price});
+                const totalKg = parseFloat(document.getElementById('pTotalKg').value) || 0;
+                const pricePerKg = parseFloat(document.getElementById('pPricePerKg').value) || 0;
+                const total = totalKg * pricePerKg;
+                document.getElementById('pRowTotal').value = total.toFixed(2) + ' PHP';
+            } else {
+                const qty = parseFloat(document.getElementById('sQuantity').value) || 0;
+                const price = parseFloat(document.getElementById('sPrice').value) || 0;
+                const total = qty * price;
+                document.getElementById('sRowTotal').value = total.toFixed(2) + ' PHP';
+            }
+        }
+
+        // Position zur temporären Batch-Liste hinzufügen
+        function addPosition(type) {
+            const prefix = type === 'purchase' ? 'p' : 's';
+            const date = document.getElementById(prefix + 'Date').value;
+            const article = document.getElementById(prefix + 'Article').value;
+            const quantity = parseFloat(document.getElementById(prefix + 'Quantity').value);
+
+            if (!date || !article || isNaN(quantity) || quantity <= 0) {
+                alert('Mangyaring punan nang tama ang lahat ng mga pangunahing patlang.');
+                return;
+            }
+
+            if (type === 'purchase') {
+                const totalKg = parseFloat(document.getElementById('pTotalKg').value) || (quantity * 25);
+                const sackPrice = parseFloat(document.getElementById('pSackPrice').value);
+                const pricePerKg = parseFloat(document.getElementById('pPricePerKg').value);
+
+                if (isNaN(sackPrice) && isNaN(pricePerKg)) {
+                    alert('Mangyaring maglagay ng presyo (Sackpreis o Kilopreis).');
+                    return;
+                }
+
+                const finalPricePerKg = !isNaN(pricePerKg) ? pricePerKg : (sackPrice / 25);
+                const finalSackPrice = !isNaN(sackPrice) ? sackPrice : (pricePerKg * 25);
+                const total = totalKg * finalPricePerKg;
+
+                const position = {
+                    id: Date.now() + Math.random(),
+                    date, article, quantity, totalKg,
+                    sackPrice: finalSackPrice,
+                    pricePerKg: finalPricePerKg,
+                    total
+                };
+
+                currentPurchaseBatch.push(position);
+                renderBatchTable('purchase');
+                document.getElementById('pTotalKg').value = '';
+                document.getElementById('pSackPrice').value = '';
+                document.getElementById('pPricePerKg').value = '';
+                manualKiloOverride = false;
+            } else {
+                const price = parseFloat(document.getElementById('sPrice').value);
+                if (isNaN(price) || price <= 0) {
+                    alert('Mangyaring punan nang tama ang presyo.');
+                    return;
+                }
+                const position = {
+                    id: Date.now() + Math.random(),
+                    date, article, quantity, price,
+                    total: quantity * price
+                };
+
+                currentSalesBatch.push(position);
+                renderBatchTable('sale');
+                document.getElementById('sPrice').value = '';
+            }
+
+            // Felder leeren
+            document.getElementById(prefix + 'Article').value = '';
+            document.getElementById(prefix + 'Quantity').value = '';
+            document.getElementById(prefix + 'RowTotal').value = '0.00 PHP';
+            document.getElementById(prefix + 'Article').focus();
+        }
+
+        // Temporäre Batch-Tabelle rendern
+        function renderBatchTable(type) {
+            const prefix = type === 'purchase' ? 'p' : 's';
+            const batch = type === 'purchase' ? currentPurchaseBatch : currentSalesBatch;
+            const tbody = document.getElementById(prefix + 'BatchTableBody');
+            tbody.innerHTML = '';
+            let grandTotal = 0;
+
+            if (batch.length === 0) {
+                if (type === 'purchase') {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>';
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>';
+                }
+                document.getElementById(prefix + 'BatchTotalDisplay').innerText = '0.00 PHP';
+                return;
+            }
+
+            batch.forEach(pos => {
+                grandTotal += pos.total;
+                const tr = document.createElement('tr');
+                if (type === 'purchase') {
+                    tr.innerHTML = `
+                        <td>${pos.article}</td>
+                        <td>${pos.quantity} Sako</td>
+                        <td><strong>${pos.totalKg} kg</strong></td>
+                        <td>${pos.sackPrice.toFixed(2)} PHP</td>
+                        <td>${pos.pricePerKg.toFixed(2)} PHP</td>
+                        <td><strong>${pos.total.toFixed(2)} PHP</strong></td>
+                        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeBatchItem('${type}', '${pos.id}')">Tanggalin</button></td>
+                    `;
+                } else {
+                    tr.innerHTML = `
+                        <td>${pos.article}</td>
+                        <td><strong>${pos.quantity} kg</strong></td>
+                        <td>${pos.price.toFixed(2)} PHP</td>
+                        <td><strong>${pos.total.toFixed(2)} PHP</strong></td>
+                        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeBatchItem('${type}', '${pos.id}')">Tanggalin</button></td>
+                    `;
+                }
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById(prefix + 'BatchTotalDisplay').innerText = grandTotal.toFixed(2) + ' PHP';
+        }
+
+        function removeBatchItem(type, id) {
+            if (type === 'purchase') {
+                currentPurchaseBatch = currentPurchaseBatch.filter(item => item.id != id);
                 renderBatchTable('purchase');
             } else {
-                const date = document.getElementById('sDate').value;
-                const article = document.getElementById('sArticle').value;
-                const sacks = parseFloat(document.getElementById('sSacks').value);
-                const totalKg = parseFloat(document.getElementById('sTotalKg').value);
-                const sackPrice = parseFloat(document.getElementById('sSackPrice').value);
-                const pricePerKg = parseFloat(document.getElementById('sPricePerKg').value);
-                if(!date || !article || !totalKg || !pricePerKg) return alert("Punan ang lahat.");
-                currentSalesBatch.push({id: Date.now(), date, article, sacks, totalKg, sackPrice, pricePerKg, total: totalKg * pricePerKg});
+                currentSalesBatch = currentSalesBatch.filter(item => item.id != id);
                 renderBatchTable('sale');
             }
         }
 
-        function renderBatchTable(type) {
+        // Endgültig abschicken (Ins Logbuch speichern)
+        function submitBatch(type) {
             const batch = type === 'purchase' ? currentPurchaseBatch : currentSalesBatch;
-            const tbody = document.getElementById(type === 'purchase' ? 'pBatchTableBody' : 'sBatchTableBody');
-            tbody.innerHTML = '';
+            if (batch.length === 0) {
+                alert('Walang laman ang listahan.');
+                return;
+            }
+
+            const targetArray = type === 'purchase' ? purchases : sales;
             batch.forEach(item => {
-                const tr = document.createElement('tr');
-                if(type === 'purchase') {
-                    tr.innerHTML = `<td>${item.article}</td><td>${item.kg}</td><td>${item.price}</td><td>${item.total}</td><td>X</td>`;
+                const entry = {
+                    id: item.id,
+                    date: item.date,
+                    article: item.article,
+                    quantity: item.quantity,
+                    price: item.price
+                };
+                if (type === 'purchase') {
+                    entry.totalKg = item.totalKg;
+                    entry.sackPrice = item.sackPrice;
+                    entry.pricePerKg = item.pricePerKg;
+                }
+                targetArray.push(entry);
+            });
+
+            if (type === 'purchase') {
+                localStorage.setItem('buy', JSON.stringify(purchases));
+                currentPurchaseBatch = [];
+                renderBatchTable('purchase');
+                renderLog('purchase');
+                document.getElementById('pDate').valueAsDate = new Date();
+                alert('Matagumpay na naitala ang pagtanggap!');
+            } else {
+                localStorage.setItem('sell', JSON.stringify(sales));
+                currentSalesBatch = [];
+                renderBatchTable('sale');
+                renderLog('sale');
+                document.getElementById('sDate').valueAsDate = new Date();
+                alert('Matagumpay na naitala ang pagbebenta!');
+            }
+        }
+
+        // Logbuch rendern
+        function renderLog(type) {
+            const prefix = type === 'purchase' ? 'p' : 's';
+            const dataArray = type === 'purchase' ? purchases : sales;
+            const tbody = document.getElementById(prefix + 'LogTableBody');
+            tbody.innerHTML = '';
+
+            if (dataArray.length === 0) {
+                if (type === 'purchase') {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>';
                 } else {
-                    tr.innerHTML = `<td>${item.article}</td><td>${item.sacks}</td><td>${item.totalKg}</td><td>${item.sackPrice}</td><td>${item.pricePerKg}</td><td>${item.total}</td><td>X</td>`;
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>';
+                }
+                return;
+            }
+
+            const sorted = [...dataArray].sort((a, b) => new Date(b.date) - new Date(a.date));
+            sorted.forEach(entry => {
+                const tr = document.createElement('tr');
+                if (type === 'purchase') {
+                    const kgValue = entry.totalKg !== undefined ? entry.totalKg : (entry.quantity * 25);
+                    const sackP = entry.sackPrice !== undefined ? entry.sackPrice : entry.price;
+                    const kgP = entry.pricePerKg !== undefined ? entry.pricePerKg : (entry.price / 25);
+                    tr.innerHTML = `
+                        <td>${entry.date}</td>
+                        <td>${entry.article}</td>
+                        <td>${entry.quantity} Sako</td>
+                        <td><strong>${kgValue} kg</strong></td>
+                        <td>${sackP.toFixed(2)} PHP</td>
+                        <td>${kgP.toFixed(2)} PHP</td>
+                        <td><button class="btn btn-danger btn-sm" onclick="deleteEntry('${type}', ${entry.id})">Tanggalin</button></td>
+                    `;
+                } else {
+                    tr.innerHTML = `
+                        <td>${entry.date}</td>
+                        <td>${entry.article}</td>
+                        <td><strong>${entry.quantity} kg</strong></td>
+                        <td>${entry.price.toFixed(2)} PHP</td>
+                        <td><button class="btn btn-danger btn-sm" onclick="deleteEntry('${type}', ${entry.id})">Tanggalin</button></td>
+                    `;
                 }
                 tbody.appendChild(tr);
             });
         }
 
-        function submitBatch(type) {
-            if(type === 'purchase') {
-                purchases.push(...currentPurchaseBatch);
-                localStorage.setItem('buy', JSON.stringify(purchases));
-                currentPurchaseBatch = [];
-                renderLog('purchase');
-            } else {
-                sales.push(...currentSalesBatch);
-                localStorage.setItem('sell', JSON.stringify(sales));
-                currentSalesBatch = [];
-                renderLog('sale');
+        function deleteEntry(type, id) {
+            if (confirm('Sigurado ka bang gusto mong tanggalin ang entry na ito?')) {
+                if (type === 'purchase') {
+                    purchases = purchases.filter(e => e.id !== id);
+                    localStorage.setItem('buy', JSON.stringify(purchases));
+                    renderLog('purchase');
+                    filterReport('purchase');
+                } else {
+                    sales = sales.filter(e => e.id !== id);
+                    localStorage.setItem('sell', JSON.stringify(sales));
+                    renderLog('sale');
+                    filterReport('sale');
+                }
             }
-            alert('Naitala!');
         }
 
-        function renderLog(type) {
-            const data = type === 'purchase' ? purchases : sales;
-            const tbody = document.getElementById(type === 'purchase' ? 'pLogTableBody' : 'sLogTableBody');
+        // Auswertung nach Zeitraum mit Gesamtsumme
+        function filterReport(type) {
+            const prefix = type === 'purchase' ? 'p' : 's';
+            const dataArray = type === 'purchase' ? purchases : sales;
+            const startDate = document.getElementById(prefix + 'StartDate').value;
+            const endDate = document.getElementById(prefix + 'EndDate').value;
+            const tbody = document.getElementById(prefix + 'ReportTableBody');
             tbody.innerHTML = '';
-            data.forEach(item => {
+
+            let filtered = dataArray;
+            if (startDate) filtered = filtered.filter(e => e.date >= startDate);
+            if (endDate) filtered = filtered.filter(e => e.date <= endDate);
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Walang natagpuang tala sa napiling panahon.</td></tr>';
+                return;
+            }
+
+            const aggregated = {};
+            filtered.forEach(entry => {
+                if (!aggregated[entry.article]) {
+                    aggregated[entry.article] = { totalQtyKg: 0, totalPriceSum: 0 };
+                }
+                if (type === 'purchase') {
+                    const qtyInKg = entry.totalKg !== undefined ? entry.totalKg : (entry.quantity * 25);
+                    const pricePerKgVal = entry.pricePerKg !== undefined ? entry.pricePerKg : (entry.price / 25);
+                    aggregated[entry.article].totalQtyKg += qtyInKg;
+                    aggregated[entry.article].totalPriceSum += (qtyInKg * pricePerKgVal);
+                } else {
+                    aggregated[entry.article].totalQtyKg += entry.quantity;
+                    aggregated[entry.article].totalPriceSum += (entry.price * entry.quantity);
+                }
+            });
+
+            let totalPeriodQtyKg = 0;
+            let totalPeriodValue = 0;
+
+            for (const [article, data] of Object.entries(aggregated)) {
+                totalPeriodQtyKg += data.totalQtyKg;
+                totalPeriodValue += data.totalPriceSum;
+
                 const tr = document.createElement('tr');
-                const kg = item.kg || item.totalKg;
-                const price = item.price || item.pricePerKg;
-                tr.innerHTML = `<td>${item.date}</td><td>${item.article}</td><td>${kg}</td><td>${price}</td><td>-</td>`;
+                tr.innerHTML = `
+                    <td><strong>${article}</strong></td>
+                    <td>${data.totalQtyKg.toLocaleString()} kg</td>
+                    <td>${data.totalPriceSum.toFixed(2)} PHP</td>
+                `;
+                tbody.appendChild(tr);
+            }
+
+            const summaryTr = document.createElement('tr');
+            summaryTr.className = 'table-dark fw-bold';
+            summaryTr.innerHTML = `
+                <td>KABUUAN / PANAHON</td>
+                <td>${totalPeriodQtyKg.toLocaleString()} kg</td>
+                <td>${totalPeriodValue.toFixed(2)} PHP</td>
+            `;
+            tbody.appendChild(summaryTr);
+        }
+
+        // Turbo & Bestandsermittlung mit Durchschnittspreisen und Marge rendern
+        function renderMarginSection() {
+            const tbody = document.getElementById('marginTableBody');
+            tbody.innerHTML = '';
+
+            const allArticles = new Set([
+                ...purchases.map(p => p.article),
+                ...sales.map(s => s.article)
+            ]);
+
+            if (allArticles.size === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">Wala pang sapat na datos para sa pagsusuri.</td></tr>';
+                return;
+            }
+
+            let totalInKg = 0;
+            let totalInPhp = 0;
+            let totalOutKg = 0;
+            let totalOutPhp = 0;
+            let totalDiffKg = 0;
+
+            allArticles.forEach(article => {
+                // Buy
+                const articlePurchases = purchases.filter(p => p.article === article);
+                let inKg = 0;
+                let inPhp = 0;
+                articlePurchases.forEach(p => {
+                    const kgValue = p.totalKg !== undefined ? p.totalKg : (p.quantity * 25);
+                    const pricePerKgVal = p.pricePerKg !== undefined ? p.pricePerKg : (p.price / 25);
+                    inKg += kgValue;
+                    inPhp += (kgValue * pricePerKgVal);
+                });
+
+                // Sell
+                const articleSales = sales.filter(s => s.article === article);
+                let outKg = 0;
+                let outPhp = 0;
+                articleSales.forEach(s => {
+                    outKg += s.quantity;
+                    outPhp += s.price * s.quantity;
+                });
+
+                const diffKg = inKg - outKg;
+
+                // Average Buy price per kg
+                const avgInPricePerKg = inKg > 0 ? (inPhp / inKg) : 0;
+
+                // Average Sell price per kg
+                const avgOutPricePerKg = outKg > 0 ? (outPhp / outKg) : 0;
+
+                // Turbo per kg
+                const marginPerKg = (outKg > 0 && inKg > 0) ? (avgOutPricePerKg - avgInPricePerKg) : 0;
+
+                totalInKg += inKg;
+                totalInPhp += inPhp;
+                totalOutKg += outKg;
+                totalOutPhp += outPhp;
+                totalDiffKg += diffKg;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${article}</strong></td>
+                    <td>${inKg.toLocaleString()} kg</td>
+                    <td>${inPhp.toFixed(2)} PHP</td>
+                    <td>${avgInPricePerKg.toFixed(2)} PHP</td>
+                    <td>${outKg.toLocaleString()} kg</td>
+                    <td>${outPhp.toFixed(2)} PHP</td>
+                    <td>${avgOutPricePerKg.toFixed(2)} PHP</td>
+                    <td class="${diffKg < 0 ? 'text-danger fw-bold' : 'fw-bold'}">${diffKg.toLocaleString()} kg</td>
+                    <td class="${marginPerKg < 0 ? 'text-danger fw-bold text-end' : 'text-success fw-bold text-end'}">${marginPerKg.toFixed(2)} PHP</td>
+                `;
                 tbody.appendChild(tr);
             });
+
+            // Gesamtdurchschnitte für die Summenzeile
+            const overallAvgInPrice = totalInKg > 0 ? (totalInPhp / totalInKg) : 0;
+            const overallAvgOutPrice = totalOutKg > 0 ? (totalOutPhp / totalOutKg) : 0;
+            const overallMargin = (totalOutKg > 0 && totalInKg > 0) ? (overallAvgOutPrice - overallAvgInPrice) : 0;
+
+            const summaryTr = document.createElement('tr');
+            summaryTr.className = 'table-dark fw-bold text-center';
+            summaryTr.innerHTML = `
+                <td>KABUUAN / LAHAT</td>
+                <td>${totalInKg.toLocaleString()} kg</td>
+                <td>${totalInPhp.toFixed(2)} PHP</td>
+                <td>${overallAvgInPrice.toFixed(2)} PHP</td>
+                <td>${totalOutKg.toLocaleString()} kg</td>
+                <td>${totalOutPhp.toFixed(2)} PHP</td>
+                <td>${overallAvgOutPrice.toFixed(2)} PHP</td>
+                <td>${totalDiffKg.toLocaleString()} kg</td>
+                <td class="${overallMargin < 0 ? 'text-danger text-end' : 'text-success text-end'}">${overallMargin.toFixed(2)} PHP</td>
+            `;
+            tbody.appendChild(summaryTr);
         }
+
+        // Beim Start initialisieren
+        renderLog('purchase');
+        renderLog('sale');
     </script>
 </body>
 </html>
