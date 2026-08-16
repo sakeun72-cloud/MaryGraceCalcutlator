@@ -231,7 +231,8 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Gesamtwert des Auftrages (PHP)</label>
-                            <input type="number" class="form-control fw-bold text-warning bg-dark text-white" id="sTotalValue" min="0.01" step="0.01" placeholder="0.00">
+                            <!-- Hier wurde der schwarze Hintergrund durch ein klares Gelb ersetzt -->
+                            <input type="number" class="form-control fw-bold text-dark" id="sTotalValue" style="background-color: #fff3cd;" min="0.01" step="0.01" placeholder="0.00">
                         </div>
                     </div>
 
@@ -328,11 +329,12 @@
                                     <th>Produkto</th>
                                     <th>Kilogramm Gesamt</th>
                                     <th>Presyo (bawat Kilo)</th>
+                                    <th>Gesamtwert</th>
                                     <th>Aksyon</th>
                                 </tr>
                             </thead>
                             <tbody id="sLogTableBody">
-                                <tr><td colspan="5" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>
+                                <tr><td colspan="6" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -396,11 +398,17 @@
         let currentPurchaseBatch = [];
         let currentSalesBatch = [];
         let manualKiloOverride = false;
-        let salesMode = 'total'; // Standardmäßig auf Gesamtwert-Eingabe gesetzt
+        let salesMode = 'total';
 
         // Datum vorbelegen
         document.getElementById('pDate').valueAsDate = new Date();
         document.getElementById('sDate').valueAsDate = new Date();
+
+        // Beim Laden direkt die Historie anzeigen
+        window.addEventListener('DOMContentLoaded', () => {
+            renderLog('purchase');
+            renderLog('sale');
+        });
 
         // Ansichten umschalten
         function showSection(sectionId) {
@@ -438,7 +446,7 @@
             updateRowTotal('purchase');
         });
 
-        // Live-Berechnung für Sell: Automatisches Berechnen des Kilopreises basierend auf dem Gesamtwert
+        // Live-Berechnung für Sell
         document.getElementById('sQuantity').addEventListener('input', () => updateSalesCalculation('qty'));
         document.getElementById('sTotalValue').addEventListener('input', () => updateSalesCalculation('total'));
         document.getElementById('sPrice').addEventListener('input', () => updateSalesCalculation('price'));
@@ -457,7 +465,6 @@
                     totalInput.value = '';
                 }
             } else {
-                // Standard-Verhalten: Gesamtwert eingeben -> Kilopreis errechnen
                 salesMode = 'total';
                 const totalVal = parseFloat(totalInput.value) || 0;
                 if (qty > 0 && totalVal > 0) {
@@ -530,7 +537,7 @@
                     id: Date.now() + Math.random(),
                     date, 
                     article, 
-                    quantity, // Dies entspricht hier den Kilos (kg)
+                    quantity, 
                     price: pricePerKg,
                     total: totalVal
                 };
@@ -542,7 +549,6 @@
                 salesMode = 'total';
             }
 
-            // Felder leeren
             document.getElementById(prefix + 'Article').value = '';
             document.getElementById(prefix + 'Quantity').value = '';
             if (type === 'purchase') {
@@ -622,7 +628,8 @@
                     date: item.date,
                     article: item.article,
                     quantity: item.quantity,
-                    price: item.price
+                    price: item.price,
+                    total: item.total
                 };
                 if (type === 'purchase') {
                     entry.totalKg = item.totalKg;
@@ -636,14 +643,77 @@
                 localStorage.setItem('buy', JSON.stringify(purchases));
                 currentPurchaseBatch = [];
                 renderBatchTable('purchase');
+                renderLog('purchase');
                 document.getElementById('pDate').valueAsDate = new Date();
                 alert('Matagumpay na naitala ang pagtanggap!');
             } else {
                 localStorage.setItem('sell', JSON.stringify(sales));
                 currentSalesBatch = [];
                 renderBatchTable('sale');
+                renderLog('sale'); // Hier wird das Sell-Log nun korrekt aktualisiert
                 document.getElementById('sDate').valueAsDate = new Date();
                 alert('Matagumpay na naitala ang pagbebenta!');
+            }
+        }
+
+        // Logbuch-Tabellen rendern (Historie)
+        function renderLog(type) {
+            if (type === 'purchase') {
+                const tbody = document.getElementById('pLogTableBody');
+                tbody.innerHTML = '';
+                if (purchases.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>';
+                    return;
+                }
+                purchases.slice().reverse().forEach((item, index) => {
+                    const originalIndex = purchases.length - 1 - index;
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${item.date}</td>
+                        <td>${item.article}</td>
+                        <td>${item.quantity} Sako</td>
+                        <td><strong>${item.totalKg} kg</strong></td>
+                        <td>${item.sackPrice ? item.sackPrice.toFixed(2) : '0.00'} PHP</td>
+                        <td>${item.pricePerKg ? item.pricePerKg.toFixed(2) : '0.00'} PHP</td>
+                        <td><button type="button" class="btn btn-danger btn-sm" onclick="deleteLogItem('purchase', ${originalIndex})">Alisin</button></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } else if (type === 'sale') {
+                const tbody = document.getElementById('sLogTableBody');
+                tbody.innerHTML = '';
+                if (sales.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>';
+                    return;
+                }
+                sales.slice().reverse().forEach((item, index) => {
+                    const originalIndex = sales.length - 1 - index;
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${item.date}</td>
+                        <td>${item.article}</td>
+                        <td><strong>${item.quantity} kg</strong></td>
+                        <td>${item.price.toFixed(2)} PHP</td>
+                        <td><strong>${item.total ? item.total.toFixed(2) : (item.quantity * item.price).toFixed(2)} PHP</strong></td>
+                        <td><button type="button" class="btn btn-danger btn-sm" onclick="deleteLogItem('sale', ${originalIndex})">Alisin</button></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+
+        // Eintrag aus der Historie löschen
+        function deleteLogItem(type, index) {
+            if (confirm('Sigurado ka bang gusto mong tanggalin ang talang ito?')) {
+                if (type === 'purchase') {
+                    purchases.splice(index, 1);
+                    localStorage.setItem('buy', JSON.stringify(purchases));
+                    renderLog('purchase');
+                } else {
+                    sales.splice(index, 1);
+                    localStorage.setItem('sell', JSON.stringify(sales));
+                    renderLog('sale');
+                }
             }
         }
 
