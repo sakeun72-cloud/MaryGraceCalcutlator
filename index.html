@@ -231,7 +231,6 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Gesamtwert des Auftrages (PHP)</label>
-                            <!-- Gelber Hintergrund -->
                             <input type="number" class="form-control fw-bold text-dark" id="sTotalValue" style="background-color: #fff3cd;" min="0.01" step="0.01" placeholder="0.00">
                         </div>
                     </div>
@@ -388,23 +387,23 @@
                 </div>
             </div>
 
-            <!-- 2. Taggenauer Rohertrag (Daily Profit) -->
+            <!-- 2. Taggenauer Rohertrag (Daily Profit / Tubo Araw-araw) -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-secondary text-white">
-                    <h5 class="mb-0">Rohertrag nach Tagen (Daily Profit / Tubo araw-araw)</h5>
+                    <h5 class="mb-0">Ulat ng Tubo Bawat Araw (Daily Profit / Tubo araw-araw)</h5>
                 </div>
                 <div class="card-body">
-                    <p class="text-muted">Übersicht über den erzielten Rohertrag (Umsatz minus Wareneinsatz) aufgeschlüsselt nach einzelnen Verkaufstagen.</p>
+                    <p class="text-muted">Buod ng nakuhang tubo (benta minus gastos sa produkto) na nakatala ayon sa bawat araw ng pagbebenta.</p>
                     
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped align-middle text-center">
                             <thead class="table-dark">
                                 <tr>
-                                    <th>Datum (Petsa)</th>
-                                    <th>Verkaufte Menge (kg)</th>
-                                    <th>Umsatz (PHP)</th>
-                                    <th>Wareneinsatz (PHP)</th>
-                                    <th>Rohertrag / Tubo (PHP)</th>
+                                    <th>Petsa (Date)</th>
+                                    <th>Dami ng Naibenta (kg)</th>
+                                    <th>Benta (PHP)</th>
+                                    <th>Gastos sa Produkto (PHP)</th>
+                                    <th>Tubo (PHP)</th>
                                 </tr>
                             </thead>
                             <tbody id="dailyProfitTableBody">
@@ -773,7 +772,6 @@
             let grandTotalStockKg = 0;
             let totalCostOfSoldGoods = 0;
 
-            // Durchschnittlichen Einkaufspreis pro Artikel vorbereiten für die tagesgenaue Berechnung
             const articleAvgBuyPrice = {};
 
             articles.forEach(article => {
@@ -855,7 +853,7 @@
                 tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">Wala pang sapat na datos para sa pagsusuri.</td></tr>';
             }
 
-            // --- ZWEITER BLOCK: Taggenauer Rohertrag (Daily Profit) ---
+            // --- ZWEITER BLOCK: Taggenauer Rohertrag (Wareneinsatz = verkaufte Menge * Average) ---
             const dailyProfitTbody = document.getElementById('dailyProfitTableBody');
             dailyProfitTbody.innerHTML = '';
 
@@ -869,7 +867,7 @@
                 const kg = s.quantity || 0;
                 const rev = s.total || (kg * (s.price || 0));
                 const avgCost = articleAvgBuyPrice[s.article] || 0;
-                const cost = kg * avgCost;
+                const cost = kg * avgCost; // Wareneinsatz = verkaufte Menge * Average Buy Price
 
                 dailyData[date].totalKg += kg;
                 dailyData[date].revenue += rev;
@@ -885,7 +883,7 @@
             sortedDates.forEach(date => {
                 hasDailyData = true;
                 const data = dailyData[date];
-                const profit = data.revenue - data.cost;
+                const profit = data.revenue - data.cost; // Rohertrag = Umsatz - Wareneinsatz
 
                 totalDailyRevenue += data.revenue;
                 totalDailyCost += data.cost;
