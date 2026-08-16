@@ -1,32 +1,32 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="tl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wareneingangsbuch</title>
+    <title>Wareneingangsbuch / Purchase Log</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 
     <div class="container my-5">
-        <h1 class="mb-4 text-center">Wareneingangsbuch</h1>
+        <h1 class="mb-4 text-center">Aklat sa Pagtanggap ng Kalakal (Purchase Log)</h1>
 
         <!-- Eingabeformular für Positionen -->
         <div class="card shadow-sm mb-5">
             <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Wareneingang erfassen (Positionen hinzufügen)</h5>
+                <h5 class="mb-0">Mag-rekord ng Bagong Pagtanggap (Add Purchase)</h5>
             </div>
             <div class="card-body">
                 <div class="row g-3 mb-3">
                     <div class="col-md-3">
-                        <label for="date" class="form-label">Datum</label>
+                        <label for="date" class="form-label">Petsa (Date)</label>
                         <input type="date" class="form-control" id="date" required>
                     </div>
                     <div class="col-md-4">
-                        <label for="article" class="form-label">Artikel</label>
+                        <label for="article" class="form-label">Produkto / Artikel</label>
                         <select class="form-select" id="article">
-                            <option value="" disabled selected>Bitte wählen...</option>
+                            <option value="" disabled selected>Pumili...</option>
                             <option value="Fuji">Fuji</option>
                             <option value="Perfect">Perfect</option>
                             <option value="Master Aroma">Master Aroma</option>
@@ -39,42 +39,42 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="quantity" class="form-label">Menge</label>
-                        <input type="number" class="form-control" id="quantity" min="1" step="1" placeholder="Menge">
+                        <label for="quantity" class="form-label">Dami (Menge)</label>
+                        <input type="number" class="form-control" id="quantity" min="1" step="1" placeholder="Dami">
                     </div>
                     <div class="col-md-3">
-                        <label for="price" class="form-label">Paketpreis (€)</label>
+                        <label for="price" class="form-label">Presyo para sa 25 kg Gebinde</label>
                         <input type="number" class="form-control" id="price" min="0.01" step="0.01" placeholder="0.00">
                     </div>
                 </div>
 
                 <div class="row g-3 align-items-center border-top pt-3">
                     <div class="col-md-4">
-                        <label class="form-label text-muted">Berechnete Zeilensumme:</label>
-                        <input type="text" class="form-control bg-white fw-bold" id="rowTotal" value="0.00 €" disabled>
+                        <label class="form-label text-muted">Kalkuladong Halaga ng Linya:</label>
+                        <input type="text" class="form-control bg-white fw-bold" id="rowTotal" value="0.00 PHP" disabled>
                     </div>
                     <div class="col-md-8 text-end">
-                        <button type="button" id="addPositionBtn" class="btn btn-secondary">Position zur Liste hinzufügen</button>
+                        <button type="button" id="addPositionBtn" class="btn btn-secondary">Idagdag sa Listahan (Add Position)</button>
                     </div>
                 </div>
 
                 <!-- Temporäre Erfassungsliste für den aktuellen Beleg -->
                 <div class="mt-4">
-                    <h6>Aktuelle Erfassungsliste (Noch nicht im Logbuch):</h6>
+                    <h6>Kasalukuyang Listahan (Noch nicht im Logbook):</h6>
                     <div class="table-responsive">
                         <table class="table table-bordered table-sm">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Artikel</th>
-                                    <th>Menge</th>
-                                    <th>Paketpreis</th>
-                                    <th>Summe</th>
-                                    <th>Aktion</th>
+                                    <th>Produkto</th>
+                                    <th>Dami</th>
+                                    <th>Presyo (25 kg)</th>
+                                    <th>Kabuuan</th>
+                                    <th>Aksyon</th>
                                 </tr>
                             </thead>
                             <tbody id="batchTableBody">
                                 <tr>
-                                    <td colspan="5" class="text-center text-muted">Noch keine Positionen hinzugefügt.</td>
+                                    <td colspan="5" class="text-center text-muted">Wala pang idinagdag na posisyon.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -82,13 +82,13 @@
 
                     <!-- Gesamtbetrag zur Prüfung -->
                     <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded border">
-                        <h4 class="mb-0">Gesamtsumme zur Prüfung:</h4>
-                        <h3 class="mb-0 text-primary" id="batchTotalDisplay">0.00 €</h3>
+                        <h4 class="mb-0">Kabuuang Halaga para sa Pagsusuri (Total Check):</h4>
+                        <h3 class="mb-0 text-primary" id="batchTotalDisplay">0.00 PHP</h3>
                     </div>
 
                     <!-- Endgültig Abschicken Button -->
                     <div class="text-end mt-3">
-                        <button type="button" id="submitBatchBtn" class="btn btn-success btn-lg">Wareneingang endgültig abschicken</button>
+                        <button type="button" id="submitBatchBtn" class="btn btn-success btn-lg">Isumite nang Pinal ang Pagtanggap (Save)</button>
                     </div>
                 </div>
             </div>
@@ -97,20 +97,20 @@
         <!-- Auswertung nach Zeitraum -->
         <div class="card shadow-sm mb-5">
             <div class="card-header bg-success text-white">
-                <h5 class="mb-0">Auswertung nach Zeitraum</h5>
+                <h5 class="mb-0">Ulat ayon sa Panahon (Auswertung nach Zeitraum)</h5>
             </div>
             <div class="card-body">
                 <div class="row g-3 mb-4">
                     <div class="col-md-4">
-                        <label for="startDate" class="form-label">Von Datum</label>
+                        <label for="startDate" class="form-label">Mula sa Petsa (Von)</label>
                         <input type="date" class="form-control" id="startDate">
                     </div>
                     <div class="col-md-4">
-                        <label for="endDate" class="form-label">Bis Datum</label>
+                        <label for="endDate" class="form-label">Hanggang sa Petsa (Bis)</label>
                         <input type="date" class="form-control" id="endDate">
                     </div>
                     <div class="col-md-4 d-flex align-items-end">
-                        <button id="filterBtn" class="btn btn-outline-success w-100">Auswertung anzeigen</button>
+                        <button id="filterBtn" class="btn btn-outline-success w-100">Ipakita ang Ulat (Show Report)</button>
                     </div>
                 </div>
 
@@ -118,15 +118,15 @@
                     <table class="table table-striped table-hover">
                         <thead>
                             <tr>
-                                <th>Artikeltext</th>
-                                <th>Gesamtmenge</th>
-                                <th>Durchschnittspreis / Paket</th>
-                                <th>Gesamtwert (€)</th>
+                                <th>Produkto / Artikel</th>
+                                <th>Kabuuang Dami</th>
+                                <th>Karaniwang Presyo / 25kg</th>
+                                <th>Kabuuang Halaga (PHP)</th>
                             </tr>
                         </thead>
                         <tbody id="reportTableBody">
                             <tr>
-                                <td colspan="4" class="text-center text-muted">Bitte Zeitraum wählen und auswerten.</td>
+                                <td colspan="4" class="text-center text-muted">Mangyaring pumili ng panahon at suriin.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -137,23 +137,23 @@
         <!-- Chronologisches Logbuch -->
         <div class="card shadow-sm">
             <div class="card-header bg-secondary text-white">
-                <h5 class="mb-0">Chronologisches Logbuch (Gesamte Historie)</h5>
+                <h5 class="mb-0">Talaan ng Kasaysayan / Logbook (Gesamte Historie)</h5>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-sm table-bordered">
                         <thead>
                             <tr>
-                                <th>Datum</th>
-                                <th>Artikeltext</th>
-                                <th>Menge</th>
-                                <th>Preis / Paket</th>
-                                <th>Aktion</th>
+                                <th>Petsa</th>
+                                <th>Produkto</th>
+                                <th>Dami</th>
+                                <th>Presyo (25 kg)</th>
+                                <th>Aksyon</th>
                             </tr>
                         </thead>
                         <tbody id="logTableBody">
                             <tr>
-                                <td colspan="5" class="text-center text-muted">Noch keine Einträge im Logbuch vorhanden.</td>
+                                <td colspan="5" class="text-center text-muted">Wala pang mga tala sa logbook.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -168,18 +168,16 @@
 
         document.getElementById('date').valueAsDate = new Date();
 
-        // Live-Berechnung der Zeilensumme
         function updateRowTotal() {
             const qty = parseFloat(document.getElementById('quantity').value) || 0;
             const price = parseFloat(document.getElementById('price').value) || 0;
             const total = qty * price;
-            document.getElementById('rowTotal').value = total.toFixed(2) + ' €';
+            document.getElementById('rowTotal').value = total.toFixed(2) + ' PHP';
         }
 
         document.getElementById('quantity').addEventListener('input', updateRowTotal);
         document.getElementById('price').addEventListener('input', updateRowTotal);
 
-        // Position zur temporären Liste hinzufügen
         document.getElementById('addPositionBtn').addEventListener('click', function() {
             const date = document.getElementById('date').value;
             const article = document.getElementById('article').value;
@@ -187,7 +185,7 @@
             const price = parseFloat(document.getElementById('price').value);
 
             if (!date || !article || isNaN(quantity) || quantity <= 0 || isNaN(price) || price <= 0) {
-                alert('Bitte füllen Sie alle Felder korrekt aus, bevor Sie eine Position hinzufügen.');
+                alert('Mangyaring punan nang tama ang lahat ng mga patlang bago magdagdag.');
                 return;
             }
 
@@ -206,19 +204,18 @@
             document.getElementById('article').value = '';
             document.getElementById('quantity').value = '';
             document.getElementById('price').value = '';
-            document.getElementById('rowTotal').value = '0.00 €';
+            document.getElementById('rowTotal').value = '0.00 PHP';
             document.getElementById('article').focus();
         });
 
-        // Temporäre Batch-Tabelle rendern
         function renderBatchTable() {
             const tbody = document.getElementById('batchTableBody');
             tbody.innerHTML = '';
             let grandTotal = 0;
 
             if (currentBatch.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Noch keine Positionen hinzugefügt.</td></tr>';
-                document.getElementById('batchTotalDisplay').innerText = '0.00 €';
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>';
+                document.getElementById('batchTotalDisplay').innerText = '0.00 PHP';
                 return;
             }
 
@@ -228,14 +225,14 @@
                 tr.innerHTML = `
                     <td>${pos.article}</td>
                     <td>${pos.quantity}</td>
-                    <td>${pos.price.toFixed(2)} €</td>
-                    <td><strong>${pos.total.toFixed(2)} €</strong></td>
-                    <td><button type="button" class="btn btn-danger btn-sm" onclick="removeBatchItem('${pos.id}')">Entfernen</button></td>
+                    <td>${pos.price.toFixed(2)} PHP</td>
+                    <td><strong>${pos.total.toFixed(2)} PHP</strong></td>
+                    <td><button type="button" class="btn btn-danger btn-sm" onclick="removeBatchItem('${pos.id}')">Tanggalin</button></td>
                 `;
                 tbody.appendChild(tr);
             });
 
-            document.getElementById('batchTotalDisplay').innerText = grandTotal.toFixed(2) + ' €';
+            document.getElementById('batchTotalDisplay').innerText = grandTotal.toFixed(2) + ' PHP';
         }
 
         function removeBatchItem(id) {
@@ -243,10 +240,9 @@
             renderBatchTable();
         }
 
-        // Endgültig abschicken
         document.getElementById('submitBatchBtn').addEventListener('click', function() {
             if (currentBatch.length === 0) {
-                alert('Die Liste ist leer. Bitte fügen Sie mindestens eine Position hinzu.');
+                alert('Walang laman ang listahan. Mangyaring magdagdag muna ng kahit isang posisyon.');
                 return;
             }
 
@@ -267,14 +263,14 @@
             renderBatchTable();
             document.getElementById('date').valueAsDate = new Date();
             
-            alert('Wareneingang wurde erfolgreich im Logbuch gespeichert!');
+            alert('Matagumpay na naitala ang pagtanggap ng kalakal!');
         });
 
         function renderLog() {
             const tbody = document.getElementById('logTableBody');
             tbody.innerHTML = '';
             if (entries.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Noch keine Einträge im Logbuch vorhanden.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>';
                 return;
             }
             const sortedEntries = [...entries].sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -284,15 +280,15 @@
                     <td>${entry.date}</td>
                     <td>${entry.article}</td>
                     <td>${entry.quantity}</td>
-                    <td>${entry.price.toFixed(2)} €</td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteEntry(${entry.id})">Löschen</button></td>
+                    <td>${entry.price.toFixed(2)} PHP</td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteEntry(${entry.id})">Tanggalin</button></td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
         function deleteEntry(id) {
-            if (confirm('Möchten Sie diesen Eintrag wirklich aus dem Logbuch löschen?')) {
+            if (confirm('Sigurado ka bang gusto mong tanggalin ang entry na ito?')) {
                 entries = entries.filter(entry => entry.id !== id);
                 localStorage.setItem('wareneingänge', JSON.stringify(entries));
                 renderLog();
@@ -301,7 +297,6 @@
             }
         }
 
-        // Auswertung nach Zeitraum mit Gesamtsummen-Berechnung
         document.getElementById('filterBtn').addEventListener('click', function() {
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
@@ -313,7 +308,7 @@
             if (endDate) filtered = filtered.filter(e => e.date <= endDate);
 
             if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Keine Wareneingänge gefunden.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Walang natagpuang pagtanggap sa napiling panahon.</td></tr>';
                 return;
             }
 
@@ -338,20 +333,19 @@
                 tr.innerHTML = `
                     <td><strong>${article}</strong></td>
                     <td>${data.totalQty}</td>
-                    <td>${avgPrice.toFixed(2)} €</td>
-                    <td>${data.totalPriceSum.toFixed(2)} €</td>
+                    <td>${avgPrice.toFixed(2)} PHP</td>
+                    <td>${data.totalPriceSum.toFixed(2)} PHP</td>
                 `;
                 tbody.appendChild(tr);
             }
 
-            // Hinzufügen der Gesamtsummen-Zeile am Ende der Auswertungstabelle
             const summaryTr = document.createElement('tr');
             summaryTr.className = 'table-dark fw-bold';
             summaryTr.innerHTML = `
-                <td>GESAMT / ZEITRAUM</td>
+                <td>KABUUAN / PANAHON</td>
                 <td>${totalPeriodQty}</td>
                 <td>-</td>
-                <td>${totalPeriodValue.toFixed(2)} €</td>
+                <td>${totalPeriodValue.toFixed(2)} PHP</td>
             `;
             tbody.appendChild(summaryTr);
         });
