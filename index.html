@@ -73,8 +73,8 @@
                             <input type="number" class="form-control" id="pQuantity" min="1" step="1" placeholder="Sacks">
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label">Kilo Gesamt (Auto)</label>
-                            <input type="text" class="form-control bg-white fw-bold text-success" id="pTotalKgDisplay" value="0 kg" disabled>
+                            <label class="form-label">Kilo Gesamt (Editable)</label>
+                            <input type="number" class="form-control fw-bold text-success" id="pTotalKg" min="0.1" step="any" placeholder="kg">
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">Presyo / Sako</label>
@@ -389,6 +389,7 @@
 
         let currentPurchaseBatch = [];
         let currentSalesBatch = [];
+        let manualKiloOverride = false;
 
         // Datum vorbelegen
         document.getElementById('pDate').valueAsDate = new Date();
@@ -404,25 +405,33 @@
             }
         }
 
-        // Live-Berechnung Zeilensumme und automatisches Kilo
+        // Live-Berechnung Zeilensumme und automatisches Kilo für Buy
+        document.getElementById('pQuantity').addEventListener('input', () => {
+            const qty = parseFloat(document.getElementById('pQuantity').value) || 0;
+            if (!manualKiloOverride) {
+                document.getElementById('pTotalKg').value = qty * 25;
+            }
+            updateRowTotal('purchase');
+        });
+
+        document.getElementById('pTotalKg').addEventListener('input', () => {
+            manualKiloOverride = true;
+            updateRowTotal('purchase');
+        });
+
+        document.getElementById('pPrice').addEventListener('input', () => updateRowTotal('purchase'));
+
+        // Live-Berechnung Zeilensumme für Sell
+        document.getElementById('sQuantity').addEventListener('input', () => updateRowTotal('sale'));
+        document.getElementById('sPrice').addEventListener('input', () => updateRowTotal('sale'));
+
         function updateRowTotal(type) {
             const prefix = type === 'purchase' ? 'p' : 's';
             const qty = parseFloat(document.getElementById(prefix + 'Quantity').value) || 0;
             const price = parseFloat(document.getElementById(prefix + 'Price').value) || 0;
-            
-            if (type === 'purchase') {
-                const totalKg = qty * 25;
-                document.getElementById('pTotalKgDisplay').value = totalKg + ' kg';
-            }
-
             const total = qty * price;
             document.getElementById(prefix + 'RowTotal').value = total.toFixed(2) + ' PHP';
         }
-
-        document.getElementById('pQuantity').addEventListener('input', () => updateRowTotal('purchase'));
-        document.getElementById('pPrice').addEventListener('input', () => updateRowTotal('purchase'));
-        document.getElementById('sQuantity').addEventListener('input', () => updateRowTotal('sale'));
-        document.getElementById('sPrice').addEventListener('input', () => updateRowTotal('sale'));
 
         // Position zur temporären Batch-Liste hinzufügen
         function addPosition(type) {
@@ -437,16 +446,20 @@
                 return;
             }
 
-            const position = {
+            let position = {
                 id: Date.now() + Math.random(),
                 date, article, quantity, price,
                 total: quantity * price
             };
 
             if (type === 'purchase') {
+                const totalKg = parseFloat(document.getElementById('pTotalKg').value) || (quantity * 25);
+                position.totalKg = totalKg;
+
                 currentPurchaseBatch.push(position);
                 renderBatchTable('purchase');
-                document.getElementById('pTotalKgDisplay').value = '0 kg';
+                document.getElementById('pTotalKg').value = '';
+                manualKiloOverride = false;
             } else {
                 currentSalesBatch.push(position);
                 renderBatchTable('sale');
@@ -482,11 +495,10 @@
                 grandTotal += pos.total;
                 const tr = document.createElement('tr');
                 if (type === 'purchase') {
-                    const totalKg = pos.quantity * 25;
                     tr.innerHTML = `
                         <td>${pos.article}</td>
                         <td>${pos.quantity} Sako</td>
-                        <td><strong>${totalKg} kg</strong></td>
+                        <td><strong>${pos.totalKg} kg</strong></td>
                         <td>${pos.price.toFixed(2)} PHP</td>
                         <td><strong>${pos.total.toFixed(2)} PHP</strong></td>
                         <td><button type="button" class="btn btn-danger btn-sm" onclick="removeBatchItem('${type}', '${pos.id}')">Tanggalin</button></td>
@@ -526,13 +538,17 @@
 
             const targetArray = type === 'purchase' ? purchases : sales;
             batch.forEach(item => {
-                targetArray.push({
+                const entry = {
                     id: item.id,
                     date: item.date,
                     article: item.article,
                     quantity: item.quantity,
                     price: item.price
-                });
+                };
+                if (type === 'purchase') {
+                    entry.totalKg = item.totalKg;
+                }
+                targetArray.push(entry);
             });
 
             if (type === 'purchase') {
@@ -572,12 +588,12 @@
             sorted.forEach(entry => {
                 const tr = document.createElement('tr');
                 if (type === 'purchase') {
-                    const totalKg = entry.quantity * 25;
+                    const kgValue = entry.totalKg !== undefined ? entry.totalKg : (entry.quantity * 25);
                     tr.innerHTML = `
                         <td>${entry.date}</td>
                         <td>${entry.article}</td>
                         <td>${entry.quantity} Sako</td>
-                        <td><strong>${totalKg} kg</strong></td>
+                        <td><strong>${kgValue} kg</strong></td>
                         <td>${entry.price.toFixed(2)} PHP</td>
                         <td><button class="btn btn-danger btn-sm" onclick="deleteEntry('${type}', ${entry.id})">Tanggalin</button></td>
                     `;
@@ -633,7 +649,7 @@
                 if (!aggregated[entry.article]) {
                     aggregated[entry.article] = { totalQtyKg: 0, totalPriceSum: 0 };
                 }
-                const qtyInKg = type === 'purchase' ? (entry.quantity * 25) : entry.quantity;
+                const qtyInKg = type === 'purchase' ? (entry.totalKg !== undefined ? entry.totalKg : entry.quantity * 25) : entry.quantity;
                 
                 aggregated[entry.article].totalQtyKg += qtyInKg;
                 aggregated[entry.article].totalPriceSum += (entry.price * entry.quantity);
@@ -692,8 +708,8 @@
                 let inKg = 0;
                 let inPhp = 0;
                 articlePurchases.forEach(p => {
-                    const sackKg = p.quantity * 25;
-                    inKg += sackKg;
+                    const kgValue = p.totalKg !== undefined ? p.totalKg : (p.quantity * 25);
+                    inKg += kgValue;
                     inPhp += p.price * p.quantity;
                 });
 
