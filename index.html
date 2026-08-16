@@ -351,26 +351,28 @@
             
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">Pangkalahatang-ideya ng Imbentaryo (Inventory & Stock Balance)</h5>
+                    <h5 class="mb-0">Pangkalahatang-ideya ng Imbentaryo at Tubo (Margin & Stock Analysis)</h5>
                 </div>
                 <div class="card-body">
-                    <p class="text-muted">Paghahambing ng kabuuang pagpasok (Einwareneingang) at paglabas (Warenausgang) kasama ang mga halaga sa PHP.</p>
+                    <p class="text-muted">Paghahambing ng pagpasok, paglabas, average na presyo kada kilo, at ang tubo (marge).</p>
                     
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
+                        <table class="table table-bordered table-striped align-middle text-center">
                             <thead class="table-dark">
                                 <tr>
                                     <th>Produkto / Artikel</th>
-                                    <th>Einwareneingang (Menge in kg)</th>
-                                    <th>Einwareneingang (Wert in PHP)</th>
-                                    <th>Warenausgang (Menge in kg)</th>
-                                    <th>Warenausgang (Wert in PHP)</th>
-                                    <th>Differenz / Bestand (kg)</th>
-                                    <th>Differenz / Bestand (Wert PHP)</th>
+                                    <th>Einwareneingang (kg)</th>
+                                    <th>Einwareneingang (PHP)</th>
+                                    <th>$\varnothing$ Einkauf / kg</th>
+                                    <th>Warenausgang (kg)</th>
+                                    <th>Warenausgang (PHP)</th>
+                                    <th>$\varnothing$ Verkauf / kg</th>
+                                    <th>Bestand (kg)</th>
+                                    <th>Gewinnmarge / kg (Tubo)</th>
                                 </tr>
                             </thead>
                             <tbody id="marginTableBody">
-                                <tr><td colspan="7" class="text-center text-muted">Wala pang sapat na datos para sa pagsusuri.</td></tr>
+                                <tr><td colspan="9" class="text-center text-muted">Wala pang sapat na datos para sa pagsusuri.</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -608,7 +610,7 @@
             }
         }
 
-        // Auswertung nach Zeitraum mit Gesamtsumme (in Kilogramm für den einheitlichen Abgleich)
+        // Auswertung nach Zeitraum mit Gesamtsumme
         function filterReport(type) {
             const prefix = type === 'purchase' ? 'p' : 's';
             const dataArray = type === 'purchase' ? purchases : sales;
@@ -663,84 +665,98 @@
             tbody.appendChild(summaryTr);
         }
 
-        // Tubo & Bestandsermittlung rendern
+        // Tubo & Bestandsermittlung mit Durchschnittspreisen und Marge rendern
         function renderMarginSection() {
             const tbody = document.getElementById('marginTableBody');
             tbody.innerHTML = '';
 
-            // Alle einzigartigen Artikel aus Einkäufen und Verkäufen ermitteln
             const allArticles = new Set([
                 ...purchases.map(p => p.article),
                 ...sales.map(s => s.article)
             ]);
 
             if (allArticles.size === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Wala pang sapat na datos para sa pagsusuri.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">Wala pang sapat na datos para sa pagsusuri.</td></tr>';
                 return;
             }
 
-            let totalSumInKg = 0;
-            let totalSumInPhp = 0;
+            let totalInKg = 0;
+            let totalInPhp = 0;
             let totalOutKg = 0;
             let totalOutPhp = 0;
             let totalDiffKg = 0;
-            let totalDiffPhp = 0;
 
             allArticles.forEach(article => {
-                // Einwareneingang für diesen Artikel
+                // Einwareneingang
                 const articlePurchases = purchases.filter(p => p.article === article);
                 let inKg = 0;
                 let inPhp = 0;
                 articlePurchases.forEach(p => {
-                    inKg += p.quantity * 25;
+                    const sackKg = p.quantity * 25;
+                    inKg += sackKg;
+                    // p.price ist der Preis pro 25kg-Sack im Einkauf
                     inPhp += p.price * p.quantity;
                 });
 
-                // Warenausgang für diesen Artikel
+                // Warenausgang
                 const articleSales = sales.filter(s => s.article === article);
                 let outKg = 0;
                 let outPhp = 0;
                 articleSales.forEach(s => {
                     outKg += s.quantity;
+                    // s.price ist der Preis pro Kilo im Verkauf
                     outPhp += s.price * s.quantity;
                 });
 
                 const diffKg = inKg - outKg;
-                // Wertdifferenz (vereinfacht auf Basis von Einkaufswert vs Ausgangswert oder durchschnittlichem Einstandswert)
-                // Hier nehmen wir als Bestands-Wert-Differenz den Einstandswert minus Ausgangswert oder Rohbestand
-                const diffPhp = inPhp - outPhp;
 
-                totalSumInKg += inKg;
-                totalSumInPhp += inPhp;
+                // Durchschnittspreis Einkauf pro Kilo (Gesamtwert Wareneingang / Gesamtkilo Wareneingang)
+                const avgInPricePerKg = inKg > 0 ? (inPhp / inKg) : 0;
+
+                // Durchschnittspreis Verkauf pro Kilo (Gesamtwert Warenausgang / Gesamtkilo Warenausgang)
+                const avgOutPricePerKg = outKg > 0 ? (outPhp / outKg) : 0;
+
+                // Gewinnmarge per kilo (Verkaufspreis pro kg minus durchschnittlicher Einkaufskilopreis)
+                const marginPerKg = (outKg > 0 && inKg > 0) ? (avgOutPricePerKg - avgInPricePerKg) : 0;
+
+                totalInKg += inKg;
+                totalInPhp += inPhp;
                 totalOutKg += outKg;
                 totalOutPhp += outPhp;
                 totalDiffKg += diffKg;
-                totalDiffPhp += diffPhp;
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><strong>${article}</strong></td>
                     <td>${inKg.toLocaleString()} kg</td>
                     <td>${inPhp.toFixed(2)} PHP</td>
+                    <td>${avgInPricePerKg.toFixed(2)} PHP</td>
                     <td>${outKg.toLocaleString()} kg</td>
                     <td>${outPhp.toFixed(2)} PHP</td>
+                    <td>${avgOutPricePerKg.toFixed(2)} PHP</td>
                     <td class="${diffKg < 0 ? 'text-danger fw-bold' : 'fw-bold'}">${diffKg.toLocaleString()} kg</td>
-                    <td class="${diffPhp < 0 ? 'text-danger fw-bold' : 'fw-bold'}">${diffPhp.toFixed(2)} PHP</td>
+                    <td class="${marginPerKg < 0 ? 'text-danger fw-bold text-end' : 'text-success fw-bold text-end'}">${marginPerKg.toFixed(2)} PHP</td>
                 `;
                 tbody.appendChild(tr);
             });
 
-            // Gesamtsummen-Zeile
+            // Gesamtdurchschnitte für die Summenzeile
+            const overallAvgInPrice = totalInKg > 0 ? (totalInPhp / totalInKg) : 0;
+            const overallAvgOutPrice = totalOutKg > 0 ? (totalOutPhp / totalOutKg) : 0;
+            const overallMargin = (totalOutKg > 0 && totalInKg > 0) ? (overallAvgOutPrice - overallAvgInPrice) : 0;
+
             const summaryTr = document.createElement('tr');
-            summaryTr.className = 'table-dark fw-bold';
+            summaryTr.className = 'table-dark fw-bold text-center';
             summaryTr.innerHTML = `
                 <td>KABUUAN / LAHAT</td>
-                <td>${totalSumInKg.toLocaleString()} kg</td>
-                <td>${totalSumInPhp.toFixed(2)} PHP</td>
+                <td>${totalInKg.toLocaleString()} kg</td>
+                <td>${totalInPhp.toFixed(2)} PHP</td>
+                <td>${overallAvgInPrice.toFixed(2)} PHP</td>
                 <td>${totalOutKg.toLocaleString()} kg</td>
                 <td>${totalOutPhp.toFixed(2)} PHP</td>
+                <td>${overallAvgOutPrice.toFixed(2)} PHP</td>
                 <td>${totalDiffKg.toLocaleString()} kg</td>
-                <td>${totalDiffPhp.toFixed(2)} PHP</td>
+                <td class="${overallMargin < 0 ? 'text-danger text-end' : 'text-success text-end'}">${overallMargin.toFixed(2)} PHP</td>
             `;
             tbody.appendChild(summaryTr);
         }
