@@ -231,7 +231,7 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Gesamtwert des Auftrages (PHP)</label>
-                            <!-- Hier wurde der schwarze Hintergrund durch ein klares Gelb ersetzt -->
+                            <!-- Gelber Hintergrund wie gewünscht -->
                             <input type="number" class="form-control fw-bold text-dark" id="sTotalValue" style="background-color: #fff3cd;" min="0.01" step="0.01" placeholder="0.00">
                         </div>
                     </div>
@@ -650,7 +650,7 @@
                 localStorage.setItem('sell', JSON.stringify(sales));
                 currentSalesBatch = [];
                 renderBatchTable('sale');
-                renderLog('sale'); // Hier wird das Sell-Log nun korrekt aktualisiert
+                renderLog('sale');
                 document.getElementById('sDate').valueAsDate = new Date();
                 alert('Matagumpay na naitala ang pagbebenta!');
             }
@@ -717,8 +717,67 @@
             }
         }
 
+        // Turbo / Lager- und Margenanalyse rendern
         function renderMarginSection() {
-            // Stub für Turbo Ansicht
+            const articles = [
+                "Fuji", "Perfect", "Master Aroma", "Sweet Hasmin", 
+                "Coco pandan", "Jasmine original", "Master Alsa", 
+                "Brown rice", "Malagkit/k"
+            ];
+
+            const tbody = document.getElementById('marginTableBody');
+            tbody.innerHTML = '';
+            let hasData = false;
+
+            articles.forEach(article => {
+                // Buy Daten aggregieren
+                const articlePurchases = purchases.filter(p => p.article === article);
+                const totalBuyKg = articlePurchases.reduce((sum, p) => sum + (p.totalKg || 0), 0);
+                const totalBuyPhp = articlePurchases.reduce((sum, p) => {
+                    const kg = p.totalKg || 0;
+                    const priceKg = p.pricePerKg || (p.sackPrice ? p.sackPrice / 25 : 0);
+                    return sum + (kg * priceKg);
+                }, 0);
+                const avgBuyPerKg = totalBuyKg > 0 ? totalBuyPhp / totalBuyKg : 0;
+
+                // Sell Daten aggregieren
+                const articleSales = sales.filter(s => s.article === article);
+                const totalSellKg = articleSales.reduce((sum, s) => sum + (s.quantity || 0), 0);
+                const totalSellPhp = articleSales.reduce((sum, s) => {
+                    const kg = s.quantity || 0;
+                    const totalVal = s.total || (kg * (s.price || 0));
+                    return sum + totalVal;
+                }, 0);
+                const avgSellPerKg = totalSellKg > 0 ? totalSellPhp / totalSellKg : 0;
+
+                // Stock & Turbo berechnen
+                const stockKg = totalBuyKg - totalSellKg;
+                let turboPerKg = 0;
+                if (totalSellKg > 0 && totalBuyKg > 0) {
+                    turboPerKg = avgSellPerKg - avgBuyPerKg;
+                }
+
+                if (totalBuyKg > 0 || totalSellKg > 0) {
+                    hasData = true;
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${article}</strong></td>
+                        <td>${totalBuyKg.toFixed(2)} kg</td>
+                        <td>${totalBuyPhp.toFixed(2)} PHP</td>
+                        <td>${avgBuyPerKg.toFixed(2)} PHP</td>
+                        <td>${totalSellKg.toFixed(2)} kg</td>
+                        <td>${totalSellPhp.toFixed(2)} PHP</td>
+                        <td>${avgSellPerKg.toFixed(2)} PHP</td>
+                        <td class="${stockKg < 0 ? 'text-danger fw-bold' : 'fw-bold'}">${stockKg.toFixed(2)} kg</td>
+                        <td class="${turboPerKg >= 0 ? 'text-success fw-bold' : 'text-danger fw-bold'}">${turboPerKg.toFixed(2)} PHP</td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+            });
+
+            if (!hasData) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">Wala pang sapat na datos para sa pagsusuri.</td></tr>';
+            }
         }
     </script>
 </body>
