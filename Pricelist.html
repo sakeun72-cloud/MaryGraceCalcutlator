@@ -5,65 +5,46 @@
     <title>Preistafel Bigas</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        body { background-color: #2b2b2b; display: flex; flex-direction: column; align-items: center; padding: 20px; font-family: 'Arial', sans-serif; }
+        body { background-color: #2b2b2b; display: flex; flex-direction: column; align-items: center; padding: 20px; font-family: 'Courier New', Courier, monospace; }
         .chalkboard {
             background-color: #1a221e; color: #f2f2f2; border: 15px solid #5c3a21;
-            padding: 20px; width: 420px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            padding: 20px; width: 450px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        h2 { text-transform: uppercase; border-bottom: 2px dashed #fff; padding-bottom: 10px; margin-top: 0; }
-        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        th { font-size: 13px; color: #ddd; padding: 5px; }
-        td { padding: 5px; border-bottom: 1px solid #333; }
-        input { background: #333; color: #fff; border: 1px solid #555; width: 50px; text-align: center; padding: 5px; }
-        .btn-download { margin-top: 20px; padding: 12px 25px; background-color: #5c3a21; color: white; border: none; cursor: pointer; font-size: 16px; }
-        .footer { font-size: 12px; margin-top: 15px; opacity: 0.7; }
+        h2 { text-transform: uppercase; border-bottom: 2px dashed #fff; padding-bottom: 10px; margin-top: 0; font-size: 24px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { font-size: 14px; padding: 10px 5px; color: #ffcc00; }
+        td { padding: 8px 5px; border-bottom: 1px solid #333; }
+        input { background: #333; color: #fff; border: 1px solid #555; width: 65px; text-align: center; padding: 6px; font-family: inherit; font-size: 14px; }
+        .name-col { text-align: left; font-weight: bold; width: 120px; }
+        .btn-download { margin-top: 25px; padding: 15px 30px; background-color: #5c3a21; color: white; border: none; cursor: pointer; font-size: 18px; border-radius: 5px; }
     </style>
 </head>
 <body>
 
 <div class="chalkboard" id="capture">
     <h2>Presyo ng Bigas</h2>
-    <p style="font-size: 12px;">(Grundpreisangabe: Preis pro 1 kg)</p>
     <table>
         <thead>
             <tr><th>Sorte</th><th>1kg</th><th>5kg</th><th>10kg</th><th>25kg</th></tr>
         </thead>
-        <tbody id="riceTable">
-            <!-- Sorte 1 -->
-            <tr><td>Fuji</td><td><input type="number" value="57" oninput="calc(this)"></td><td><input type="number" class="p5"></td><td><input type="number" class="p10"></td><td><input type="number" class="p25"></td></tr>
-            <tr><td>Perfect</td><td><input type="number" value="54" oninput="calc(this)"></td><td><input type="number" class="p5"></td><td><input type="number" class="p10"></td><td><input type="number" class="p25"></td></tr>
-            <tr><td>Master Aroma</td><td><input type="number" value="55" oninput="calc(this)"></td><td><input type="number" class="p5"></td><td><input type="number" class="p10"></td><td><input type="number" class="p25"></td></tr>
-            <tr><td>Sinandomeng</td><td><input type="number" value="50" oninput="calc(this)"></td><td><input type="number" class="p5"></td><td><input type="number" class="p10"></td><td><input type="number" class="p25"></td></tr>
-            <tr><td>Jasmine</td><td><input type="number" value="52" oninput="calc(this)"></td><td><input type="number" class="p5"></td><td><input type="number" class="p10"></td><td><input type="number" class="p25"></td></tr>
-            <tr><td>Dinorado</td><td><input type="number" value="60" oninput="calc(this)"></td><td><input type="number" class="p5"></td><td><input type="number" class="p10"></td><td><input type="number" class="p25"></td></tr>
+        <tbody>
+            <tr><td class="name-col">Fuji</td><td><input type="number" value="57"></td><td><input type="number" value="280"></td><td><input type="number" value="550"></td><td><input type="number" value="1350"></td></tr>
+            <tr><td class="name-col">Perfect</td><td><input type="number" value="54"></td><td><input type="number" value="265"></td><td><input type="number" value="520"></td><td><input type="number" value="1280"></td></tr>
+            <tr><td class="name-col">Master Aroma</td><td><input type="number" value="55"></td><td><input type="number" value="270"></td><td><input type="number" value="530"></td><td><input type="number" value="1300"></td></tr>
+            <tr><td class="name-col">Sinandomeng</td><td><input type="number" value="50"></td><td><input type="number" value="240"></td><td><input type="number" value="470"></td><td><input type="number" value="1150"></td></tr>
+            <tr><td class="name-col">Jasmine</td><td><input type="number" value="52"></td><td><input type="number" value="250"></td><td><input type="number" value="490"></td><td><input type="number" value="1200"></td></tr>
+            <tr><td class="name-col">Dinorado</td><td><input type="number" value="60"></td><td><input type="number" value="290"></td><td><input type="number" value="570"></td><td><input type="number" value="1400"></td></tr>
         </tbody>
     </table>
-    <div class="footer">Einfach 1kg Preis ändern – Rest rechnet sich selbst!</div>
 </div>
 
 <button class="btn-download" onclick="downloadImage()">Bild herunterladen</button>
 
 <script>
-    // Initial Berechnung beim Laden
-    window.onload = function() {
-        document.querySelectorAll('input[type="number"]').forEach(input => {
-            if(input.oninput) input.oninput();
-        });
-    };
-
-    function calc(input) {
-        let tr = input.parentElement.parentElement;
-        let p1 = parseFloat(input.value) || 0;
-        // Berechnung mit Mengenrabatt (Beispiel)
-        tr.querySelector('.p5').value = Math.round(p1 * 5 * 0.95);
-        tr.querySelector('.p10').value = Math.round(p1 * 10 * 0.90);
-        tr.querySelector('.p25').value = Math.round(p1 * 25 * 0.85);
-    }
-
     function downloadImage() {
         html2canvas(document.querySelector("#capture")).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'preistafel_hochformat.png';
+            link.download = 'preistafel_bigas.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
         });
