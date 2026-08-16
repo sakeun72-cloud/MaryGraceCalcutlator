@@ -39,8 +39,9 @@
             text-align: left;
         }
         th, td {
-            padding: 8px;
+            padding: 10px 8px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            vertical-align: middle;
         }
         th {
             font-size: 1rem;
@@ -49,6 +50,27 @@
         }
         th:first-child, td:first-child {
             text-align: left;
+        }
+        input.text-input {
+            background: transparent;
+            border: 1px dashed rgba(255, 255, 255, 0.3);
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.95rem;
+            width: 95%;
+            padding: 3px;
+            border-radius: 3px;
+        }
+        input.tagalog-input {
+            background: transparent;
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            color: #bbb;
+            font-family: inherit;
+            font-size: 0.8rem;
+            width: 95%;
+            padding: 2px;
+            margin-top: 4px;
+            border-radius: 3px;
         }
         input.price-input {
             background: transparent;
@@ -61,7 +83,7 @@
             text-align: center;
             border-radius: 3px;
         }
-        input.price-input:focus {
+        input.text-input:focus, input.tagalog-input:focus, input.price-input:focus {
             outline: none;
             border-color: #d4af37;
             background: rgba(255, 255, 255, 0.1);
@@ -97,11 +119,10 @@
             <!-- Wird via JS geladen -->
         </tbody>
     </table>
-    <div class="info">Änderungen werden automatisch gespeichert (bleiben nach Reload erhalten).</div>
+    <div class="info">Namen, Eigenschaften und Preise sind direkt editierbar und werden automatisch gespeichert.</div>
 </div>
 
 <script>
-    // Standard-Daten falls noch kein Speicher existiert
     const defaultData = [
         { name: "1. Fuji", tagalog: "Puti", p25: 1420 },
         { name: "2. Perfect", tagalog: "Perpekto", p25: 1340 },
@@ -113,9 +134,7 @@
         { name: "8. Malagkit", tagalog: "Malagkit", p25: 1500 }
     ];
 
-    // Daten aus localStorage laden oder defaults nehmen
-    let riceData = JSON.parse(localStorage.getItem('ricePrices')) || defaultData;
-
+    let riceData = JSON.parse(localStorage.getItem('ricePricesCustom')) || defaultData;
     const tbody = document.getElementById("rice-table-body");
 
     function renderTable() {
@@ -127,8 +146,11 @@
 
             const row = document.createElement("tr");
             row.innerHTML = `
-                <td><strong>${item.name}</strong><br><small style="color:#bbb;">(${item.tagalog})</small></td>
-                <td style="text-align:center;">₱<input type="number" class="price-input" value="${item.p25}" data-index="${index}"></td>
+                <td>
+                    <input type="text" class="text-input" value="${item.name}" data-index="${index}" data-field="name">
+                    <input type="text" class="tagalog-input" value="${item.tagalog || ''}" placeholder="Eigenschaft (optional)" data-index="${index}" data-field="tagalog">
+                </td>
+                <td style="text-align:center;">₱<input type="number" class="price-input" value="${item.p25}" data-index="${index}" data-field="p25"></td>
                 <td class="calculated-price">₱${p1}</td>
                 <td class="calculated-price">₱${p5}</td>
                 <td class="calculated-price">₱${p10}</td>
@@ -136,23 +158,28 @@
             tbody.appendChild(row);
         });
 
-        // Event Listener für Eingaben
-        document.querySelectorAll('.price-input').forEach(input => {
+        // Event Listener für alle Inputs (Name, Tagalog, Preis)
+        document.querySelectorAll('input').forEach(input => {
             input.addEventListener('input', (e) => {
                 const idx = e.target.getAttribute('data-index');
-                const val = parseFloat(e.target.value) || 0;
+                const field = e.target.getAttribute('data-field');
                 
-                // Daten aktualisieren
-                riceData[idx].p25 = val;
-                
-                // In localStorage speichern
-                localStorage.setItem('ricePrices', JSON.stringify(riceData));
-                
-                // Nur die berechneten Zellen in dieser Zeile aktualisieren (um Fokus zu behalten)
-                const row = e.target.closest('tr');
-                row.cells[2].innerText = `₱${Math.round(val / 25)}`;
-                row.cells[3].innerText = `₱${Math.round(val * (5 / 25))}`;
-                row.cells[4].innerText = `₱${Math.round(val * (10 / 25))}`;
+                if (field === 'p25') {
+                    riceData[idx].p25 = parseFloat(e.target.value) || 0;
+                    // Berechnete Spalten in der Zeile direkt anpassen ohne Neuladen der ganzen Tabelle
+                    const row = e.target.closest('tr');
+                    const val = riceData[idx].p25;
+                    row.cells[2].innerText = `₱${Math.round(val / 25)}`;
+                    row.cells[3].innerText = `₱${Math.round(val * (5 / 25))}`;
+                    row.cells[4].innerText = `₱${Math.round(val * (10 / 25))}`;
+                } else if (field === 'name') {
+                    riceData[idx].name = e.target.value;
+                } else if (field === 'tagalog') {
+                    riceData[idx].tagalog = e.target.value;
+                }
+
+                // In localStorage sichern
+                localStorage.setItem('ricePricesCustom', JSON.stringify(riceData));
             });
         });
     }
