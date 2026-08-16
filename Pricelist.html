@@ -2,53 +2,147 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Preistafel Bigas</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presyo ng Bigas - Interaktive Preistafel</title>
     <style>
-        body { background-color: #2b2b2b; display: flex; flex-direction: column; align-items: center; padding: 20px; font-family: 'Courier New', Courier, monospace; }
-        .chalkboard {
-            background-color: #1a221e; color: #f2f2f2; border: 15px solid #5c3a21;
-            padding: 20px; width: 450px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        body {
+            background-color: #2c2c2c;
+            font-family: 'Courier New', Courier, monospace;
+            color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
         }
-        h2 { text-transform: uppercase; border-bottom: 2px dashed #fff; padding-bottom: 10px; margin-top: 0; font-size: 24px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th { font-size: 14px; padding: 10px 5px; color: #ffcc00; }
-        td { padding: 8px 5px; border-bottom: 1px solid #333; }
-        input { background: #333; color: #fff; border: 1px solid #555; width: 65px; text-align: center; padding: 6px; font-family: inherit; font-size: 14px; }
-        .name-col { text-align: left; font-weight: bold; width: 120px; }
-        .btn-download { margin-top: 25px; padding: 15px 30px; background-color: #5c3a21; color: white; border: none; cursor: pointer; font-size: 18px; border-radius: 5px; }
+        .chalkboard-frame {
+            border: 16px solid #5c3a21;
+            background-color: #1e2a22;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+            max-width: 950px;
+            width: 100%;
+            border-radius: 4px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 1.6rem;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            border-bottom: 2px dashed #f4f4f4;
+            padding-bottom: 10px;
+            text-transform: uppercase;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        th, td {
+            padding: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        th {
+            font-size: 1rem;
+            color: #d4af37;
+            text-align: center;
+        }
+        th:first-child, td:first-child {
+            text-align: left;
+        }
+        input.price-input {
+            background: transparent;
+            border: 1px dashed rgba(255, 255, 255, 0.5);
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.95rem;
+            width: 70px;
+            padding: 4px;
+            text-align: center;
+            border-radius: 3px;
+        }
+        input.price-input:focus {
+            outline: none;
+            border-color: #d4af37;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .calculated-price {
+            text-align: center;
+            color: #a8d5ba;
+        }
+        .info {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
     </style>
 </head>
 <body>
 
-<div class="chalkboard" id="capture">
-    <h2>Presyo ng Bigas</h2>
+<div class="chalkboard-frame">
+    <h1>Presyo: Mga Uri at Presyo ng Bigas</h1>
     <table>
         <thead>
-            <tr><th>Sorte</th><th>1kg</th><th>5kg</th><th>10kg</th><th>25kg</th></tr>
+            <tr>
+                <th>Uri ng Bigas</th>
+                <th>25 kg (Basis)</th>
+                <th>1 kg</th>
+                <th>5 kg</th>
+                <th>10 kg</th>
+            </tr>
         </thead>
-        <tbody>
-            <tr><td class="name-col">Fuji</td><td><input type="number" value="57"></td><td><input type="number" value="280"></td><td><input type="number" value="550"></td><td><input type="number" value="1350"></td></tr>
-            <tr><td class="name-col">Perfect</td><td><input type="number" value="54"></td><td><input type="number" value="265"></td><td><input type="number" value="520"></td><td><input type="number" value="1280"></td></tr>
-            <tr><td class="name-col">Master Aroma</td><td><input type="number" value="55"></td><td><input type="number" value="270"></td><td><input type="number" value="530"></td><td><input type="number" value="1300"></td></tr>
-            <tr><td class="name-col">Sinandomeng</td><td><input type="number" value="50"></td><td><input type="number" value="240"></td><td><input type="number" value="470"></td><td><input type="number" value="1150"></td></tr>
-            <tr><td class="name-col">Jasmine</td><td><input type="number" value="52"></td><td><input type="number" value="250"></td><td><input type="number" value="490"></td><td><input type="number" value="1200"></td></tr>
-            <tr><td class="name-col">Dinorado</td><td><input type="number" value="60"></td><td><input type="number" value="290"></td><td><input type="number" value="570"></td><td><input type="number" value="1400"></td></tr>
+        <tbody id="rice-table-body">
+            <!-- Dynamisch generiert -->
         </tbody>
     </table>
+    <div class="info">Ändern Sie den 25-kg-Preis – 1 kg, 5 kg und 10 kg werden automatisch berechnet.</div>
 </div>
 
-<button class="btn-download" onclick="downloadImage()">Bild herunterladen</button>
-
 <script>
-    function downloadImage() {
-        html2canvas(document.querySelector("#capture")).then(canvas => {
-            const link = document.createElement('a');
-            link.download = 'preistafel_bigas.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
+    const riceData = [
+        { name: "1. Fuji", tagalog: "Puti", p25: 1420 },
+        { name: "2. Perfect", tagalog: "Perpekto", p25: 1340 },
+        { name: "3. Master Aroma", tagalog: "Mabangong Bigas", p25: 1380 },
+        { name: "4. Sweet Hasmin", tagalog: "Matamis na Jasmin", p25: 1350 },
+        { name: "5. Coco pandan", tagalog: "Kusot Pandan", p25: 1330 },
+        { name: "6. Jasmine original", tagalog: "Jasmin Orihinal", p25: 1310 },
+        { name: "7. Master Alsa", tagalog: "Alsa Hari", p25: 1200 },
+        { name: "8. Malagkit", tagalog: "Malagkit", p25: 1500 }
+    ];
+
+    const tbody = document.getElementById("rice-table-body");
+
+    function renderTable() {
+        tbody.innerHTML = "";
+        riceData.forEach((item, index) => {
+            // Automatische Berechnung der anderen Mengen basierend auf 25 kg
+            let p1 = Math.round(item.p25 / 25);
+            let p5 = Math.round(item.p25 * (5 / 25));
+            let p10 = Math.round(item.p25 * (10 / 25));
+
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td><strong>${item.name}</strong><br><small style="color:#bbb;">(${item.tagalog})</small></td>
+                <td style="text-align:center;">₱<input type="number" class="price-input" value="${item.p25}" data-index="${index}"></td>
+                <td class="calculated-price">₱${p1}</td>
+                <td class="calculated-price">₱${p5}</td>
+                <td class="calculated-price">₱${p10}</td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        document.querySelectorAll('.price-input').forEach(input => {
+            input.addEventListener('input', (e) => {
+                const idx = e.target.getAttribute('data-index');
+                riceData[idx].p25 = parseFloat(e.target.value) || 0;
+                renderTable();
+            });
         });
     }
+
+    renderTable();
 </script>
+
 </body>
 </html>
