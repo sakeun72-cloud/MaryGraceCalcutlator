@@ -40,7 +40,7 @@
         
         <!-- ================= EINKAUF SEKTION ================= -->
         <div id="purchaseSection" class="section-view active-view">
-            <h2 class="text-primary mb-4 text-center">Aklat sa Pagtanggap (Purchase Log)</h2>
+            <h2 class="text-primary mb-4 text-center">Aklat sa Pagtanggap (Purchase Log - 25kg Sacks)</h2>
 
             <!-- Eingabeformular Einkauf -->
             <div class="card shadow-sm mb-4">
@@ -69,11 +69,11 @@
                             </select>
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label">Dami (Menge)</label>
-                            <input type="number" class="form-control" id="pQuantity" min="1" step="1" placeholder="Dami">
+                            <label class="form-label">Bilang ng Sako (25kg)</label>
+                            <input type="number" class="form-control" id="pQuantity" min="1" step="1" placeholder="Sacks">
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Presyo para sa 25 kg Gebinde</label>
+                            <label class="form-label">Presyo bawat Sako (25 kg)</label>
                             <input type="number" class="form-control" id="pPrice" min="0.01" step="0.01" placeholder="0.00">
                         </div>
                     </div>
@@ -96,8 +96,8 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>Produkto</th>
-                                        <th>Dami</th>
-                                        <th>Presyo (25 kg)</th>
+                                        <th>Dami (Sako / Kilo)</th>
+                                        <th>Presyo (25 kg Sako)</th>
                                         <th>Kabuuan</th>
                                         <th>Aksyon</th>
                                     </tr>
@@ -123,7 +123,7 @@
             <!-- Auswertung nach Zeitraum Einkauf -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">Ulat ayon sa Panahon (Purchases by Period)</h5>
+                    <h5 class="mb-0">Ulat ayon sa Panahon (Purchases by Period - in kg)</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3 mb-4">
@@ -145,13 +145,12 @@
                             <thead>
                                 <tr>
                                     <th>Produkto / Artikel</th>
-                                    <th>Kabuuang Dami</th>
-                                    <th>Karaniwang Presyo / 25kg</th>
+                                    <th>Kabuuang Dami (Kilo)</th>
                                     <th>Kabuuang Halaga (PHP)</th>
                                 </tr>
                             </thead>
                             <tbody id="pReportTableBody">
-                                <tr><td colspan="4" class="text-center text-muted">Mangyaring pumili ng panahon at suriin.</td></tr>
+                                <tr><td colspan="3" class="text-center text-muted">Mangyaring pumili ng panahon at suriin.</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -170,7 +169,7 @@
                                 <tr>
                                     <th>Petsa</th>
                                     <th>Produkto</th>
-                                    <th>Dami</th>
+                                    <th>Dami (Sako & Kilo)</th>
                                     <th>Presyo (25 kg)</th>
                                     <th>Aksyon</th>
                                 </tr>
@@ -186,12 +185,12 @@
 
         <!-- ================= VERKAUF SEKTION ================= -->
         <div id="salesSection" class="section-view">
-            <h2 class="text-warning mb-4 text-center">Aklat sa Pagbebenta (Sales Log)</h2>
+            <h2 class="text-warning mb-4 text-center">Aklat sa Pagbebenta (Sales Log - in Kilo)</h2>
 
             <!-- Eingabeformular Verkauf -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0">Mag-rekord ng Bagong Benta (Add Sale)</h5>
+                    <h5 class="mb-0">Mag-rekord ng Bagong Benta (Add Sale in kg)</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3 mb-3">
@@ -215,11 +214,11 @@
                             </select>
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label">Dami (Menge)</label>
-                            <input type="number" class="form-control" id="sQuantity" min="1" step="1" placeholder="Dami">
+                            <label class="form-label">Dami sa Kilo (kg)</label>
+                            <input type="number" class="form-control" id="sQuantity" min="0.1" step="any" placeholder="Kilo">
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Presyo ng Benta (25 kg)</label>
+                            <label class="form-label">Presyo bawat Kilo (PHP)</label>
                             <input type="number" class="form-control" id="sPrice" min="0.01" step="0.01" placeholder="0.00">
                         </div>
                     </div>
@@ -242,8 +241,8 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>Produkto</th>
-                                        <th>Dami</th>
-                                        <th>Presyo (25 kg)</th>
+                                        <th>Dami (Kilo)</th>
+                                        <th>Presyo bawat Kilo</th>
                                         <th>Kabuuan</th>
                                         <th>Aksyon</th>
                                     </tr>
@@ -269,7 +268,7 @@
             <!-- Auswertung nach Zeitraum Verkauf -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0">Ulat ayon sa Panahon (Sales by Period)</h5>
+                    <h5 class="mb-0">Ulat ayon sa Panahon (Sales by Period - in kg)</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3 mb-4">
@@ -291,13 +290,12 @@
                             <thead>
                                 <tr>
                                     <th>Produkto / Artikel</th>
-                                    <th>Kabuuang Dami</th>
-                                    <th>Karaniwang Presyo / 25kg</th>
+                                    <th>Kabuuang Dami (Kilo)</th>
                                     <th>Kabuuang Halaga (PHP)</th>
                                 </tr>
                             </thead>
                             <tbody id="sReportTableBody">
-                                <tr><td colspan="4" class="text-center text-muted">Mangyaring pumili ng panahon at suriin.</td></tr>
+                                <tr><td colspan="3" class="text-center text-muted">Mangyaring pumili ng panahon at suriin.</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -316,8 +314,8 @@
                                 <tr>
                                     <th>Petsa</th>
                                     <th>Produkto</th>
-                                    <th>Dami</th>
-                                    <th>Presyo (25 kg)</th>
+                                    <th>Dami (Kilo)</th>
+                                    <th>Presyo (bawat Kilo)</th>
                                     <th>Aksyon</th>
                                 </tr>
                             </thead>
@@ -391,7 +389,7 @@
             const prefix = type === 'purchase' ? 'p' : 's';
             const date = document.getElementById(prefix + 'Date').value;
             const article = document.getElementById(prefix + 'Article').value;
-            const quantity = parseInt(document.getElementById(prefix + 'Quantity').value);
+            const quantity = parseFloat(document.getElementById(prefix + 'Quantity').value);
             const price = parseFloat(document.getElementById(prefix + 'Price').value);
 
             if (!date || !article || isNaN(quantity) || quantity <= 0 || isNaN(price) || price <= 0) {
@@ -438,13 +436,24 @@
             batch.forEach(pos => {
                 grandTotal += pos.total;
                 const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${pos.article}</td>
-                    <td>${pos.quantity}</td>
-                    <td>${pos.price.toFixed(2)} PHP</td>
-                    <td><strong>${pos.total.toFixed(2)} PHP</strong></td>
-                    <td><button type="button" class="btn btn-danger btn-sm" onclick="removeBatchItem('${type}', '${pos.id}')">Tanggalin</button></td>
-                `;
+                if (type === 'purchase') {
+                    const totalKg = pos.quantity * 25;
+                    tr.innerHTML = `
+                        <td>${pos.article}</td>
+                        <td>${pos.quantity} Sako (${totalKg} kg)</td>
+                        <td>${pos.price.toFixed(2)} PHP</td>
+                        <td><strong>${pos.total.toFixed(2)} PHP</strong></td>
+                        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeBatchItem('${type}', '${pos.id}')">Tanggalin</button></td>
+                    `;
+                } else {
+                    tr.innerHTML = `
+                        <td>${pos.article}</td>
+                        <td>${pos.quantity} kg</td>
+                        <td>${pos.price.toFixed(2)} PHP</td>
+                        <td><strong>${pos.total.toFixed(2)} PHP</strong></td>
+                        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeBatchItem('${type}', '${pos.id}')">Tanggalin</button></td>
+                    `;
+                }
                 tbody.appendChild(tr);
             });
 
@@ -512,13 +521,24 @@
             const sorted = [...dataArray].sort((a, b) => new Date(b.date) - new Date(a.date));
             sorted.forEach(entry => {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${entry.date}</td>
-                    <td>${entry.article}</td>
-                    <td>${entry.quantity}</td>
-                    <td>${entry.price.toFixed(2)} PHP</td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteEntry('${type}', ${entry.id})">Tanggalin</button></td>
-                `;
+                if (type === 'purchase') {
+                    const totalKg = entry.quantity * 25;
+                    tr.innerHTML = `
+                        <td>${entry.date}</td>
+                        <td>${entry.article}</td>
+                        <td>${entry.quantity} Sako (${totalKg} kg)</td>
+                        <td>${entry.price.toFixed(2)} PHP</td>
+                        <td><button class="btn btn-danger btn-sm" onclick="deleteEntry('${type}', ${entry.id})">Tanggalin</button></td>
+                    `;
+                } else {
+                    tr.innerHTML = `
+                        <td>${entry.date}</td>
+                        <td>${entry.article}</td>
+                        <td>${entry.quantity} kg</td>
+                        <td>${entry.price.toFixed(2)} PHP</td>
+                        <td><button class="btn btn-danger btn-sm" onclick="deleteEntry('${type}', ${entry.id})">Tanggalin</button></td>
+                    `;
+                }
                 tbody.appendChild(tr);
             });
         }
@@ -539,7 +559,7 @@
             }
         }
 
-        // Auswertung nach Zeitraum mit Gesamtsumme
+        // Auswertung nach Zeitraum mit Gesamtsumme (in Kilogramm für den einheitlichen Abgleich)
         function filterReport(type) {
             const prefix = type === 'purchase' ? 'p' : 's';
             const dataArray = type === 'purchase' ? purchases : sales;
@@ -553,32 +573,34 @@
             if (endDate) filtered = filtered.filter(e => e.date <= endDate);
 
             if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Walang natagpuang tala sa napiling panahon.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Walang natagpuang tala sa napiling panahon.</td></tr>';
                 return;
             }
 
             const aggregated = {};
             filtered.forEach(entry => {
                 if (!aggregated[entry.article]) {
-                    aggregated[entry.article] = { totalQty: 0, totalPriceSum: 0 };
+                    aggregated[entry.article] = { totalQtyKg: 0, totalPriceSum: 0 };
                 }
-                aggregated[entry.article].totalQty += entry.quantity;
+                // Bei Einkauf: entry.quantity sind Säcke -> Umrechnung in kg (* 25)
+                // Bei Verkauf: entry.quantity sind bereits Kilo
+                const qtyInKg = type === 'purchase' ? (entry.quantity * 25) : entry.quantity;
+                
+                aggregated[entry.article].totalQtyKg += qtyInKg;
                 aggregated[entry.article].totalPriceSum += (entry.price * entry.quantity);
             });
 
-            let totalPeriodQty = 0;
+            let totalPeriodQtyKg = 0;
             let totalPeriodValue = 0;
 
             for (const [article, data] of Object.entries(aggregated)) {
-                const avgPrice = data.totalPriceSum / data.totalQty;
-                totalPeriodQty += data.totalQty;
+                totalPeriodQtyKg += data.totalQtyKg;
                 totalPeriodValue += data.totalPriceSum;
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><strong>${article}</strong></td>
-                    <td>${data.totalQty}</td>
-                    <td>${avgPrice.toFixed(2)} PHP</td>
+                    <td>${data.totalQtyKg.toLocaleString()} kg</td>
                     <td>${data.totalPriceSum.toFixed(2)} PHP</td>
                 `;
                 tbody.appendChild(tr);
@@ -588,8 +610,7 @@
             summaryTr.className = 'table-dark fw-bold';
             summaryTr.innerHTML = `
                 <td>KABUUAN / PANAHON</td>
-                <td>${totalPeriodQty}</td>
-                <td>-</td>
+                <td>${totalPeriodQtyKg.toLocaleString()} kg</td>
                 <td>${totalPeriodValue.toFixed(2)} PHP</td>
             `;
             tbody.appendChild(summaryTr);
