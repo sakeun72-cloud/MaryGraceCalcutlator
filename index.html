@@ -1,313 +1,247 @@
 <!DOCTYPE html>
-<html lang="tl">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mary Grace dream comes true - Calculator ng Presyo at Tubo</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Wareneingangsbuch</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans pb-12">
+<body class="bg-light">
 
-    <div class="max-w-4xl mx-auto p-4 sm:p-6 my-6 bg-white shadow-xl rounded-2xl">
-        <header class="border-b pb-4 mb-6">
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-indigo-600">Mary Grace dream comes true - Calculator ng Presyo at Tubo</h1>
-            <p class="text-sm text-gray-500">I-ayos ang presyong bulto, dami ng paninda, at mga order.</p>
-        </header>
+    <div class="container my-5">
+        <h1 class="mb-4 text-center">Wareneingangsbuch</h1>
 
-        <!-- Sektion 1: Master-Staffelpreise -->
-        <section class="mb-6 bg-indigo-50/60 p-4 sm:p-6 rounded-xl border border-indigo-100">
-            <h2 class="text-md font-bold text-indigo-900 mb-4">1. Presyong Bulto at Limitasyon:</h2>
-            <div class="max-w-md mx-auto bg-white p-4 rounded-lg border shadow-sm space-y-2 text-sm text-gray-700">
-                <strong class="text-indigo-600 block border-b pb-1">Talaan ng Bulto (4 na Antas)</strong>
-                
-                <!-- Antas 1 -->
-                <div class="flex items-center justify-between text-xs gap-1">
-                    <span>1 hanggang</span>
-                    <input type="number" id="lim1" value="3" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
-                    <span>Stk. :</span>
-                    <input type="number" id="base1" value="1300.00" step="0.01" oninput="calculate()" class="w-24 p-1 border rounded text-right"> PHP
-                </div>
-
-                <!-- Antas 2 -->
-                <div class="flex items-center justify-between text-xs gap-1">
-                    <span id="labelStart2" class="font-bold text-indigo-700">4</span>
-                    <span>hanggang</span>
-                    <input type="number" id="lim2" value="6" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
-                    <span>Stk. :</span>
-                    <input type="number" id="base2" value="1250.00" step="0.01" oninput="calculate()" class="w-24 p-1 border rounded text-right"> PHP
-                </div>
-
-                <!-- Antas 3 -->
-                <div class="flex items-center justify-between text-xs gap-1">
-                    <span id="labelStart3" class="font-bold text-indigo-700">7</span>
-                    <span>hanggang</span>
-                    <input type="number" id="lim3" value="10" min="1" oninput="calculate()" class="w-12 p-1 border rounded text-center font-bold">
-                    <span>Stk. :</span>
-                    <input type="number" id="base3" value="1200.00" step="0.01" oninput="calculate()" class="w-24 p-1 border rounded text-right"> PHP
-                </div>
-
-                <!-- Antas 4 -->
-                <div class="flex items-center justify-between text-xs">
-                    <div>
-                        <span id="labelStart4" class="font-bold text-indigo-700">11</span>
-                        <span>Stk. pataas :</span>
+        <!-- Eingabeformular -->
+        <div class="card shadow-sm mb-5">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Neuen Wareneingang erfassen</h5>
+            </div>
+            <div class="card-body">
+                <form id="entryForm">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="date" class="form-label">Datum</label>
+                            <input type="date" class="form-control" id="date" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="article" class="form-label">Artikeltext</label>
+                            <input type="text" class="form-control" id="article" placeholder="z. B. Schrauben M8" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="quantity" class="form-label">Menge</label>
+                            <input type="number" class="form-control" id="quantity" min="1" step="1" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="price" class="form-label">Paketpreis (€)</label>
+                            <input type="number" class="form-control" id="price" min="0.01" step="0.01" required>
+                        </div>
                     </div>
-                    <input type="number" id="base4" value="1180.00" step="0.01" oninput="calculate()" class="w-24 p-1 border rounded text-right"> PHP
+                    <button type="submit" class="btn btn-success mt-3">Eingabe abschicken</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Auswertung nach Zeitraum -->
+        <div class="card shadow-sm mb-5">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Auswertung nach Zeitraum</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <label for="startDate" class="form-label">Von Datum</label>
+                        <input type="date" class="form-control" id="startDate">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="endDate" class="form-label">Bis Datum</label>
+                        <input type="date" class="form-control" id="endDate">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button id="filterBtn" class="btn btn-outline-success w-100">Auswertung anzeigen</button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Artikeltext</th>
+                                <th>Gesamtmenge</th>
+                                <th>Durchschnittspreis / Paket</th>
+                                <th>Gesamtwert (€)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportTableBody">
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">Bitte Zeitraum wählen und auswerten.</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <!-- Sektion 2: Wareneingang -->
-        <section class="mb-8 bg-blue-50/60 p-4 sm:p-6 rounded-xl border border-blue-100">
-            <h2 class="text-md font-bold text-blue-900 mb-4">2. Pasok ng Paninda (Batayan ng Presyo):</h2>
-            <div class="max-w-md mx-auto bg-white p-4 rounded-lg border shadow-sm space-y-3 text-sm text-gray-700">
-                <div class="flex items-center justify-between text-xs">
-                    <span class="font-bold text-blue-600">Dami ng Dumating:</span>
-                    <input type="number" id="warenQty" value="10" min="1" oninput="calculate()" class="w-28 p-1.5 border rounded-md text-right text-sm font-bold">
-                </div>
-                <div class="flex items-center justify-between text-xs border-t pt-2">
-                    <span class="text-gray-600">Presyo ng Pagbili (EK / Stk.):</span>
-                    <span id="warenUnitPrice" class="font-bold text-indigo-600 text-sm">0.00 PHP</span>
+        <!-- Chronologisches Logbuch (Einzeltabelle) -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">Chronologisches Logbuch (Alle Einzeleinträge)</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Datum</th>
+                                <th>Artikeltext</th>
+                                <th>Menge</th>
+                                <th>Preis / Paket</th>
+                                <th>Aktion</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logTableBody">
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">Noch keine Einträge vorhanden.</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </section>
-        
-        <!-- Sektion 3: Bestellmengen & Ergebnisse -->
-        <main class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-4">
-                <h2 class="text-lg font-semibold text-gray-700">3. Mga Order at Presyo</h2>
-                
-                <!-- Order 1 -->
-                <div class="p-4 bg-gray-50 rounded-xl border space-y-3">
-                    <div class="font-bold text-gray-800 text-sm border-b pb-1">Order 1</div>
-                    <div class="space-y-2 text-xs">
-                        <div class="flex items-center justify-between">
-                            <label class="text-gray-600">Dami:</label>
-                            <input type="number" id="qty1" value="3" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm font-bold">
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <label class="text-gray-600">Presyong Panbenta (VK) / Stk.:</label>
-                            <input type="number" id="vk1" value="1400.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <label class="text-gray-600">Dagdag na Gastos:</label>
-                            <input type="number" id="extra1" value="0.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Order 2 -->
-                <div class="p-4 bg-gray-50 rounded-xl border space-y-3">
-                    <div class="font-bold text-gray-800 text-sm border-b pb-1">Order 2</div>
-                    <div class="space-y-2 text-xs">
-                        <div class="flex items-center justify-between">
-                            <label class="text-gray-600">Dami:</label>
-                            <input type="number" id="qty2" value="5" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm font-bold">
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <label class="text-gray-600">Presyong Panbenta (VK) / Stk.:</label>
-                            <input type="number" id="vk2" value="1500.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <label class="text-gray-600">Dagdag na Gastos:</label>
-                            <input type="number" id="extra2" value="0.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Order 3 -->
-                <div class="p-4 bg-gray-50 rounded-xl border space-y-3">
-                    <div class="font-bold text-gray-800 text-sm border-b pb-1">Order 3</div>
-                    <div class="space-y-2 text-xs">
-                        <div class="flex items-center justify-between">
-                            <label class="text-gray-600">Dami:</label>
-                            <input type="number" id="qty3" value="8" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm font-bold">
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <label class="text-gray-600">Presyong Panbenta (VK) / Stk.:</label>
-                            <input type="number" id="vk3" value="1350.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <label class="text-gray-600">Dagdag na Gastos:</label>
-                            <input type="number" id="extra3" value="0.00" step="0.01" min="0" oninput="calculate()" class="w-32 p-1.5 border rounded-md text-right text-sm">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Ergebnisse -->
-            <div class="bg-slate-900 text-white p-6 rounded-2xl flex flex-col justify-between shadow-lg">
-                <div>
-                    <h2 class="text-lg font-semibold text-indigo-400 mb-4 border-b border-slate-800 pb-2">Pagsusuri ng Kita at Tubo</h2>
-                    <div id="results" class="space-y-4 text-xs text-slate-300">
-                        <!-- Dynamisch -->
-                    </div>
-                </div>
-                
-                <div class="mt-6 pt-4 border-t border-slate-800 space-y-2">
-                    <div class="flex justify-between text-sm text-slate-400">
-                        <span>Kabuuang Gastusin (EK + Dagdag):</span>
-                        <span id="totalCost">0.00 PHP</span>
-                    </div>
-                    <div class="flex justify-between text-sm text-slate-400">
-                        <span>Kabuuang Benta (VK):</span>
-                        <span id="totalRevenue">0.00 PHP</span>
-                    </div>
-                    <div class="flex justify-between font-bold text-xl text-emerald-400 pt-2 border-t border-slate-800">
-                        <span>Kabuuang Tubo:</span>
-                        <span id="totalProfit">0.00 PHP</span>
-                    </div>
-                </div>
-            </div>
-        </main>
+        </div>
     </div>
 
+    <!-- JavaScript Logik -->
     <script>
-        const inputIds = ['lim1', 'base1', 'lim2', 'base2', 'lim3', 'base3', 'base4', 'warenQty', 'qty1', 'vk1', 'extra1', 'qty2', 'vk2', 'extra2', 'qty3', 'vk3', 'extra3'];
+        // Daten aus dem localStorage laden oder leeres Array erstellen
+        let entries = JSON.parse(localStorage.getItem('wareneingänge')) || [];
 
-        function saveValues() {
-            inputIds.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    localStorage.setItem(id, el.value);
-                }
+        // Datum auf heute vorausfüllen
+        document.getElementById('date').valueAsDate = new Date();
+
+        // Formular abschicken
+        document.getElementById('entryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const newEntry = {
+                id: Date.now(),
+                date: document.getElementById('date').value,
+                article: document.getElementById('article').value.trim(),
+                quantity: parseInt(document.getElementById('quantity').value),
+                price: parseFloat(document.getElementById('price').value)
+            };
+
+            entries.push(newEntry);
+            saveAndRefresh();
+            
+            // Felder zurücksetzen (Datum beibehalten)
+            document.getElementById('article').value = '';
+            document.getElementById('quantity').value = '';
+            document.getElementById('price').value = '';
+            document.getElementById('article').focus();
+        });
+
+        // Daten speichern und Ansichten aktualisieren
+        function saveAndRefresh() {
+            localStorage.setItem('wareneingänge', JSON.stringify(entries));
+            renderLog();
+        }
+
+        // Chronologisches Logbuch rendern
+        function renderLog() {
+            const tbody = document.getElementById('logTableBody');
+            tbody.innerHTML = '';
+
+            if (entries.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Noch keine Einträge vorhanden.</td></tr>';
+                return;
+            }
+
+            // Nach Datum absteigend sortieren für die Anzeige
+            const sortedEntries = [...entries].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            sortedEntries.forEach(entry => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    󠁳<td>${entry.date}</td>
+                    <td>${escapeHtml(entry.article)}</td>
+                    <td>${entry.quantity}</td>
+                    <td>${entry.price.toFixed(2)} €</td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteEntry(${entry.id})">Löschen</button></td>
+                `;
+                tbody.appendChild(tr);
             });
         }
 
-        function loadValues() {
-            inputIds.forEach(id => {
-                const saved = localStorage.getItem(id);
-                if (saved !== null) {
-                    const el = document.getElementById(id);
-                    if (el) {
-                        el.value = saved;
-                    }
+        // Eintrag löschen
+        function deleteEntry(id) {
+            if (confirm('Möchten Sie diesen Eintrag wirklich löschen?')) {
+                entries = entries.filter(entry => entry.id !== id);
+                saveAndRefresh();
+                // Wenn Filter aktiv war, diesen ebenfalls aktualisieren
+                document.getElementById('filterBtn').click();
+            }
+        }
+
+        // Auswertung generieren
+        document.getElementById('filterBtn').addEventListener('click', function() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const tbody = document.getElementById('reportTableBody');
+            tbody.innerHTML = '';
+
+            // Filtern
+            let filtered = entries;
+            if (startDate) {
+                filtered = filtered.filter(e => e.date >= startDate);
+            }
+            if (endDate) {
+                filtered = filtered.filter(e => e.date <= endDate);
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Keine Wareneingänge im gewählten Zeitraum gefunden.</td></tr>';
+                return;
+            }
+
+            // Aggregation nach Artikeltext
+            const aggregated = {};
+            filtered.forEach(entry => {
+                const name = entry.article;
+                if (!aggregated[name]) {
+                    aggregated[name] = { totalQty: 0, totalPriceSum: 0, count: 0 };
                 }
+                aggregated[name].totalQty += entry.quantity;
+                aggregated[name].totalPriceSum += (entry.price * entry.quantity);
+                aggregated[name].count += 1;
             });
+
+            for (const [article, data] of Object.entries(aggregated)) {
+                const avgPrice = data.totalPriceSum / data.totalQty;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${escapeHtml(article)}</strong></td>
+                    <td>${data.totalQty}</td>
+                    <td>${avgPrice.toFixed(2)} €</td>
+                    <td>${data.totalPriceSum.toFixed(2)} €</td>
+                `;
+                tbody.appendChild(tr);
+            }
+        });
+
+        // XSS-Schutz Hilfsfunktion
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
         }
 
-        function calculate() {
-            saveValues();
-
-            const lim1 = parseInt(document.getElementById('lim1').value) || 3;
-            const lim2 = parseInt(document.getElementById('lim2').value) || 6;
-            const lim3 = parseInt(document.getElementById('lim3').value) || 10;
-
-            document.getElementById('labelStart2').innerText = (lim1 + 1);
-            document.getElementById('labelStart3').innerText = (lim2 + 1);
-            document.getElementById('labelStart4').innerText = (lim3 + 1);
-
-            const b1 = parseFloat(document.getElementById('base1').value) || 0;
-            const b2 = parseFloat(document.getElementById('base2').value) || 0;
-            const b3 = parseFloat(document.getElementById('base3').value) || 0;
-            const b4 = parseFloat(document.getElementById('base4').value) || 0;
-
-            const warenQty = parseInt(document.getElementById('warenQty').value) || 1;
-            let warenPrice = warenQty <= lim1 ? b1 : (warenQty <= lim2 ? b2 : (warenQty <= lim3 ? b3 : b4));
-            document.getElementById('warenUnitPrice').innerText = warenPrice.toFixed(2) + ' PHP';
-
-            // Order 1
-            const qty1 = parseInt(document.getElementById('qty1').value) || 0;
-            const vk1 = parseFloat(document.getElementById('vk1').value) || 0;
-            const extra1 = parseFloat(document.getElementById('extra1').value) || 0;
-            let ekaTotal1 = qty1 * warenPrice;
-            let rev1 = qty1 * vk1;
-            let cost1 = ekaTotal1 + extra1;
-            let profit1 = rev1 - cost1;
-
-            // Order 2
-            const qty2 = parseInt(document.getElementById('qty2').value) || 0;
-            const vk2 = parseFloat(document.getElementById('vk2').value) || 0;
-            const extra2 = parseFloat(document.getElementById('extra2').value) || 0;
-            let ekaTotal2 = qty2 * warenPrice;
-            let rev2 = qty2 * vk2;
-            let cost2 = ekaTotal2 + extra2;
-            let profit2 = rev2 - cost2;
-
-            // Order 3
-            const qty3 = parseInt(document.getElementById('qty3').value) || 0;
-            const vk3 = parseFloat(document.getElementById('vk3').value) || 0;
-            const extra3 = parseFloat(document.getElementById('extra3').value) || 0;
-            let ekaTotal3 = qty3 * warenPrice;
-            let rev3 = qty3 * vk3;
-            let cost3 = ekaTotal3 + extra3;
-            let profit3 = rev3 - cost3;
-
-            let totalCost = cost1 + cost2 + cost3;
-            let totalRevenue = rev1 + rev2 + rev3;
-            let totalProfit = profit1 + profit2 + profit3;
-
-            document.getElementById('results').innerHTML = `
-                <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700/50 space-y-1">
-                    <div class="font-bold text-white text-sm mb-1">Order 1 (${qty1} Stk.)</div>
-                    <div class="flex justify-between text-slate-300">
-                        <span>Benta (Dami × VK):</span>
-                        <span>+ ${rev1.toFixed(2)} PHP</span>
-                    </div>
-                    <div class="flex justify-between text-red-300">
-                        <span>- Kabuuang EK (${qty1} × ${warenPrice.toFixed(2)} PHP):</span>
-                        <span>- ${ekaTotal1.toFixed(2)} PHP</span>
-                    </div>
-                    <div class="flex justify-between text-red-300 border-b border-slate-700 pb-1">
-                        <span>- Dagdag na Gastos:</span>
-                        <span>- ${extra1.toFixed(2)} PHP</span>
-                    </div>
-                    <div class="flex justify-between font-bold text-emerald-400 pt-1">
-                        <span>= Tubo:</span>
-                        <span>${profit1.toFixed(2)} PHP</span>
-                    </div>
-                </div>
-
-                <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700/50 space-y-1">
-                    <div class="font-bold text-white text-sm mb-1">Order 2 (${qty2} Stk.)</div>
-                    <div class="flex justify-between text-slate-300">
-                        <span>Benta (Dami × VK):</span>
-                        <span>+ ${rev2.toFixed(2)} PHP</span>
-                    </div>
-                    <div class="flex justify-between text-red-300">
-                        <span>- Kabuuang EK (${qty2} × ${warenPrice.toFixed(2)} PHP):</span>
-                        <span>- ${ekaTotal2.toFixed(2)} PHP</span>
-                    </div>
-                    <div class="flex justify-between text-red-300 border-b border-slate-700 pb-1">
-                        <span>- Dagdag na Gastos:</span>
-                        <span>- ${extra2.toFixed(2)} PHP</span>
-                    </div>
-                    <div class="flex justify-between font-bold text-emerald-400 pt-1">
-                        <span>= Tubo:</span>
-                        <span>${profit2.toFixed(2)} PHP</span>
-                    </div>
-                </div>
-
-                <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700/50 space-y-1">
-                    <div class="font-bold text-white text-sm mb-1">Order 3 (${qty3} Stk.)</div>
-                    <div class="flex justify-between text-slate-300">
-                        <span>Benta (Dami × VK):</span>
-                        <span>+ ${rev3.toFixed(2)} PHP</span>
-                    </div>
-                    <div class="flex justify-between text-red-300">
-                        <span>- Kabuuang EK (${qty3} × ${warenPrice.toFixed(2)} PHP):</span>
-                        <span>- ${ekaTotal3.toFixed(2)} PHP</span>
-                    </div>
-                    <div class="flex justify-between text-red-300 border-b border-slate-700 pb-1">
-                        <span>- Dagdag na Gastos:</span>
-                        <span>- ${extra3.toFixed(2)} PHP</span>
-                    </div>
-                    <div class="flex justify-between font-bold text-emerald-400 pt-1">
-                        <span>= Tubo:</span>
-                        <span>${profit3.toFixed(2)} PHP</span>
-                    </div>
-                </div>
-            `;
-
-            document.getElementById('totalCost').innerText = totalCost.toFixed(2) + ' PHP';
-            document.getElementById('totalRevenue').innerText = totalRevenue.toFixed(2) + ' PHP';
-            document.getElementById('totalProfit').innerText = totalProfit.toFixed(2) + ' PHP';
-        }
-
-        window.onload = function() {
-            loadValues();
-            calculate();
-        };
+        // Initiales Laden beim Start der Seite
+        renderLog();
     </script>
 </body>
 </html>
