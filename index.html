@@ -53,7 +53,7 @@
                             <label class="form-label">Petsa (Date)</label>
                             <input type="date" class="form-control" id="pDate" required>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="form-label">Produkto / Artikel</label>
                             <select class="form-select" id="pArticle">
                                 <option value="" disabled selected>Pumili...</option>
@@ -69,11 +69,15 @@
                             </select>
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label">Bilang ng Sako (25kg)</label>
+                            <label class="form-label">Bilang ng Sako</label>
                             <input type="number" class="form-control" id="pQuantity" min="1" step="1" placeholder="Sacks">
                         </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Presyo bawat Sako (25 kg)</label>
+                        <div class="col-md-2">
+                            <label class="form-label">Kilo Gesamt (Auto)</label>
+                            <input type="text" class="form-control bg-white fw-bold text-success" id="pTotalKgDisplay" value="0 kg" disabled>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Presyo / Sako</label>
                             <input type="number" class="form-control" id="pPrice" min="0.01" step="0.01" placeholder="0.00">
                         </div>
                     </div>
@@ -96,14 +100,15 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>Produkto</th>
-                                        <th>Dami (Sako / Kilo)</th>
+                                        <th>Dami (Sako)</th>
+                                        <th>Kilogramm Gesamt</th>
                                         <th>Presyo (25 kg Sako)</th>
                                         <th>Kabuuan</th>
                                         <th>Aksyon</th>
                                     </tr>
                                 </thead>
                                 <tbody id="pBatchTableBody">
-                                    <tr><td colspan="5" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>
+                                    <tr><td colspan="6" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -169,13 +174,14 @@
                                 <tr>
                                     <th>Petsa</th>
                                     <th>Produkto</th>
-                                    <th>Dami (Sako & Kilo)</th>
+                                    <th>Dami (Sako)</th>
+                                    <th>Kilogramm Gesamt</th>
                                     <th>Presyo (25 kg)</th>
                                     <th>Aksyon</th>
                                 </tr>
                             </thead>
                             <tbody id="pLogTableBody">
-                                <tr><td colspan="5" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>
+                                <tr><td colspan="6" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -241,7 +247,7 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>Produkto</th>
-                                        <th>Dami (Kilo)</th>
+                                        <th>Kilogramm Gesamt</th>
                                         <th>Presyo bawat Kilo</th>
                                         <th>Kabuuan</th>
                                         <th>Aksyon</th>
@@ -314,7 +320,7 @@
                                 <tr>
                                     <th>Petsa</th>
                                     <th>Produkto</th>
-                                    <th>Dami (Kilo)</th>
+                                    <th>Kilogramm Gesamt</th>
                                     <th>Presyo (bawat Kilo)</th>
                                     <th>Aksyon</th>
                                 </tr>
@@ -370,11 +376,17 @@
             document.getElementById(sectionId).classList.add('active-view');
         }
 
-        // Live-Berechnung Zeilensumme
+        // Live-Berechnung Zeilensumme und automatisches Kilo
         function updateRowTotal(type) {
             const prefix = type === 'purchase' ? 'p' : 's';
             const qty = parseFloat(document.getElementById(prefix + 'Quantity').value) || 0;
             const price = parseFloat(document.getElementById(prefix + 'Price').value) || 0;
+            
+            if (type === 'purchase') {
+                const totalKg = qty * 25;
+                document.getElementById('pTotalKgDisplay').value = totalKg + ' kg';
+            }
+
             const total = qty * price;
             document.getElementById(prefix + 'RowTotal').value = total.toFixed(2) + ' PHP';
         }
@@ -406,6 +418,7 @@
             if (type === 'purchase') {
                 currentPurchaseBatch.push(position);
                 renderBatchTable('purchase');
+                document.getElementById('pTotalKgDisplay').value = '0 kg';
             } else {
                 currentSalesBatch.push(position);
                 renderBatchTable('sale');
@@ -428,7 +441,11 @@
             let grandTotal = 0;
 
             if (batch.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>';
+                if (type === 'purchase') {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>';
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>';
+                }
                 document.getElementById(prefix + 'BatchTotalDisplay').innerText = '0.00 PHP';
                 return;
             }
@@ -440,7 +457,8 @@
                     const totalKg = pos.quantity * 25;
                     tr.innerHTML = `
                         <td>${pos.article}</td>
-                        <td>${pos.quantity} Sako (${totalKg} kg)</td>
+                        <td>${pos.quantity} Sako</td>
+                        <td><strong>${totalKg} kg</strong></td>
                         <td>${pos.price.toFixed(2)} PHP</td>
                         <td><strong>${pos.total.toFixed(2)} PHP</strong></td>
                         <td><button type="button" class="btn btn-danger btn-sm" onclick="removeBatchItem('${type}', '${pos.id}')">Tanggalin</button></td>
@@ -448,7 +466,7 @@
                 } else {
                     tr.innerHTML = `
                         <td>${pos.article}</td>
-                        <td>${pos.quantity} kg</td>
+                        <td><strong>${pos.quantity} kg</strong></td>
                         <td>${pos.price.toFixed(2)} PHP</td>
                         <td><strong>${pos.total.toFixed(2)} PHP</strong></td>
                         <td><button type="button" class="btn btn-danger btn-sm" onclick="removeBatchItem('${type}', '${pos.id}')">Tanggalin</button></td>
@@ -514,7 +532,11 @@
             tbody.innerHTML = '';
 
             if (dataArray.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>';
+                if (type === 'purchase') {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>';
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>';
+                }
                 return;
             }
 
@@ -526,7 +548,8 @@
                     tr.innerHTML = `
                         <td>${entry.date}</td>
                         <td>${entry.article}</td>
-                        <td>${entry.quantity} Sako (${totalKg} kg)</td>
+                        <td>${entry.quantity} Sako</td>
+                        <td><strong>${totalKg} kg</strong></td>
                         <td>${entry.price.toFixed(2)} PHP</td>
                         <td><button class="btn btn-danger btn-sm" onclick="deleteEntry('${type}', ${entry.id})">Tanggalin</button></td>
                     `;
@@ -534,7 +557,7 @@
                     tr.innerHTML = `
                         <td>${entry.date}</td>
                         <td>${entry.article}</td>
-                        <td>${entry.quantity} kg</td>
+                        <td><strong>${entry.quantity} kg</strong></td>
                         <td>${entry.price.toFixed(2)} PHP</td>
                         <td><button class="btn btn-danger btn-sm" onclick="deleteEntry('${type}', ${entry.id})">Tanggalin</button></td>
                     `;
@@ -582,8 +605,6 @@
                 if (!aggregated[entry.article]) {
                     aggregated[entry.article] = { totalQtyKg: 0, totalPriceSum: 0 };
                 }
-                // Bei Einkauf: entry.quantity sind Säcke -> Umrechnung in kg (* 25)
-                // Bei Verkauf: entry.quantity sind bereits Kilo
                 const qtyInKg = type === 'purchase' ? (entry.quantity * 25) : entry.quantity;
                 
                 aggregated[entry.article].totalQtyKg += qtyInKg;
