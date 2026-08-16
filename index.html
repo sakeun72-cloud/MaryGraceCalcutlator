@@ -12,44 +12,85 @@
     <div class="container my-5">
         <h1 class="mb-4 text-center">Wareneingangsbuch</h1>
 
-        <!-- Eingabeformular -->
+        <!-- Eingabeformular für Positionen -->
         <div class="card shadow-sm mb-5">
             <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Neuen Wareneingang erfassen</h5>
+                <h5 class="mb-0">Wareneingang erfassen (Positionen hinzufügen)</h5>
             </div>
             <div class="card-body">
-                <form id="entryForm">
-                    <div class="row g-3">
-                        <div class="col-md-3">
-                            <label for="date" class="form-label">Datum</label>
-                            <input type="date" class="form-control" id="date" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="article" class="form-label">Artikel</label>
-                            <select class="form-select" id="article" required>
-                                <option value="" disabled selected>Bitte wählen...</option>
-                                <option value="Fuji">Fuji</option>
-                                <option value="Perfect">Perfect</option>
-                                <option value="Master Aroma">Master Aroma</option>
-                                <option value="Sweet Hasmin">Sweet Hasmin</option>
-                                <option value="Coco pandan">Coco pandan</option>
-                                <option value="Jasmine original">Jasmine original</option>
-                                <option value="Master Alsa">Master Alsa</option>
-                                <option value="Brown rice">Brown rice</option>
-                                <option value="Malagkit/k">Malagkit/k</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label for="quantity" class="form-label">Menge</label>
-                            <input type="number" class="form-control" id="quantity" min="1" step="1" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label for="price" class="form-label">Paketpreis (€)</label>
-                            <input type="number" class="form-control" id="price" min="0.01" step="0.01" required>
-                        </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-3">
+                        <label for="date" class="form-label">Datum</label>
+                        <input type="date" class="form-control" id="date" required>
                     </div>
-                    <button type="submit" class="btn btn-success mt-3">Eingabe abschicken</button>
-                </form>
+                    <div class="col-md-4">
+                        <label for="article" class="form-label">Artikel</label>
+                        <select class="form-select" id="article">
+                            <option value="" disabled selected>Bitte wählen...</option>
+                            <option value="Fuji">Fuji</option>
+                            <option value="Perfect">Perfect</option>
+                            <option value="Master Aroma">Master Aroma</option>
+                            <option value="Sweet Hasmin">Sweet Hasmin</option>
+                            <option value="Coco pandan">Coco pandan</option>
+                            <option value="Jasmine original">Jasmine original</option>
+                            <option value="Master Alsa">Master Alsa</option>
+                            <option value="Brown rice">Brown rice</option>
+                            <option value="Malagkit/k">Malagkit/k</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="quantity" class="form-label">Menge</label>
+                        <input type="number" class="form-control" id="quantity" min="1" step="1" placeholder="Menge">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="price" class="form-label">Paketpreis (€)</label>
+                        <input type="number" class="form-control" id="price" min="0.01" step="0.01" placeholder="0.00">
+                    </div>
+                </div>
+
+                <div class="row g-3 align-items-center border-top pt-3">
+                    <div class="col-md-4">
+                        <label class="form-label text-muted">Berechnete Zeilensumme:</label>
+                        <input type="text" class="form-control bg-white fw-bold" id="rowTotal" value="0.00 €" disabled>
+                    </div>
+                    <div class="col-md-8 text-end">
+                        <button type="button" id="addPositionBtn" class="btn btn-secondary">Position zur Liste hinzufügen</button>
+                    </div>
+                </div>
+
+                <!-- Temporäre Erfassungsliste für den aktuellen Beleg -->
+                <div class="mt-4">
+                    <h6>Aktuelle Erfassungsliste (Noch nicht gespeichert):</h6>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Artikel</th>
+                                    <th>Menge</th>
+                                    <th>Paketpreis</th>
+                                    <th>Summe</th>
+                                    <th>Aktion</th>
+                                </tr>
+                            </thead>
+                            <tbody id="batchTableBody">
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">Noch keine Positionen hinzugefügt.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Gesamtbetrag zur Prüfung -->
+                    <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded border">
+                        <h4 class="mb-0">Gesamtsumme zur Prüfung:</h4>
+                        <h3 class="mb-0 text-primary" id="batchTotalDisplay">0.00 €</h3>
+                    </div>
+
+                    <!-- Endgültig Abschicken Button -->
+                    <div class="text-end mt-3">
+                        <button type="button" id="submitBatchBtn" class="btn btn-success btn-lg">Wareneingang endgültig abschicken</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -96,7 +137,7 @@
         <!-- Chronologisches Logbuch -->
         <div class="card shadow-sm">
             <div class="card-header bg-secondary text-white">
-                <h5 class="mb-0">Chronologisches Logbuch</h5>
+                <h5 class="mb-0">Chronologisches Logbuch (Gesamte Historie)</h5>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -123,26 +164,112 @@
 
     <script>
         let entries = JSON.parse(localStorage.getItem('wareneingänge')) || [];
+        let currentBatch = []; // Speichert die Positionen, bevor sie endgültig abgeschickt werden
+
         document.getElementById('date').valueAsDate = new Date();
 
-        document.getElementById('entryForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        // Live-Berechnung der Zeilensumme
+        function updateRowTotal() {
+            const qty = parseFloat(document.getElementById('quantity').value) || 0;
+            const price = parseFloat(document.getElementById('price').value) || 0;
+            const total = qty * price;
+            document.getElementById('rowTotal').value = total.toFixed(2) + ' €';
+        }
 
-            const newEntry = {
-                id: Date.now(),
-                date: document.getElementById('date').value,
-                article: document.getElementById('article').value,
-                quantity: parseInt(document.getElementById('quantity').value),
-                price: parseFloat(document.getElementById('price').value)
+        document.getElementById('quantity').addEventListener('input', updateRowTotal);
+        document.getElementById('price').addEventListener('input', updateRowTotal);
+
+        // Position zur temporären Liste hinzufügen
+        document.getElementById('addPositionBtn').addEventListener('click', function() {
+            const date = document.getElementById('date').value;
+            const article = document.getElementById('article').value;
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const price = parseFloat(document.getElementById('price').value);
+
+            if (!date || !article || isNaN(quantity) || quantity <= 0 || isNaN(price) || price <= 0) {
+                alert('Bitte füllen Sie alle Felder korrekt aus, bevor Sie eine Position hinzufügen.');
+                return;
+            }
+
+            const position = {
+                id: Date.now() + Math.random(),
+                date: date,
+                article: article,
+                quantity: quantity,
+                price: price,
+                total: quantity * price
             };
 
-            entries.push(newEntry);
-            saveAndRefresh();
-            
-            // Felder zurücksetzen
+            currentBatch.push(position);
+            renderBatchTable();
+
+            // Eingabefelder für den nächsten Artikel leeren (Datum bleibt erhalten)
             document.getElementById('article').value = '';
             document.getElementById('quantity').value = '';
             document.getElementById('price').value = '';
+            document.getElementById('rowTotal').value = '0.00 €';
+            document.getElementById('article').focus();
+        });
+
+        // Temporäre Batch-Tabelle rendern & Gesamtsumme berechnen
+        function renderBatchTable() {
+            const tbody = document.getElementById('batchTableBody');
+            tbody.innerHTML = '';
+            let grandTotal = 0;
+
+            if (currentBatch.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Noch keine Positionen hinzugefügt.</td></tr>';
+                document.getElementById('batchTotalDisplay').innerText = '0.00 €';
+                return;
+            }
+
+            currentBatch.forEach(pos => {
+                grandTotal += pos.total;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${pos.article}</td>
+                    <td>${pos.quantity}</td>
+                    <td>${pos.price.toFixed(2)} €</td>
+                    <td><strong>${pos.total.toFixed(2)} €</strong></td>
+                    <td><button type="button" class="btn btn-danger btn-sm" onclick="removeBatchItem('${pos.id}')">Entfernen</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('batchTotalDisplay').innerText = grandTotal.toFixed(2) + ' €';
+        }
+
+        // Einzelne Position aus der temporären Liste entfernen
+        function removeBatchItem(id) {
+            currentBatch = currentBatch.filter(item => item.id != id);
+            renderBatchTable();
+        }
+
+        // Endgültig abschicken (erst hier wird gespeichert und resettet)
+        document.getElementById('submitBatchBtn').addEventListener('click', function() {
+            if (currentBatch.length === 0) {
+                alert('Die Liste ist leer. Bitte fügen Sie mindestens eine Position hinzu.');
+                return;
+            }
+
+            // Alle Positionen des Batches in das persistente Array übertragen
+            currentBatch.forEach(item => {
+                entries.push({
+                    id: item.id,
+                    date: item.date,
+                    article: item.article,
+                    quantity: item.quantity,
+                    price: item.price
+                });
+            });
+
+            saveAndRefresh();
+            
+            // Erst jetzt wird komplett zurückgesetzt
+            currentBatch = [];
+            renderBatchTable();
+            document.getElementById('date').valueAsDate = new Date();
+            alert('Wareneingang wurde erfolgreich gespeichert!');
         });
 
         function saveAndRefresh() {
