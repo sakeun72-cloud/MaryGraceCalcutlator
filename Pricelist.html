@@ -151,6 +151,10 @@
     const table = document.getElementById('price-table');
 
     data.forEach(row => {
+        // Prüfen, ob mindestens ein Preis größer als 0 ist, ansonsten überspringen
+        const hasPrices = row.prices && row.prices.some(p => p > 0);
+        if (!hasPrices) return;
+
         // Hauptzeile
         let tr = document.createElement('tr');
         tr.innerHTML = `<td style="text-align: left; font-weight: bold; color: #fff;">${row.name}</td>`;
