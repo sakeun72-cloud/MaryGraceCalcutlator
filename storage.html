@@ -2,60 +2,77 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Post-Generator</title>
+    <title>Facebook Post Creator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        body { font-family: sans-serif; background: #f0f0f0; padding: 20px; }
-        /* Das Raster-Layout */
-        #grid-container {
-            display: grid;
-            grid-template-columns: repeat(2, 300px);
-            gap: 20px;
-            background: white;
-            padding: 20px;
-            width: fit-content;
-        }
-        .card { border: 1px solid #ccc; padding: 10px; width: 280px; text-align: center; }
-        .card img { max-width: 100%; height: 200px; object-fit: cover; background: #eee; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #e9ecef; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         
-        /* Editier-Bereich */
-        .controls { margin-top: 20px; border-top: 2px solid #333; padding-top: 20px; }
-        input { width: 90%; margin-bottom: 5px; }
+        /* Das zu exportierende Bild-Layout */
+        #post-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            background: #fff;
+            padding: 10px;
+            width: 600px;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .card { padding: 10px; text-align: center; border: 1px solid #eee; }
+        .card img { width: 100%; height: 250px; object-fit: cover; background: #f8f9fa; margin-bottom: 10px; }
+        .card h3 { margin: 5px 0; font-size: 16px; color: #333; }
+        .card p { margin: 0; font-weight: bold; color: #d9534f; font-size: 18px; }
+        
+        /* Steuerung */
+        .controls { margin-top: 30px; background: white; padding: 20px; border-radius: 8px; width: 600px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .control-group { border-bottom: 1px solid #ddd; padding: 10px 0; }
+        .control-group input { display: block; margin: 5px 0; width: 100%; padding: 8px; box-sizing: border-box; }
+        
+        button { background: #28a745; color: white; border: none; padding: 15px; width: 100%; font-size: 16px; cursor: pointer; border-radius: 5px; margin-top: 20px; }
+        button:hover { background: #218838; }
     </style>
 </head>
 <body>
 
-<h1>Dein Post-Generator</h1>
-
-<!-- Das zu exportierende Raster -->
-<div id="grid-container">
-    <!-- Kachel 1 -->
-    <div class="card" id="card1">
-        <img id="img1" src="" alt="Bild 1">
-        <h3 id="title1">Titel 1</h3>
-        <p id="price1">Preis 1</p>
+<!-- Bereich, der als Bild exportiert wird -->
+<div id="post-container">
+    <div class="card">
+        <img id="img1" src="https://via.placeholder.com/250x250?text=Bild+1" alt="Bild 1">
+        <h3 id="title1">Produkt 1</h3>
+        <p id="price1">0,00 €</p>
     </div>
-    <!-- Kachel 2 -->
-    <div class="card" id="card2">
-        <img id="img2" src="" alt="Bild 2">
-        <h3 id="title2">Titel 2</h3>
-        <p id="price2">Preis 2</p>
+    <div class="card">
+        <img id="img2" src="https://via.placeholder.com/250x250?text=Bild+2" alt="Bild 2">
+        <h3 id="title2">Produkt 2</h3>
+        <p id="price2">0,00 €</p>
     </div>
 </div>
 
-<!-- Bearbeitungs-Bereich -->
+<!-- Bearbeitungs-Bereich (wird nicht mit exportiert) -->
 <div class="controls">
-    <h3>Kachel 1 bearbeiten:</h3>
-    <input type="file" onchange="loadFile(event, 'img1')">
-    <input type="text" placeholder="Titel" oninput="document.getElementById('title1').innerText = this.value">
-    <input type="text" placeholder="Preis" oninput="document.getElementById('price1').innerText = this.value">
+    <h2>Bearbeitung</h2>
     
-    <br><br>
-    <button onclick="downloadImage()">Bild herunterladen (für Facebook)</button>
+    <!-- Kachel 1 Steuerung -->
+    <div class="control-group">
+        <strong>Kachel 1:</strong>
+        <input type="file" onchange="loadFile(event, 'img1')">
+        <input type="text" placeholder="Titel 1" oninput="document.getElementById('title1').innerText = this.value">
+        <input type="text" placeholder="Preis 1" oninput="document.getElementById('price1').innerText = this.value">
+    </div>
+
+    <!-- Kachel 2 Steuerung -->
+    <div class="control-group">
+        <strong>Kachel 2:</strong>
+        <input type="file" onchange="loadFile(event, 'img2')">
+        <input type="text" placeholder="Titel 2" oninput="document.getElementById('title2').innerText = this.value">
+        <input type="text" placeholder="Preis 2" oninput="document.getElementById('price2').innerText = this.value">
+    </div>
+
+    <button onclick="downloadImage()">Bild für Facebook exportieren</button>
 </div>
 
 <script>
-    // Bild-Upload Funktion
     function loadFile(event, imgId) {
         var reader = new FileReader();
         reader.onload = function() {
@@ -64,11 +81,11 @@
         reader.readAsDataURL(event.target.files[0]);
     }
 
-    // Export-Funktion
     function downloadImage() {
-        html2canvas(document.querySelector("#grid-container")).then(canvas => {
+        // Wir exportieren nur den Container mit dem Bild
+        html2canvas(document.querySelector("#post-container")).then(canvas => {
             let link = document.createElement("a");
-            link.download = "mein-facebook-post.png";
+            link.download = "facebook-post.png";
             link.href = canvas.toDataURL("image/png");
             link.click();
         });
