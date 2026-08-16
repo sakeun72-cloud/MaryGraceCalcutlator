@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Preistafel Bigas - Facebook Optimiert</title>
+    <title>Preistafel Bigas - Erweitert</title>
     <!-- html2canvas Bibliothek -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -21,7 +21,6 @@
             box-sizing: border-box;
         }
         
-        /* Wrapper für mobile Ansicht (verhindert Ränder-Ausbruch) */
         .table-responsive {
             width: 100%;
             overflow-x: auto;
@@ -34,7 +33,7 @@
             border: 4px solid #8B4513;
             padding: 20px;
             border-radius: 8px;
-            width: 550px; /* Feste Breite für ein perfektes Facebook-Bildformat */
+            width: 580px; 
             box-sizing: border-box;
         }
         h1 { 
@@ -42,7 +41,6 @@
             color: #f1c40f; 
             border-bottom: 2px dashed #f1c40f; 
             padding-bottom: 10px; 
-            letter-spacing: 2px;
             margin-top: 0;
             font-size: 1.5em;
         }
@@ -53,41 +51,52 @@
         }
         th, td { 
             border: 1px solid #333; 
-            padding: 8px; 
+            padding: 6px; 
             text-align: center; 
-            font-size: 0.95em;
+            font-size: 0.9em;
         }
-        th { 
-            color: #f1c40f; 
-        }
-        input {
-            width: 60px;
+        th { color: #f1c40f; }
+        
+        input[type="number"] {
+            width: 55px;
             background: #2c2c2c;
             color: white;
             border: 1px solid #555;
             text-align: center;
-            display: block;
-            margin: 0 auto;
-            font-size: 1em;
-            padding: 4px;
+            font-size: 0.9em;
+            padding: 3px;
             border-radius: 4px;
         }
-        /* Pfeile bei Zahlenfeldern entfernen */
+        
+        /* Eigenschaften Input Style */
+        .desc-input {
+            width: 95%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #444;
+            color: #ccc;
+            font-size: 0.8em;
+            font-style: italic;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { 
             -webkit-appearance: none; 
             margin: 0; 
         }
+        
         .per-kg { 
-            font-size: 0.75em; 
-            color: #aaa; 
-            margin-top: 4px; 
+            font-size: 0.7em; 
+            color: #888; 
             display: block; 
+            margin-top: 2px;
         }
+        
         .btn-container {
             margin-top: 20px;
             text-align: center;
-            width: 100%;
         }
         button {
             background-color: #f1c40f;
@@ -98,10 +107,6 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 1em;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-        button:hover {
-            background-color: #d4ac0d;
         }
     </style>
 </head>
@@ -133,36 +138,56 @@
         {name: "Master Aroma", prices: [55, 270, 530, 1300]},
         {name: "Sinandomeng", prices: [50, 240, 470, 1150]},
         {name: "Jasmine", prices: [52, 250, 490, 1200]},
-        {name: "Dinorado", prices: [60, 290, 570, 1400]}
+        {name: "Dinorado", prices: [60, 290, 570, 1400]},
+        {name: "Sweet Hasmin", prices: [0, 0, 0, 1350]},
+        {name: "Coco pandan", prices: [0, 0, 0, 1330]},
+        {name: "Jasmine orig.", prices: [0, 0, 0, 1310]},
+        {name: "Master Alsa", prices: [0, 0, 0, 1200]},
+        {name: "Brown rice", prices: [0, 400, 0, 0]},
+        {name: "Malagkit", prices: [60, 0, 0, 0]}
     ];
+    
     const weights = [1, 5, 10, 25];
     const table = document.getElementById('price-table');
 
     data.forEach(row => {
+        // Hauptzeile
         let tr = document.createElement('tr');
-        tr.innerHTML = `<td style="text-align: left; font-weight: bold;">${row.name}</td>`;
+        tr.innerHTML = `<td style="text-align: left; font-weight: bold; color: #fff;">${row.name}</td>`;
+        
         row.prices.forEach((p, i) => {
+            const val = p > 0 ? p : ""; // Leer lassen, wenn 0
+            const displayKg = p > 0 ? "(" + (p / weights[i]).toFixed(2) + " / kg)" : "-";
+            
             tr.innerHTML += `<td>
-                <input type="number" value="${p}" oninput="calc(this, ${weights[i]})">
-                <span class="per-kg">(${(p/weights[i]).toFixed(2)} / kg)</span>
+                <input type="number" value="${val}" oninput="calc(this, ${weights[i]})" placeholder="0">
+                <span class="per-kg">${displayKg}</span>
             </td>`;
         });
         table.appendChild(tr);
+
+        // Eigenschaften-Zeile
+        let descTr = document.createElement('tr');
+        descTr.innerHTML = `<td colspan="5" style="padding: 2px;">
+            <input type="text" class="desc-input" placeholder="Eigenschaften (z.B. duftend, klebend...)">
+        </td>`;
+        table.appendChild(descTr);
     });
 
     function calc(el, weight) {
         let val = parseFloat(el.value) || 0;
-        el.nextElementSibling.innerText = "(" + (val / weight).toFixed(2) + " / kg)";
+        let result = val > 0 ? "(" + (val / weight).toFixed(2) + " / kg)" : "-";
+        el.nextElementSibling.innerText = result;
     }
 
     function downloadImage() {
         const board = document.getElementById('capture');
         html2canvas(board, { 
             backgroundColor: '#1a1a1a',
-            scale: 2 // Erhöht die Auflösung für ein gestochen scharfes Facebook-Bild
+            scale: 2 
         }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'preistafel_bigas_facebook.png';
+            link.download = 'preistafel_bigas_update.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
         });
