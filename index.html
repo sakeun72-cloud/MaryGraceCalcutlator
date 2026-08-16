@@ -26,10 +26,10 @@
     <!-- Sticky Navigation (Immer sichtbar) -->
     <div class="sticky-nav text-center">
         <div class="btn-group w-100 mb-2 flex-wrap" role="group">
-            <button class="btn btn-primary m-1" onclick="showSection('purchaseSection')">Einkauf</button>
-            <button class="btn btn-warning text-dark fw-bold m-1" onclick="showSection('salesSection')">Verkauf</button>
+            <button class="btn btn-primary m-1" onclick="showSection('purchaseSection')">Buy</button>
+            <button class="btn btn-warning text-dark fw-bold m-1" onclick="showSection('salesSection')">Sell</button>
             <button class="btn btn-secondary m-1" onclick="showSection('ordersSection')">Orders</button>
-            <button class="btn btn-info text-white m-1" onclick="showSection('marginSection')">Tubo</button>
+            <button class="btn btn-info text-white m-1" onclick="showSection('marginSection')">Turbo</button>
         </div>
         <a href="http://www.bantaypresyo.da.gov.ph/" target="_blank" class="btn btn-outline-info btn-sm">
             Bantay Presyo (DA)
@@ -38,14 +38,14 @@
 
     <div class="container pb-5">
         
-        <!-- ================= EINKAUF SEKTION ================= -->
+        <!-- ================= BUY SEKTION ================= -->
         <div id="purchaseSection" class="section-view active-view">
-            <h2 class="text-primary mb-4 text-center">Aklat sa Pagtanggap (Purchase Log - 25kg Sacks)</h2>
+            <h2 class="text-primary mb-4 text-center">Buy Log (25kg Sacks)</h2>
 
-            <!-- Eingabeformular Einkauf -->
+            <!-- Eingabeformular Buy -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Mag-rekord ng Bagong Pagtanggap (Add Purchase)</h5>
+                    <h5 class="mb-0">Mag-rekord ng Bagong Pagtanggap (Add Buy)</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3 mb-3">
@@ -92,7 +92,7 @@
                         </div>
                     </div>
 
-                    <!-- Temporäre Erfassungsliste Einkauf -->
+                    <!-- Temporäre Erfassungsliste Buy -->
                     <div class="mt-4">
                         <h6>Kasalukuyang Listahan (Current Batch):</h6>
                         <div class="table-responsive">
@@ -119,16 +119,16 @@
                         </div>
 
                         <div class="text-end mt-3">
-                            <button type="button" class="btn btn-success btn-lg" onclick="submitBatch('purchase')">Isumite nang Pinal (Save Purchase)</button>
+                            <button type="button" class="btn btn-success btn-lg" onclick="submitBatch('purchase')">Isumite nang Pinal (Save Buy)</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Auswertung nach Zeitraum Einkauf -->
+            <!-- Auswertung nach Zeitraum Buy -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">Ulat ayon sa Panahon (Purchases by Period - in kg)</h5>
+                    <h5 class="mb-0">Ulat ayon sa Panahon (Buy by Period - in kg)</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3 mb-4">
@@ -162,10 +162,10 @@
                 </div>
             </div>
 
-            <!-- Logbuch Einkauf -->
+            <!-- Logbuch Buy -->
             <div class="card shadow-sm">
                 <div class="card-header bg-secondary text-white">
-                    <h5 class="mb-0">Talaan ng Kasaysayan (Purchase History)</h5>
+                    <h5 class="mb-0">Talaan ng Kasaysayan (Buy History)</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -189,14 +189,14 @@
             </div>
         </div>
 
-        <!-- ================= VERKAUF SEKTION ================= -->
+        <!-- ================= SELL SEKTION ================= -->
         <div id="salesSection" class="section-view">
-            <h2 class="text-warning mb-4 text-center">Aklat sa Pagbebenta (Sales Log - in Kilo)</h2>
+            <h2 class="text-warning mb-4 text-center">Sell Log (in Kilo)</h2>
 
-            <!-- Eingabeformular Verkauf -->
+            <!-- Eingabeformular Sell -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0">Mag-rekord ng Bagong Benta (Add Sale in kg)</h5>
+                    <h5 class="mb-0">Mag-rekord ng Bagong Benta (Add Sell in kg)</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3 mb-3">
@@ -239,7 +239,7 @@
                         </div>
                     </div>
 
-                    <!-- Temporäre Erfassungsliste Verkauf -->
+                    <!-- Temporäre Erfassungsliste Sell -->
                     <div class="mt-4">
                         <h6>Kasalukuyang Listahan (Current Batch):</h6>
                         <div class="table-responsive">
@@ -265,16 +265,16 @@
                         </div>
 
                         <div class="text-end mt-3">
-                            <button type="button" class="btn btn-success btn-lg" onclick="submitBatch('sale')">Isumite nang Pinal (Save Sale)</button>
+                            <button type="button" class="btn btn-success btn-lg" onclick="submitBatch('sale')">Isumite nang Pinal (Save Sell)</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Auswertung nach Zeitraum Verkauf -->
+            <!-- Auswertung nach Zeitraum Sell -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0">Ulat ayon sa Panahon (Sales by Period - in kg)</h5>
+                    <h5 class="mb-0">Ulat ayon sa Panahon (Sell by Period - in kg)</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3 mb-4">
@@ -308,10 +308,10 @@
                 </div>
             </div>
 
-            <!-- Logbuch Verkauf -->
+            <!-- Logbuch Sell -->
             <div class="card shadow-sm">
                 <div class="card-header bg-secondary text-white">
-                    <h5 class="mb-0">Talaan ng Kasaysayan (Sales History)</h5>
+                    <h5 class="mb-0">Talaan ng Kasaysayan (Sell History)</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -345,13 +345,13 @@
             </div>
         </div>
 
-        <!-- ================= TUBO (GEWINNMARGE) SEKTION ================= -->
+        <!-- ================= TURBO SEKTION ================= -->
         <div id="marginSection" class="section-view">
-            <h2 class="text-info mb-4 text-center">Tubo at Pagsusuri ng Imbentaryo (Margin & Inventory Overview)</h2>
+            <h2 class="text-info mb-4 text-center">Turbo & Inventory Overview</h2>
             
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">Pangkalahatang-ideya ng Imbentaryo at Tubo (Margin & Stock Analysis)</h5>
+                    <h5 class="mb-0">Turbo & Stock Analysis</h5>
                 </div>
                 <div class="card-body">
                     <p class="text-muted">Paghahambing ng pagpasok, paglabas, average na presyo kada kilo, at ang tubo (marge).</p>
@@ -360,15 +360,15 @@
                         <table class="table table-bordered table-striped align-middle text-center">
                             <thead class="table-dark">
                                 <tr>
-                                    <th>Produkto / Artikel</th>
-                                    <th>Einwareneingang (kg)</th>
-                                    <th>Einwareneingang (PHP)</th>
-                                    <th>$\varnothing$ Einkauf / kg</th>
-                                    <th>Warenausgang (kg)</th>
-                                    <th>Warenausgang (PHP)</th>
-                                    <th>$\varnothing$ Verkauf / kg</th>
-                                    <th>Bestand (kg)</th>
-                                    <th>Gewinnmarge / kg (Tubo)</th>
+                                    <th>Artikel</th>
+                                    <th>Buy (kg)</th>
+                                    <th>Buy (PHP)</th>
+                                    <th>Average Buy / kg</th>
+                                    <th>Sell (kg)</th>
+                                    <th>Sell (PHP)</th>
+                                    <th>Average Sell / kg</th>
+                                    <th>Stock (kg)</th>
+                                    <th>Turbo / kg</th>
                                 </tr>
                             </thead>
                             <tbody id="marginTableBody">
@@ -384,8 +384,8 @@
 
     <script>
         // Speicher initialisieren
-        let purchases = JSON.parse(localStorage.getItem('wareneingänge')) || [];
-        let sales = JSON.parse(localStorage.getItem('warenausgänge')) || [];
+        let purchases = JSON.parse(localStorage.getItem('buy')) || [];
+        let sales = JSON.parse(localStorage.getItem('sell')) || [];
 
         let currentPurchaseBatch = [];
         let currentSalesBatch = [];
@@ -536,14 +536,14 @@
             });
 
             if (type === 'purchase') {
-                localStorage.setItem('wareneingänge', JSON.stringify(purchases));
+                localStorage.setItem('buy', JSON.stringify(purchases));
                 currentPurchaseBatch = [];
                 renderBatchTable('purchase');
                 renderLog('purchase');
                 document.getElementById('pDate').valueAsDate = new Date();
                 alert('Matagumpay na naitala ang pagtanggap!');
             } else {
-                localStorage.setItem('warenausgänge', JSON.stringify(sales));
+                localStorage.setItem('sell', JSON.stringify(sales));
                 currentSalesBatch = [];
                 renderBatchTable('sale');
                 renderLog('sale');
@@ -598,12 +598,12 @@
             if (confirm('Sigurado ka bang gusto mong tanggalin ang entry na ito?')) {
                 if (type === 'purchase') {
                     purchases = purchases.filter(e => e.id !== id);
-                    localStorage.setItem('wareneingänge', JSON.stringify(purchases));
+                    localStorage.setItem('buy', JSON.stringify(purchases));
                     renderLog('purchase');
                     filterReport('purchase');
                 } else {
                     sales = sales.filter(e => e.id !== id);
-                    localStorage.setItem('warenausgänge', JSON.stringify(sales));
+                    localStorage.setItem('sell', JSON.stringify(sales));
                     renderLog('sale');
                     filterReport('sale');
                 }
@@ -665,7 +665,7 @@
             tbody.appendChild(summaryTr);
         }
 
-        // Tubo & Bestandsermittlung mit Durchschnittspreisen und Marge rendern
+        // Turbo & Bestandsermittlung mit Durchschnittspreisen und Marge rendern
         function renderMarginSection() {
             const tbody = document.getElementById('marginTableBody');
             tbody.innerHTML = '';
@@ -687,36 +687,34 @@
             let totalDiffKg = 0;
 
             allArticles.forEach(article => {
-                // Einwareneingang
+                // Buy
                 const articlePurchases = purchases.filter(p => p.article === article);
                 let inKg = 0;
                 let inPhp = 0;
                 articlePurchases.forEach(p => {
                     const sackKg = p.quantity * 25;
                     inKg += sackKg;
-                    // p.price ist der Preis pro 25kg-Sack im Einkauf
                     inPhp += p.price * p.quantity;
                 });
 
-                // Warenausgang
+                // Sell
                 const articleSales = sales.filter(s => s.article === article);
                 let outKg = 0;
                 let outPhp = 0;
                 articleSales.forEach(s => {
                     outKg += s.quantity;
-                    // s.price ist der Preis pro Kilo im Verkauf
                     outPhp += s.price * s.quantity;
                 });
 
                 const diffKg = inKg - outKg;
 
-                // Durchschnittspreis Einkauf pro Kilo (Gesamtwert Wareneingang / Gesamtkilo Wareneingang)
+                // Average Buy price per kg
                 const avgInPricePerKg = inKg > 0 ? (inPhp / inKg) : 0;
 
-                // Durchschnittspreis Verkauf pro Kilo (Gesamtwert Warenausgang / Gesamtkilo Warenausgang)
+                // Average Sell price per kg
                 const avgOutPricePerKg = outKg > 0 ? (outPhp / outKg) : 0;
 
-                // Gewinnmarge per kilo (Verkaufspreis pro kg minus durchschnittlicher Einkaufskilopreis)
+                // Turbo per kg
                 const marginPerKg = (outKg > 0 && inKg > 0) ? (avgOutPricePerKg - avgInPricePerKg) : 0;
 
                 totalInKg += inKg;
