@@ -29,7 +29,7 @@
             <button class="btn btn-primary m-1" onclick="showSection('purchaseSection')">Buy</button>
             <button class="btn btn-warning text-dark fw-bold m-1" onclick="showSection('salesSection')">Sell</button>
             <button class="btn btn-secondary m-1" onclick="showSection('ordersSection')">Orders</button>
-            <button class="btn btn-info text-white m-1" onclick="showSection('marginSection')">Turbo</button>
+            <button class="btn btn-info text-white m-1" onclick="showSection('marginSection')">Tubo</button>
         </div>
         <a href="http://www.bantaypresyo.da.gov.ph/" target="_blank" class="btn btn-outline-info btn-sm">
             Bantay Presyo (DA)
@@ -353,13 +353,13 @@
             </div>
         </div>
 
-        <!-- ================= TURBO SEKTION ================= -->
+        <!-- ================= TUBO SEKTION ================= -->
         <div id="marginSection" class="section-view">
-            <h2 class="text-info mb-4 text-center">Turbo & Inventory Overview</h2>
+            <h2 class="text-info mb-4 text-center">Tubo & Inventory Overview</h2>
             
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">Turbo & Stock Analysis</h5>
+                    <h5 class="mb-0">Tubo & Stock Analysis</h5>
                 </div>
                 <div class="card-body">
                     <p class="text-muted">Paghahambing ng pagpasok, paglabas, average na presyo kada kilo, at ang tubo (marge).</p>
@@ -376,7 +376,7 @@
                                     <th>Sell (PHP)</th>
                                     <th>Average Sell / kg</th>
                                     <th>Stock (kg)</th>
-                                    <th>Turbo / kg</th>
+                                    <th>Tubo / kg</th>
                                 </tr>
                             </thead>
                             <tbody id="marginTableBody">
@@ -422,7 +422,6 @@
             document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active-view'));
             document.getElementById(sectionId).classList.add('active-view');
             
-            // Aktiven Reiter im localStorage speichern
             localStorage.setItem('activeSection', sectionId);
 
             if (sectionId === 'marginSection') {
@@ -727,7 +726,7 @@
             }
         }
 
-        // Turbo / Lager- und Margenanalyse rendern
+        // Tubo / Lager- und Margenanalyse mit Gesamt- / Summenzeile rendern
         function renderMarginSection() {
             const articles = [
                 "Fuji", "Perfect", "Master Aroma", "Sweet Hasmin", 
@@ -738,6 +737,12 @@
             const tbody = document.getElementById('marginTableBody');
             tbody.innerHTML = '';
             let hasData = false;
+
+            let grandTotalBuyKg = 0;
+            let grandTotalBuyPhp = 0;
+            let grandTotalSellKg = 0;
+            let grandTotalSellPhp = 0;
+            let grandTotalStockKg = 0;
 
             articles.forEach(article => {
                 const articlePurchases = purchases.filter(p => p.article === article);
@@ -766,6 +771,12 @@
 
                 if (totalBuyKg > 0 || totalSellKg > 0) {
                     hasData = true;
+                    grandTotalBuyKg += totalBuyKg;
+                    grandTotalBuyPhp += totalBuyPhp;
+                    grandTotalSellKg += totalSellKg;
+                    grandTotalSellPhp += totalSellPhp;
+                    grandTotalStockKg += stockKg;
+
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td><strong>${article}</strong></td>
@@ -782,7 +793,26 @@
                 }
             });
 
-            if (!hasData) {
+            if (hasData) {
+                const overallAvgBuyPerKg = grandTotalBuyKg > 0 ? grandTotalBuyPhp / grandTotalBuyKg : 0;
+                const overallAvgSellPerKg = grandTotalSellKg > 0 ? grandTotalSellPhp / grandTotalSellKg : 0;
+                const overallTurboPerKg = overallAvgSellPerKg - overallAvgBuyPerKg;
+
+                const summaryTr = document.createElement('tr');
+                summaryTr.className = 'table-secondary fw-bold';
+                summaryTr.innerHTML = `
+                    <td>GESAMT / SUMMEN</td>
+                    <td>${grandTotalBuyKg.toFixed(2)} kg</td>
+                    <td>${grandTotalBuyPhp.toFixed(2)} PHP</td>
+                    <td>${overallAvgBuyPerKg.toFixed(2)} PHP</td>
+                    <td>${grandTotalSellKg.toFixed(2)} kg</td>
+                    <td>${grandTotalSellPhp.toFixed(2)} PHP</td>
+                    <td>${overallAvgSellPerKg.toFixed(2)} PHP</td>
+                    <td class="${grandTotalStockKg < 0 ? 'text-danger' : ''}">${grandTotalStockKg.toFixed(2)} kg</td>
+                    <td class="${overallTurboPerKg >= 0 ? 'text-success' : 'text-danger'}">${overallTurboPerKg.toFixed(2)} PHP</td>
+                `;
+                tbody.appendChild(summaryTr);
+            } else {
                 tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">Wala pang sapat na datos para sa pagsusuri.</td></tr>';
             }
         }
