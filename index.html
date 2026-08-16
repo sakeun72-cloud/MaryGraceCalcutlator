@@ -726,7 +726,7 @@
             }
         }
 
-        // Tubo / Lager- und Margenanalyse mit Gesamt- / Summenzeile rendern
+        // Tubo / Lager- und Margenanalyse mit korrigierter Gesamt- / Summenzeile rendern
         function renderMarginSection() {
             const articles = [
                 "Fuji", "Perfect", "Master Aroma", "Sweet Hasmin", 
@@ -743,6 +743,7 @@
             let grandTotalSellKg = 0;
             let grandTotalSellPhp = 0;
             let grandTotalStockKg = 0;
+            let totalCostOfSoldGoods = 0;
 
             articles.forEach(article => {
                 const articlePurchases = purchases.filter(p => p.article === article);
@@ -777,6 +778,10 @@
                     grandTotalSellPhp += totalSellPhp;
                     grandTotalStockKg += stockKg;
 
+                    if (totalSellKg > 0 && totalBuyKg > 0) {
+                        totalCostOfSoldGoods += totalSellKg * avgBuyPerKg;
+                    }
+
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td><strong>${article}</strong></td>
@@ -796,7 +801,10 @@
             if (hasData) {
                 const overallAvgBuyPerKg = grandTotalBuyKg > 0 ? grandTotalBuyPhp / grandTotalBuyKg : 0;
                 const overallAvgSellPerKg = grandTotalSellKg > 0 ? grandTotalSellPhp / grandTotalSellKg : 0;
-                const overallTurboPerKg = overallAvgSellPerKg - overallAvgBuyPerKg;
+                
+                // Korrekte Tubo-Gesamtberechnung auf Basis der tatsächlich verkauften Ware
+                const totalProfit = grandTotalSellPhp - totalCostOfSoldGoods;
+                const overallTurboPerKg = grandTotalSellKg > 0 ? totalProfit / grandTotalSellKg : 0;
 
                 const summaryTr = document.createElement('tr');
                 summaryTr.className = 'table-secondary fw-bold';
