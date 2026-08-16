@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Preistafel Bigas</title>
+    <style>
+        body {
+            background-color: #2b2b2b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .chalkboard {
+            background-color: #1a221e;
+            color: #f2f2f2;
+            border: 16px solid #5c3a21;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+            width: 750px;
+            text-align: center;
+        }
+        h2 {
+            margin-top: 0;
+            font-size: 22px;
+            letter-spacing: 2px;
+            border-bottom: 2px dashed rgba(242, 242, 242, 0.4);
+            padding-bottom: 15px;
+            text-transform: uppercase;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid rgba(242, 242, 242, 0.25);
+            padding: 8px 10px;
+            text-align: left;
+            font-size: 15px;
+        }
+        th {
+            text-align: center;
+            font-weight: bold;
+        }
+        td:nth-child(2), td:nth-child(3), td:nth-child(4), td:nth-child(5) {
+            text-align: center;
+        }
+        .subtext {
+            display: block;
+            font-size: 13px;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chalkboard">
+        <h2>Presyo: Mga Uri Presyo ng Bigas</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Uri ng Bigas</th>
+                    <th>1 kg</th>
+                    <th>5 kg</th>
+                    <th>10 kg</th>
+                    <th>25 kg</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1. Fuji <span class="subtext">(Puti)</span></td>
+                    <td>₱57</td>
+                    <td>₱284</td>
+                    <td>₱568</td>
+                    <td>₱1420</td>
+                </tr>
+                <tr>
+                    <td>2. Perfect <span class="subtext">(Perpekto)</span></td>
+                    <td>₱54</td>
+                    <td>₱268</td>
+                    <td>₱535</td>
+                    <td>₱1340</td>
+                </tr>
+                <tr>
+                    <td>3. Master Aroma <span class="subtext">(Mabangong Bigas)</span></td>
+                    <td>₱55</td>
+                    <td>₱276</td>
+                    <td>₱550</td>
+                    <td>₱1380</td>
+                </tr>
+                <tr>
+                    <td>4. Sweet Hasmin <span class="subtext">(Matamis na Jasmin)</span></td>
+                    <td>₱54</td>
+                    <td>₱270</td>
+                    <td>₱540</td>
+                    <td>₱1350</td>
+                </tr>
+                <tr>
+                    <td>5. Coco pandan <span class="subtext">(Kusot Pandan)</span></td>
+                    <td>₱53</td>
+                    <td>₱266</td>
+                    <td>₱530</td>
+                    <td>₱1330</td>
+                </tr>
+                <tr>
+                    <td>6. Jasmine original <span class="subtext">(Jasmin Orihinal)</span></td>
+                    <td>₱52</td>
+                    <td>₱262</td>
+                    <td>₱525</td>
+                    <td>₱1310</td>
+                </tr>
+                <tr>
+                    <td>7. Master Alsa <span class="subtext">(Alsa Hari)</span></td>
+                    <td>₱48</td>
+                    <td>₱240</td>
+                    <td>₱480</td>
+                    <td>₱1200</td>
+                </tr>
+                <tr>
+                    <td>8. Brown rice</td>
+                    <td>-</td>
+                    <td>₱400</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>9. Malagkit <span class="subtext">(Special)</span></td>
+                    <td>₱60</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
