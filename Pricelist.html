@@ -3,188 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Presyo ng Bigas - Interaktive Preistafel</title>
+    <title>Preistafel Bigas - Erweitert</title>
+    <!-- html2canvas Bibliothek -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body {
-            background-color: #2c2c2c;
-            font-family: 'Courier New', Courier, monospace;
-            color: #f4f4f4;
+            background-color: #121212;
+            color: #ffffff;
+            font-family: sans-serif;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
+            padding: 10px;
+            box-sizing: border-box;
         }
-        .chalkboard-frame {
-            border: 16px solid #5c3a21;
-            background-color: #1e2a22;
-            padding: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
-            max-width: 950px;
+        
+        .table-responsive {
             width: 100%;
+            overflow-x: auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        .board {
+            background-color: #1a1a1a;
+            border: 4px solid #8B4513;
+            padding: 20px;
+            border-radius: 8px;
+            width: 580px; 
+            box-sizing: border-box;
+        }
+        h1 { 
+            text-align: center; 
+            color: #f1c40f; 
+            border-bottom: 2px dashed #f1c40f; 
+            padding-bottom: 10px; 
+            margin-top: 0;
+            font-size: 1.5em;
+        }
+        table { 
+            border-collapse: collapse; 
+            margin-top: 15px; 
+            width: 100%; 
+        }
+        th, td { 
+            border: 1px solid #333; 
+            padding: 6px; 
+            text-align: center; 
+            font-size: 0.9em;
+        }
+        th { color: #f1c40f; }
+        
+        input[type="number"] {
+            width: 55px;
+            background: #2c2c2c;
+            color: white;
+            border: 1px solid #555;
+            text-align: center;
+            font-size: 0.9em;
+            padding: 3px;
             border-radius: 4px;
         }
-        h1 {
-            text-align: center;
-            font-size: 1.6rem;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-            border-bottom: 2px dashed #f4f4f4;
-            padding-bottom: 10px;
-            text-transform: uppercase;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-        th, td {
-            padding: 10px 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            vertical-align: middle;
-        }
-        th {
-            font-size: 1rem;
-            color: #d4af37;
-            text-align: center;
-        }
-        th:first-child, td:first-child {
-            text-align: left;
-        }
-        input.text-input {
-            background: transparent;
-            border: 1px dashed rgba(255, 255, 255, 0.3);
-            color: #fff;
-            font-family: inherit;
-            font-size: 0.95rem;
+        
+        /* Eigenschaften Input Style */
+        .desc-input {
             width: 95%;
-            padding: 3px;
-            border-radius: 3px;
-        }
-        input.tagalog-input {
             background: transparent;
-            border: 1px dashed rgba(255, 255, 255, 0.2);
-            color: #bbb;
-            font-family: inherit;
-            font-size: 0.8rem;
-            width: 95%;
-            padding: 2px;
-            margin-top: 4px;
-            border-radius: 3px;
-        }
-        input.price-input {
-            background: transparent;
-            border: 1px dashed rgba(255, 255, 255, 0.5);
-            color: #fff;
-            font-family: inherit;
-            font-size: 0.95rem;
-            width: 70px;
-            padding: 4px;
+            border: none;
+            border-bottom: 1px solid #444;
+            color: #ccc;
+            font-size: 0.8em;
+            font-style: italic;
             text-align: center;
-            border-radius: 3px;
+            margin-bottom: 5px;
         }
-        input.text-input:focus, input.tagalog-input:focus, input.price-input:focus {
-            outline: none;
-            border-color: #d4af37;
-            background: rgba(255, 255, 255, 0.1);
+
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
         }
-        .calculated-price {
+        
+        .per-kg { 
+            font-size: 0.7em; 
+            color: #888; 
+            display: block; 
+            margin-top: 2px;
+        }
+        
+        .btn-container {
+            margin-top: 20px;
             text-align: center;
-            color: #a8d5ba;
+        }
+        button {
+            background-color: #f1c40f;
+            color: #121212;
+            border: none;
+            padding: 12px 24px;
             font-weight: bold;
-        }
-        .info {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 0.85rem;
-            color: #aaa;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
         }
     </style>
 </head>
 <body>
 
-<div class="chalkboard-frame">
-    <h1>Presyo: Mga Uri at Presyo ng Bigas</h1>
-    <table>
-        <thead>
+<div class="table-responsive">
+    <div class="board" id="capture">
+        <h1>PRESYO NG BIGAS</h1>
+        <table id="price-table">
             <tr>
-                <th>Uri ng Bigas</th>
-                <th>25 kg (Basis)</th>
-                <th>1 kg</th>
-                <th>5 kg</th>
-                <th>10 kg</th>
+                <th>Sorte</th>
+                <th>1kg</th>
+                <th>5kg</th>
+                <th>10kg</th>
+                <th>25kg</th>
             </tr>
-        </thead>
-        <tbody id="rice-table-body">
-            <!-- Wird via JS geladen -->
-        </tbody>
-    </table>
-    <div class="info">Namen, Eigenschaften und Preise sind direkt editierbar und werden automatisch gespeichert.</div>
+        </table>
+    </div>
+</div>
+
+<div class="btn-container">
+    <button onclick="downloadImage()">Als Bild für Facebook speichern</button>
 </div>
 
 <script>
-    const defaultData = [
-        { name: "1. Fuji", tagalog: "Puti", p25: 1420 },
-        { name: "2. Perfect", tagalog: "Perpekto", p25: 1340 },
-        { name: "3. Master Aroma", tagalog: "Mabangong Bigas", p25: 1380 },
-        { name: "4. Sweet Hasmin", tagalog: "Matamis na Jasmin", p25: 1350 },
-        { name: "5. Coco pandan", tagalog: "Kusot Pandan", p25: 1330 },
-        { name: "6. Jasmine original", tagalog: "Jasmin Orihinal", p25: 1310 },
-        { name: "7. Master Alsa", tagalog: "Alsa Hari", p25: 1200 },
-        { name: "8. Malagkit", tagalog: "Malagkit", p25: 1500 }
+    const data = [
+        {name: "Fuji", prices: [57, 280, 550, 1350]},
+        {name: "Perfect", prices: [54, 265, 520, 1280]},
+        {name: "Master Aroma", prices: [55, 270, 530, 1300]},
+        {name: "Sinandomeng", prices: [50, 240, 470, 1150]},
+        {name: "Jasmine", prices: [52, 250, 490, 1200]},
+        {name: "Dinorado", prices: [60, 290, 570, 1400]},
+        {name: "Sweet Hasmin", prices: [0, 0, 0, 1350]},
+        {name: "Coco pandan", prices: [0, 0, 0, 1330]},
+        {name: "Jasmine orig.", prices: [0, 0, 0, 1310]},
+        {name: "Master Alsa", prices: [0, 0, 0, 1200]},
+        {name: "Brown rice", prices: [0, 400, 0, 0]},
+        {name: "Malagkit", prices: [60, 0, 0, 0]}
     ];
+    
+    const weights = [1, 5, 10, 25];
+    const table = document.getElementById('price-table');
 
-    let riceData = JSON.parse(localStorage.getItem('ricePricesCustom')) || defaultData;
-    const tbody = document.getElementById("rice-table-body");
-
-    function renderTable() {
-        tbody.innerHTML = "";
-        riceData.forEach((item, index) => {
-            let p1 = Math.round(item.p25 / 25);
-            let p5 = Math.round(item.p25 * (5 / 25));
-            let p10 = Math.round(item.p25 * (10 / 25));
-
-            const row = document.createElement("tr");
-            row.innerHTML = `
-                <td>
-                    <input type="text" class="text-input" value="${item.name}" data-index="${index}" data-field="name">
-                    <input type="text" class="tagalog-input" value="${item.tagalog || ''}" placeholder="Eigenschaft (optional)" data-index="${index}" data-field="tagalog">
-                </td>
-                <td style="text-align:center;">₱<input type="number" class="price-input" value="${item.p25}" data-index="${index}" data-field="p25"></td>
-                <td class="calculated-price">₱${p1}</td>
-                <td class="calculated-price">₱${p5}</td>
-                <td class="calculated-price">₱${p10}</td>
-            `;
-            tbody.appendChild(row);
+    data.forEach(row => {
+        // Hauptzeile
+        let tr = document.createElement('tr');
+        tr.innerHTML = `<td style="text-align: left; font-weight: bold; color: #fff;">${row.name}</td>`;
+        
+        row.prices.forEach((p, i) => {
+            const val = p > 0 ? p : ""; // Leer lassen, wenn 0
+            const displayKg = p > 0 ? "(" + (p / weights[i]).toFixed(2) + " / kg)" : "-";
+            
+            tr.innerHTML += `<td>
+                <input type="number" value="${val}" oninput="calc(this, ${weights[i]})" placeholder="0">
+                <span class="per-kg">${displayKg}</span>
+            </td>`;
         });
+        table.appendChild(tr);
 
-        // Event Listener für alle Inputs (Name, Tagalog, Preis)
-        document.querySelectorAll('input').forEach(input => {
-            input.addEventListener('input', (e) => {
-                const idx = e.target.getAttribute('data-index');
-                const field = e.target.getAttribute('data-field');
-                
-                if (field === 'p25') {
-                    riceData[idx].p25 = parseFloat(e.target.value) || 0;
-                    // Berechnete Spalten in der Zeile direkt anpassen ohne Neuladen der ganzen Tabelle
-                    const row = e.target.closest('tr');
-                    const val = riceData[idx].p25;
-                    row.cells[2].innerText = `₱${Math.round(val / 25)}`;
-                    row.cells[3].innerText = `₱${Math.round(val * (5 / 25))}`;
-                    row.cells[4].innerText = `₱${Math.round(val * (10 / 25))}`;
-                } else if (field === 'name') {
-                    riceData[idx].name = e.target.value;
-                } else if (field === 'tagalog') {
-                    riceData[idx].tagalog = e.target.value;
-                }
+        // Eigenschaften-Zeile
+        let descTr = document.createElement('tr');
+        descTr.innerHTML = `<td colspan="5" style="padding: 2px;">
+            <input type="text" class="desc-input" placeholder="Eigenschaften (z.B. duftend, klebend...)">
+        </td>`;
+        table.appendChild(descTr);
+    });
 
-                // In localStorage sichern
-                localStorage.setItem('ricePricesCustom', JSON.stringify(riceData));
-            });
-        });
+    function calc(el, weight) {
+        let val = parseFloat(el.value) || 0;
+        let result = val > 0 ? "(" + (val / weight).toFixed(2) + " / kg)" : "-";
+        el.nextElementSibling.innerText = result;
     }
 
-    renderTable();
+    function downloadImage() {
+        const board = document.getElementById('capture');
+        html2canvas(board, { 
+            backgroundColor: '#1a1a1a',
+            scale: 2 
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'preistafel_bigas_update.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    }
 </script>
 
 </body>
