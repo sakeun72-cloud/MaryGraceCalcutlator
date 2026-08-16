@@ -60,7 +60,7 @@
 
                 <!-- Temporäre Erfassungsliste für den aktuellen Beleg -->
                 <div class="mt-4">
-                    <h6>Aktuelle Erfassungsliste (Noch nicht gespeichert):</h6>
+                    <h6>Aktuelle Erfassungsliste (Noch nicht im Logbuch):</h6>
                     <div class="table-responsive">
                         <table class="table table-bordered table-sm">
                             <thead class="table-light">
@@ -163,8 +163,10 @@
     </div>
 
     <script>
+        // Dauerhafter Speicher für das Logbuch
         let entries = JSON.parse(localStorage.getItem('wareneingänge')) || [];
-        let currentBatch = []; // Speichert die Positionen, bevor sie endgültig abgeschickt werden
+        // Temporäre Liste für den aktuellen Erfassungs-Vorgang
+        let currentBatch = [];
 
         document.getElementById('date').valueAsDate = new Date();
 
@@ -203,7 +205,7 @@
             currentBatch.push(position);
             renderBatchTable();
 
-            // Eingabefelder für den nächsten Artikel leeren (Datum bleibt erhalten)
+            // Nur die Eingabefelder für die nächste Position leeren
             document.getElementById('article').value = '';
             document.getElementById('quantity').value = '';
             document.getElementById('price').value = '';
@@ -245,14 +247,14 @@
             renderBatchTable();
         }
 
-        // Endgültig abschicken (erst hier wird gespeichert und resettet)
+        // Endgültig abschicken: Fügt Positionen zum Logbuch hinzu, ohne alte Einträge zu löschen
         document.getElementById('submitBatchBtn').addEventListener('click', function() {
             if (currentBatch.length === 0) {
                 alert('Die Liste ist leer. Bitte fügen Sie mindestens eine Position hinzu.');
                 return;
             }
 
-            // Alle Positionen des Batches in das persistente Array übertragen
+            // Neue Positionen an das bestehende Logbuch anhängen
             currentBatch.forEach(item => {
                 entries.push({
                     id: item.id,
@@ -263,25 +265,24 @@
                 });
             });
 
-            saveAndRefresh();
-            
-            // Erst jetzt wird komplett zurückgesetzt
+            // Im localStorage sichern und Logbuch-Anzeige aktualisieren
+            localStorage.setItem('wareneingänge', JSON.stringify(entries));
+            renderLog();
+
+            // Nur die temporäre Erfassung zurücksetzen (das Logbuch bleibt unberührt!)
             currentBatch = [];
             renderBatchTable();
             document.getElementById('date').valueAsDate = new Date();
-            alert('Wareneingang wurde erfolgreich gespeichert!');
+            
+            alert('Wareneingang wurde erfolgreich im Logbuch gespeichert!');
         });
 
-        function saveAndRefresh() {
-            localStorage.setItem('wareneingänge', JSON.stringify(entries));
-            renderLog();
-        }
-
+        // Logbuch-Tabelle rendern
         function renderLog() {
             const tbody = document.getElementById('logTableBody');
             tbody.innerHTML = '';
             if (entries.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Noch keine Einträge vorhanden.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Noch keine Einträge im Logbuch vorhanden.</td></tr>';
                 return;
             }
             const sortedEntries = [...entries].sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -298,14 +299,18 @@
             });
         }
 
+        // Einzelnen Eintrag aus dem Logbuch löschen
         function deleteEntry(id) {
-            if (confirm('Eintrag löschen?')) {
+            if (confirm('Möchten Sie diesen Eintrag wirklich aus dem Logbuch löschen?')) {
                 entries = entries.filter(entry => entry.id !== id);
-                saveAndRefresh();
-                document.getElementById('filterBtn').click();
+                localStorage.setItem('wareneingänge', JSON.stringify(entries));
+                renderLog();
+                const filterBtn = document.getElementById('filterBtn');
+                if (filterBtn) filterBtn.click();
             }
         }
 
+        // Auswertung nach Zeitraum
         document.getElementById('filterBtn').addEventListener('click', function() {
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
@@ -343,6 +348,7 @@
             }
         });
 
+        // Initiales Laden beim Seitenaufruf
         renderLog();
     </script>
 </body>
