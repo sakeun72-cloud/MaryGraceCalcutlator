@@ -6,6 +6,10 @@
     <title>Rice Inventory System</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Supabase-Bibliothek laden -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         .section-view { display: none; }
         .active-view { display: block; }
@@ -417,505 +421,456 @@
 
     </div>
 
+    <!-- Vollständiges JavaScript -->
     <script>
-        // Speicher initialisieren
-        let purchases = JSON.parse(localStorage.getItem('buy')) || [];
-        let sales = JSON.parse(localStorage.getItem('sell')) || [];
-
         let currentPurchaseBatch = [];
         let currentSalesBatch = [];
-        let manualKiloOverride = false;
-        let salesMode = 'total';
 
-        // Datum vorbelegen
-        document.getElementById('pDate').valueAsDate = new Date();
-        document.getElementById('sDate').valueAsDate = new Date();
-
-        // Beim Laden Historie laden und letzten Reiter wiederherstellen
-        window.addEventListener('DOMContentLoaded', () => {
-            renderLog('purchase');
-            renderLog('sale');
-
-            const savedSection = localStorage.getItem('activeSection');
-            if (savedSection && document.getElementById(savedSection)) {
-                showSection(savedSection);
-            } else {
-                showSection('purchaseSection');
-            }
-        });
-
-        // Ansichten umschalten und aktiv speichern
         function showSection(sectionId) {
-            document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active-view'));
+            document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active-view'));
             document.getElementById(sectionId).classList.add('active-view');
-            
-            localStorage.setItem('activeSection', sectionId);
-
             if (sectionId === 'marginSection') {
-                renderMarginSection();
+                updateMarginAndStock();
             }
         }
 
-        // Live-Berechnung für Buy
-        document.getElementById('pQuantity').addEventListener('input', () => {
-            const qty = parseFloat(document.getElementById('pQuantity').value) || 0;
-            if (!manualKiloOverride) {
-                document.getElementById('pTotalKg').value = qty * 25;
-            }
-            updateRowTotal('purchase');
-        });
+        // Live Calculations for Purchase (Buy)
+        document.getElementById('pQuantity').addEventListener('input', calculatePurchase);
+        document.getElementById('pTotalKg').addEventListener('input', calculatePurchaseFromKg);
+        document.getElementById('pSackPrice').addEventListener('input', calculatePurchaseFromSack);
+        document.getElementById('pPricePerKg').addEventListener('input', calculatePurchaseFromKgPrice);
 
-        document.getElementById('pTotalKg').addEventListener('input', () => {
-            manualKiloOverride = true;
-            updateRowTotal('purchase');
-        });
-
-        document.getElementById('pSackPrice').addEventListener('input', () => {
-            const sackPrice = parseFloat(document.getElementById('pSackPrice').value) || 0;
-            document.getElementById('pPricePerKg').value = sackPrice > 0 ? (sackPrice / 25).toFixed(2) : '';
-            updateRowTotal('purchase');
-        });
-
-        document.getElementById('pPricePerKg').addEventListener('input', () => {
-            const pricePerKg = parseFloat(document.getElementById('pPricePerKg').value) || 0;
-            document.getElementById('pSackPrice').value = pricePerKg > 0 ? (pricePerKg * 25).toFixed(2) : '';
-            updateRowTotal('purchase');
-        });
-
-        // Live-Berechnung für Sell
-        document.getElementById('sQuantity').addEventListener('input', () => updateSalesCalculation('qty'));
-        document.getElementById('sTotalValue').addEventListener('input', () => updateSalesCalculation('total'));
-        document.getElementById('sPrice').addEventListener('input', () => updateSalesCalculation('price'));
-
-        function updateSalesCalculation(trigger) {
-            const qty = parseFloat(document.getElementById('sQuantity').value) || 0;
-            const priceInput = document.getElementById('sPrice');
-            const totalInput = document.getElementById('sTotalValue');
-
-            if (trigger === 'price') {
-                salesMode = 'price';
-                const price = parseFloat(priceInput.value) || 0;
-                if (qty > 0 && price > 0) {
-                    totalInput.value = (qty * price).toFixed(2);
-                } else {
-                    totalInput.value = '';
-                }
-            } else {
-                salesMode = 'total';
-                const totalVal = parseFloat(totalInput.value) || 0;
-                if (qty > 0 && totalVal > 0) {
-                    priceInput.value = (totalVal / qty).toFixed(2);
-                } else {
-                    priceInput.value = '';
-                }
+        function calculatePurchase() {
+            let sacks = parseFloat(document.getElementById('pQuantity').value) || 0;
+            let totalKg = sacks * 25;
+            document.getElementById('pTotalKg').value = totalKg > 0 ? totalKg : '';
+            let sackPrice = parseFloat(document.getElementById('pSackPrice').value) || 0;
+            if (sackPrice > 0) {
+                let total = sacks * sackPrice;
+                document.getElementById('pRowTotal').value = total.toFixed(2) + ' PHP';
+                document.getElementById('pPricePerKg').value = (sackPrice / 25).toFixed(2);
             }
         }
 
-        function updateRowTotal(type) {
-            if (type === 'purchase') {
-                const totalKg = parseFloat(document.getElementById('pTotalKg').value) || 0;
-                const pricePerKg = parseFloat(document.getElementById('pPricePerKg').value) || 0;
-                const total = totalKg * pricePerKg;
+        function calculatePurchaseFromKg() {
+            let totalKg = parseFloat(document.getElementById('pTotalKg').value) || 0;
+            let sacks = totalKg / 25;
+            document.getElementById('pQuantity').value = sacks > 0 ? sacks : '';
+            let sackPrice = parseFloat(document.getElementById('pSackPrice').value) || 0;
+            if (sackPrice > 0 && sacks > 0) {
+                let total = sacks * sackPrice;
                 document.getElementById('pRowTotal').value = total.toFixed(2) + ' PHP';
             }
         }
 
-        // Position zur temporären Batch-Liste hinzufügen
+        function calculatePurchaseFromSack() {
+            let sackPrice = parseFloat(document.getElementById('pSackPrice').value) || 0;
+            let sacks = parseFloat(document.getElementById('pQuantity').value) || 0;
+            if (sacks > 0) {
+                let total = sacks * sackPrice;
+                document.getElementById('pRowTotal').value = total.toFixed(2) + ' PHP';
+                document.getElementById('pPricePerKg').value = (sackPrice / 25).toFixed(2);
+            }
+        }
+
+        function calculatePurchaseFromKgPrice() {
+            let kgPrice = parseFloat(document.getElementById('pPricePerKg').value) || 0;
+            if (kgPrice > 0) {
+                let sackPrice = kgPrice * 25;
+                document.getElementById('pSackPrice').value = sackPrice.toFixed(2);
+                let sacks = parseFloat(document.getElementById('pQuantity').value) || 0;
+                if (sacks > 0) {
+                    let total = sacks * sackPrice;
+                    document.getElementById('pRowTotal').value = total.toFixed(2) + ' PHP';
+                }
+            }
+        }
+
+        // Live Calculations for Sales (Sell)
+        document.getElementById('sQuantity').addEventListener('input', calculateSales);
+        document.getElementById('sTotalValue').addEventListener('input', calculateSalesFromTotal);
+        document.getElementById('sPrice').addEventListener('input', calculateSalesFromPrice);
+
+        function calculateSales() {
+            let kg = parseFloat(document.getElementById('sQuantity').value) || 0;
+            let totalVal = parseFloat(document.getElementById('sTotalValue').value) || 0;
+            if (kg > 0 && totalVal > 0) {
+                document.getElementById('sPrice').value = (totalVal / kg).toFixed(2);
+            } else if (kg > 0) {
+                let pricePerKg = parseFloat(document.getElementById('sPrice').value) || 0;
+                if (pricePerKg > 0) {
+                    document.getElementById('sTotalValue').value = (kg * pricePerKg).toFixed(2);
+                }
+            }
+        }
+
+        function calculateSalesFromTotal() {
+            let kg = parseFloat(document.getElementById('sQuantity').value) || 0;
+            let totalVal = parseFloat(document.getElementById('sTotalValue').value) || 0;
+            if (kg > 0) {
+                document.getElementById('sPrice').value = (totalVal / kg).toFixed(2);
+            }
+        }
+
+        function calculateSalesFromPrice() {
+            let kg = parseFloat(document.getElementById('sQuantity').value) || 0;
+            let pricePerKg = parseFloat(document.getElementById('sPrice').value) || 0;
+            if (kg > 0) {
+                document.getElementById('sTotalValue').value = (kg * pricePerKg).toFixed(2);
+            }
+        }
+
         function addPosition(type) {
-            const prefix = type === 'purchase' ? 'p' : 's';
-            const date = document.getElementById(prefix + 'Date').value;
-            const article = document.getElementById(prefix + 'Article').value;
-            const quantity = parseFloat(document.getElementById(prefix + 'Quantity').value);
-
-            if (!date || !article || isNaN(quantity) || quantity <= 0) {
-                alert('Mangyaring punan nang tama ang lahat ng mga pangunahing patlang.');
-                return;
-            }
-
             if (type === 'purchase') {
-                const totalKg = parseFloat(document.getElementById('pTotalKg').value) || (quantity * 25);
-                const sackPrice = parseFloat(document.getElementById('pSackPrice').value);
-                const pricePerKg = parseFloat(document.getElementById('pPricePerKg').value);
+                let date = document.getElementById('pDate').value;
+                let article = document.getElementById('pArticle').value;
+                let quantity = parseFloat(document.getElementById('pQuantity').value);
+                let totalKg = parseFloat(document.getElementById('pTotalKg').value);
+                let sackPrice = parseFloat(document.getElementById('pSackPrice').value);
+                let pricePerKg = parseFloat(document.getElementById('pPricePerKg').value);
 
-                if (isNaN(sackPrice) && isNaN(pricePerKg)) {
-                    alert('Mangyaring maglagay ng presyo (Sackpreis o Kilopreis).');
+                if (!date || !article || !quantity || !sackPrice) {
+                    alert('Mangyaring punan ang lahat ng kinakailangang larangan.');
                     return;
                 }
 
-                const finalPricePerKg = !isNaN(pricePerKg) ? pricePerKg : (sackPrice / 25);
-                const finalSackPrice = !isNaN(sackPrice) ? sackPrice : (pricePerKg * 25);
-                const total = totalKg * finalPricePerKg;
-
-                const position = {
-                    id: Date.now() + Math.random(),
-                    date, article, quantity, totalKg,
-                    sackPrice: finalSackPrice,
-                    pricePerKg: finalPricePerKg,
-                    total
-                };
-
-                currentPurchaseBatch.push(position);
+                let total = quantity * sackPrice;
+                currentPurchaseBatch.push({ date, article, quantity, totalKg, sackPrice, pricePerKg, total });
                 renderBatchTable('purchase');
-                document.getElementById('pTotalKg').value = '';
-                document.getElementById('pSackPrice').value = '';
-                document.getElementById('pPricePerKg').value = '';
-                manualKiloOverride = false;
-            } else {
-                const totalVal = parseFloat(document.getElementById('sTotalValue').value);
-                const pricePerKg = parseFloat(document.getElementById('sPrice').value);
+            } else if (type === 'sale') {
+                let date = document.getElementById('sDate').value;
+                let article = document.getElementById('sArticle').value;
+                let quantity = parseFloat(document.getElementById('sQuantity').value);
+                let totalValue = parseFloat(document.getElementById('sTotalValue').value);
+                let price = parseFloat(document.getElementById('sPrice').value);
 
-                if (isNaN(totalVal) || totalVal <= 0 || isNaN(pricePerKg) || pricePerKg <= 0) {
-                    alert('Mangyaring punan nang tama ang kabuuang halaga o presyo.');
+                if (!date || !article || !quantity || !totalValue) {
+                    alert('Mangyaring punan ang lahat ng kinakailangang larangan.');
                     return;
                 }
 
-                const position = {
-                    id: Date.now() + Math.random(),
-                    date, 
-                    article, 
-                    quantity, 
-                    price: pricePerKg,
-                    total: totalVal
-                };
-
-                currentSalesBatch.push(position);
+                currentSalesBatch.push({ date, article, quantity, price, totalValue });
                 renderBatchTable('sale');
-                document.getElementById('sTotalValue').value = '';
-                document.getElementById('sPrice').value = '';
-                salesMode = 'total';
             }
-
-            document.getElementById(prefix + 'Article').value = '';
-            document.getElementById(prefix + 'Quantity').value = '';
-            if (type === 'purchase') {
-                document.getElementById('pRowTotal').value = '0.00 PHP';
-            }
-            document.getElementById(prefix + 'Article').focus();
         }
 
-        // Temporäre Batch-Tabelle rendern
         function renderBatchTable(type) {
-            const prefix = type === 'purchase' ? 'p' : 's';
-            const batch = type === 'purchase' ? currentPurchaseBatch : currentSalesBatch;
-            const tbody = document.getElementById(prefix + 'BatchTableBody');
-            tbody.innerHTML = '';
-            let grandTotal = 0;
-
-            if (batch.length === 0) {
-                if (type === 'purchase') {
+            if (type === 'purchase') {
+                let tbody = document.getElementById('pBatchTableBody');
+                let totalDisplay = document.getElementById('pBatchTotalDisplay');
+                if (currentPurchaseBatch.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>';
-                } else {
+                    totalDisplay.innerText = '0.00 PHP';
+                    return;
+                }
+                let html = '';
+                let sum = 0;
+                currentPurchaseBatch.forEach((item, index) => {
+                    sum += item.total;
+                    html += `<tr>
+                        <td>${item.article}</td>
+                        <td>${item.quantity}</td>
+                        <td>${item.totalKg} kg</td>
+                        <td>${item.sackPrice.toFixed(2)}</td>
+                        <td>${item.pricePerKg.toFixed(2)}</td>
+                        <td>${item.total.toFixed(2)} PHP</td>
+                        <td><button class="btn btn-danger btn-sm" onclick="removeItem('purchase', ${index})">Tanggalin</button></td>
+                    </tr>`;
+                });
+                tbody.innerHTML = html;
+                totalDisplay.innerText = sum.toFixed(2) + ' PHP';
+            } else if (type === 'sale') {
+                let tbody = document.getElementById('sBatchTableBody');
+                let totalDisplay = document.getElementById('sBatchTotalDisplay');
+                if (currentSalesBatch.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>';
+                    totalDisplay.innerText = '0.00 PHP';
+                    return;
                 }
-                document.getElementById(prefix + 'BatchTotalDisplay').innerText = '0.00 PHP';
-                return;
+                let html = '';
+                let sum = 0;
+                currentSalesBatch.forEach((item, index) => {
+                    sum += item.totalValue;
+                    html += `<tr>
+                        <td>${item.article}</td>
+                        <td>${item.quantity} kg</td>
+                        <td>${item.price.toFixed(2)}</td>
+                        <td>${item.totalValue.toFixed(2)} PHP</td>
+                        <td><button class="btn btn-danger btn-sm" onclick="removeItem('sale', ${index})">Tanggalin</button></td>
+                    </tr>`;
+                });
+                tbody.innerHTML = html;
+                totalDisplay.innerText = sum.toFixed(2) + ' PHP';
             }
-
-            batch.forEach(pos => {
-                grandTotal += pos.total;
-                const tr = document.createElement('tr');
-                if (type === 'purchase') {
-                    tr.innerHTML = `
-                        <td>${pos.article}</td>
-                        <td>${pos.quantity} Sako</td>
-                        <td><strong>${pos.totalKg} kg</strong></td>
-                        <td>${pos.sackPrice.toFixed(2)} PHP</td>
-                        <td>${pos.pricePerKg.toFixed(2)} PHP</td>
-                        <td><strong>${pos.total.toFixed(2)} PHP</strong></td>
-                        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeBatchItem('${type}', '${pos.id}')">Tanggalin</button></td>
-                    `;
-                } else {
-                    tr.innerHTML = `
-                        <td>${pos.article}</td>
-                        <td><strong>${pos.quantity} kg</strong></td>
-                        <td>${pos.price.toFixed(2)} PHP</td>
-                        <td><strong>${pos.total.toFixed(2)} PHP</strong></td>
-                        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeBatchItem('${type}', '${pos.id}')">Tanggalin</button></td>
-                    `;
-                }
-                tbody.appendChild(tr);
-            });
-
-            document.getElementById(prefix + 'BatchTotalDisplay').innerText = grandTotal.toFixed(2) + ' PHP';
         }
 
-        function removeBatchItem(type, id) {
+        function removeItem(type, index) {
             if (type === 'purchase') {
-                currentPurchaseBatch = currentPurchaseBatch.filter(item => item.id != id);
+                currentPurchaseBatch.splice(index, 1);
                 renderBatchTable('purchase');
-            } else {
-                currentSalesBatch = currentSalesBatch.filter(item => item.id != id);
+            } else if (type === 'sale') {
+                currentSalesBatch.splice(index, 1);
                 renderBatchTable('sale');
             }
         }
 
-        // Endgültig abschicken (Ins Logbuch speichern)
         function submitBatch(type) {
-            const batch = type === 'purchase' ? currentPurchaseBatch : currentSalesBatch;
-            if (batch.length === 0) {
-                alert('Walang laman ang listahan.');
-                return;
-            }
-
-            const targetArray = type === 'purchase' ? purchases : sales;
-            batch.forEach(item => {
-                const entry = {
-                    id: item.id,
-                    date: item.date,
-                    article: item.article,
-                    quantity: item.quantity,
-                    price: item.price,
-                    total: item.total
-                };
-                if (type === 'purchase') {
-                    entry.totalKg = item.totalKg;
-                    entry.sackPrice = item.sackPrice;
-                    entry.pricePerKg = item.pricePerKg;
-                }
-                targetArray.push(entry);
-            });
-
             if (type === 'purchase') {
-                localStorage.setItem('buy', JSON.stringify(purchases));
+                if (currentPurchaseBatch.length === 0) return alert('Walang laman ang batch.');
+                let history = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
+                history.push(...currentPurchaseBatch);
+                localStorage.setItem('purchaseHistory', JSON.stringify(history));
                 currentPurchaseBatch = [];
                 renderBatchTable('purchase');
-                renderLog('purchase');
-                document.getElementById('pDate').valueAsDate = new Date();
-                alert('Matagumpay na naitala ang pagtanggap!');
-            } else {
-                localStorage.setItem('sell', JSON.stringify(sales));
+                loadHistory('purchase');
+                alert('Matagumpay na nai-save ang Buy log!');
+            } else if (type === 'sale') {
+                if (currentSalesBatch.length === 0) return alert('Walang laman ang batch.');
+                let history = JSON.parse(localStorage.getItem('salesHistory') || '[]');
+                history.push(...currentSalesBatch);
+                localStorage.setItem('salesHistory', JSON.stringify(history));
                 currentSalesBatch = [];
                 renderBatchTable('sale');
-                renderLog('sale');
-                document.getElementById('sDate').valueAsDate = new Date();
-                alert('Matagumpay na naitala ang pagbebenta!');
+                loadHistory('sale');
+                alert('Matagumpay na nai-save ang Sell log!');
             }
         }
 
-        // Logbuch-Tabellen rendern (Historie)
-        function renderLog(type) {
+        function loadHistory(type) {
             if (type === 'purchase') {
-                const tbody = document.getElementById('pLogTableBody');
-                tbody.innerHTML = '';
-                if (purchases.length === 0) {
+                let history = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
+                let tbody = document.getElementById('pLogTableBody');
+                if (history.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>';
                     return;
                 }
-                purchases.slice().reverse().forEach((item, index) => {
-                    const originalIndex = purchases.length - 1 - index;
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
+                let html = '';
+                history.forEach((item, index) => {
+                    html += `<tr>
                         <td>${item.date}</td>
                         <td>${item.article}</td>
-                        <td>${item.quantity} Sako</td>
-                        <td><strong>${item.totalKg} kg</strong></td>
-                        <td>${item.sackPrice ? item.sackPrice.toFixed(2) : '0.00'} PHP</td>
-                        <td>${item.pricePerKg ? item.pricePerKg.toFixed(2) : '0.00'} PHP</td>
-                        <td><button type="button" class="btn btn-danger btn-sm" onclick="deleteLogItem('purchase', ${originalIndex})">Alisin</button></td>
-                    `;
-                    tbody.appendChild(tr);
+                        <td>${item.quantity}</td>
+                        <td>${item.totalKg} kg</td>
+                        <td>${item.sackPrice.toFixed(2)}</td>
+                        <td>${item.pricePerKg.toFixed(2)}</td>
+                        <td><button class="btn btn-outline-danger btn-sm" onclick="deleteHistoryItem('purchase', ${index})">Burahin</button></td>
+                    </tr>`;
                 });
+                tbody.innerHTML = html;
             } else if (type === 'sale') {
-                const tbody = document.getElementById('sLogTableBody');
-                tbody.innerHTML = '';
-                if (sales.length === 0) {
+                let history = JSON.parse(localStorage.getItem('salesHistory') || '[]');
+                let tbody = document.getElementById('sLogTableBody');
+                if (history.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>';
                     return;
                 }
-                sales.slice().reverse().forEach((item, index) => {
-                    const originalIndex = sales.length - 1 - index;
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
+                let html = '';
+                history.forEach((item, index) => {
+                    html += `<tr>
                         <td>${item.date}</td>
                         <td>${item.article}</td>
-                        <td><strong>${item.quantity} kg</strong></td>
-                        <td>${item.price.toFixed(2)} PHP</td>
-                        <td><strong>${item.total ? item.total.toFixed(2) : (item.quantity * item.price).toFixed(2)} PHP</strong></td>
-                        <td><button type="button" class="btn btn-danger btn-sm" onclick="deleteLogItem('sale', ${originalIndex})">Alisin</button></td>
-                    `;
-                    tbody.appendChild(tr);
+                        <td>${item.quantity} kg</td>
+                        <td>${item.price.toFixed(2)}</td>
+                        <td>${item.totalValue.toFixed(2)} PHP</td>
+                        <td><button class="btn btn-outline-danger btn-sm" onclick="deleteHistoryItem('sale', ${index})">Burahin</button></td>
+                    </tr>`;
                 });
+                tbody.innerHTML = html;
             }
         }
 
-        // Eintrag aus der Historie löschen
-        function deleteLogItem(type, index) {
-            if (confirm('Sigurado ka bang gusto mong tanggalin ang talang ito?')) {
+        function deleteHistoryItem(type, index) {
+            if (confirm('Sigurado ka bang nais mong burahin ang talang ito?')) {
                 if (type === 'purchase') {
-                    purchases.splice(index, 1);
-                    localStorage.setItem('buy', JSON.stringify(purchases));
-                    renderLog('purchase');
-                } else {
-                    sales.splice(index, 1);
-                    localStorage.setItem('sell', JSON.stringify(sales));
-                    renderLog('sale');
+                    let history = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
+                    history.splice(index, 1);
+                    localStorage.setItem('purchaseHistory', JSON.stringify(history));
+                    loadHistory('purchase');
+                } else if (type === 'sale') {
+                    let history = JSON.parse(localStorage.getItem('salesHistory') || '[]');
+                    history.splice(index, 1);
+                    localStorage.setItem('salesHistory', JSON.stringify(history));
+                    loadHistory('sale');
                 }
             }
         }
 
-        // Tubo / Lager-, Margen- und tagesgenaue Analyse rendern
-        function renderMarginSection() {
-            const articles = [
-                "Fuji", "Perfect", "Master Aroma", "Sweet Hasmin", 
-                "Coco pandan", "Jasmine original", "Master Alsa", 
-                "Brown rice", "Malagkit/k"
-            ];
+        function filterReport(type) {
+            if (type === 'purchase') {
+                let start = document.getElementById('pStartDate').value;
+                let end = document.getElementById('pEndDate').value;
+                let history = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
+                let tbody = document.getElementById('pReportTableBody');
+                
+                let filtered = history.filter(item => {
+                    if (!start && !end) return true;
+                    if (start && !end) return item.date >= start;
+                    if (!start && end) return item.date <= end;
+                    return item.date >= start && item.date <= end;
+                });
 
-            const tbody = document.getElementById('marginTableBody');
-            tbody.innerHTML = '';
+                let summary = {};
+                filtered.forEach(item => {
+                    if (!summary[item.article]) summary[item.article] = { kg: 0, total: 0 };
+                    summary[item.article].kg += item.totalKg;
+                    summary[item.article].total += item.total;
+                });
+
+                if (Object.keys(summary).length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Walang nakitang datos sa napiling panahon.</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                for (let art in summary) {
+                    html += `<tr>
+                        <td>${art}</td>
+                        <td>${summary[art].kg.toFixed(2)} kg</td>
+                        <td>${summary[art].total.toFixed(2)} PHP</td>
+                    </tr>`;
+                }
+                tbody.innerHTML = html;
+            } else if (type === 'sale') {
+                let start = document.getElementById('sStartDate').value;
+                let end = document.getElementById('sEndDate').value;
+                let history = JSON.parse(localStorage.getItem('salesHistory') || '[]');
+                let tbody = document.getElementById('sReportTableBody');
+                
+                let filtered = history.filter(item => {
+                    if (!start && !end) return true;
+                    if (start && !end) return item.date >= start;
+                    if (!start && end) return item.date <= end;
+                    return item.date >= start && item.date <= end;
+                });
+
+                let summary = {};
+                filtered.forEach(item => {
+                    if (!summary[item.article]) summary[item.article] = { kg: 0, total: 0 };
+                    summary[item.article].kg += item.quantity;
+                    summary[item.article].total += item.totalValue;
+                });
+
+                if (Object.keys(summary).length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Walang nakitang datos sa napiling panahon.</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                for (let art in summary) {
+                    html += `<tr>
+                        <td>${art}</td>
+                        <td>${summary[art].kg.toFixed(2)} kg</td>
+                        <td>${summary[art].total.toFixed(2)} PHP</td>
+                    </tr>`;
+                }
+                tbody.innerHTML = html;
+            }
+        }
+
+        function updateMarginAndStock() {
+            let pHistory = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
+            let sHistory = JSON.parse(localStorage.getItem('salesHistory') || '[]');
+
+            let articles = ["Fuji", "Perfect", "Master Aroma", "Sweet Hasmin", "Coco pandan", "Jasmine original", "Master Alsa", "Brown rice", "Malagkit/k"];
+            let stats = {};
+
+            articles.forEach(art => {
+                stats[art] = { buyKg: 0, buyPHP: 0, sellKg: 0, sellPHP: 0 };
+            });
+
+            pHistory.forEach(item => {
+                if (stats[item.article]) {
+                    stats[item.article].buyKg += item.totalKg;
+                    stats[item.article].buyPHP += item.total;
+                }
+            });
+
+            sHistory.forEach(item => {
+                if (stats[item.article]) {
+                    stats[item.article].sellKg += item.quantity;
+                    stats[item.article].sellPHP += item.totalValue;
+                }
+            });
+
+            let marginTbody = document.getElementById('marginTableBody');
+            let marginHtml = '';
             let hasData = false;
 
-            let grandTotalBuyKg = 0;
-            let grandTotalBuyPhp = 0;
-            let grandTotalSellKg = 0;
-            let grandTotalSellPhp = 0;
-            let grandTotalStockKg = 0;
-            let totalCostOfSoldGoods = 0;
-
-            const articleAvgBuyPrice = {};
-
-            articles.forEach(article => {
-                const articlePurchases = purchases.filter(p => p.article === article);
-                const totalBuyKg = articlePurchases.reduce((sum, p) => sum + (p.totalKg || 0), 0);
-                const totalBuyPhp = articlePurchases.reduce((sum, p) => {
-                    const kg = p.totalKg || 0;
-                    const priceKg = p.pricePerKg || (p.sackPrice ? p.sackPrice / 25 : 0);
-                    return sum + (kg * priceKg);
-                }, 0);
-                const avgBuyPerKg = totalBuyKg > 0 ? totalBuyPhp / totalBuyKg : 0;
-                
-                articleAvgBuyPrice[article] = avgBuyPerKg;
-
-                const articleSales = sales.filter(s => s.article === article);
-                const totalSellKg = articleSales.reduce((sum, s) => sum + (s.quantity || 0), 0);
-                const totalSellPhp = articleSales.reduce((sum, s) => {
-                    const kg = s.quantity || 0;
-                    const totalVal = s.total || (kg * (s.price || 0));
-                    return sum + totalVal;
-                }, 0);
-                const avgSellPerKg = totalSellKg > 0 ? totalSellPhp / totalSellKg : 0;
-
-                const stockKg = totalBuyKg - totalSellKg;
-                let turboPerKg = 0;
-                if (totalSellKg > 0 && totalBuyKg > 0) {
-                    turboPerKg = avgSellPerKg - avgBuyPerKg;
-                }
-
-                if (totalBuyKg > 0 || totalSellKg > 0) {
+            articles.forEach(art => {
+                let data = stats[art];
+                if (data.buyKg > 0 || data.sellKg > 0) {
                     hasData = true;
-                    grandTotalBuyKg += totalBuyKg;
-                    grandTotalBuyPhp += totalBuyPhp;
-                    grandTotalSellKg += totalSellKg;
-                    grandTotalSellPhp += totalSellPhp;
-                    grandTotalStockKg += stockKg;
+                    let avgBuy = data.buyKg > 0 ? (data.buyPHP / data.buyKg) : 0;
+                    let avgSell = data.sellKg > 0 ? (data.sellPHP / data.sellKg) : 0;
+                    let stock = data.buyKg - data.sellKg;
+                    let tuboPerKg = avgSell > 0 && avgBuy > 0 ? (avgSell - avgBuy) : 0;
 
-                    if (totalSellKg > 0 && totalBuyKg > 0) {
-                        totalCostOfSoldGoods += totalSellKg * avgBuyPerKg;
-                    }
-
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><strong>${article}</strong></td>
-                        <td>${totalBuyKg.toFixed(2)} kg</td>
-                        <td>${totalBuyPhp.toFixed(2)} PHP</td>
-                        <td>${avgBuyPerKg.toFixed(2)} PHP</td>
-                        <td>${totalSellKg.toFixed(2)} kg</td>
-                        <td>${totalSellPhp.toFixed(2)} PHP</td>
-                        <td>${avgSellPerKg.toFixed(2)} PHP</td>
-                        <td class="${stockKg < 0 ? 'text-danger fw-bold' : 'fw-bold'}">${stockKg.toFixed(2)} kg</td>
-                        <td class="${turboPerKg >= 0 ? 'text-success fw-bold' : 'text-danger fw-bold'}">${turboPerKg.toFixed(2)} PHP</td>
-                    `;
-                    tbody.appendChild(tr);
+                    marginHtml += `<tr>
+                        <td><strong>${art}</strong></td>
+                        <td>${data.buyKg.toFixed(2)}</td>
+                        <td>${data.buyPHP.toFixed(2)}</td>
+                        <td>${avgBuy.toFixed(2)}</td>
+                        <td>${data.sellKg.toFixed(2)}</td>
+                        <td>${data.sellPHP.toFixed(2)}</td>
+                        <td>${avgSell.toFixed(2)}</td>
+                        <td class="${stock < 0 ? 'text-danger fw-bold' : 'text-success fw-bold'}">${stock.toFixed(2)}</td>
+                        <td class="${tuboPerKg < 0 ? 'text-danger' : 'text-success'} fw-bold">${tuboPerKg.toFixed(2)}</td>
+                    </tr>`;
                 }
             });
 
-            if (hasData) {
-                const overallAvgBuyPerKg = grandTotalBuyKg > 0 ? grandTotalBuyPhp / grandTotalBuyKg : 0;
-                const overallAvgSellPerKg = grandTotalSellKg > 0 ? grandTotalSellPhp / grandTotalSellKg : 0;
-                const totalProfit = grandTotalSellPhp - totalCostOfSoldGoods;
-                const overallTurboPerKg = grandTotalSellKg > 0 ? totalProfit / grandTotalSellKg : 0;
-
-                const summaryTr = document.createElement('tr');
-                summaryTr.className = 'table-secondary fw-bold';
-                summaryTr.innerHTML = `
-                    <td>GESAMT / SUMMEN</td>
-                    <td>${grandTotalBuyKg.toFixed(2)} kg</td>
-                    <td>${grandTotalBuyPhp.toFixed(2)} PHP</td>
-                    <td>${overallAvgBuyPerKg.toFixed(2)} PHP</td>
-                    <td>${grandTotalSellKg.toFixed(2)} kg</td>
-                    <td>${grandTotalSellPhp.toFixed(2)} PHP</td>
-                    <td>${overallAvgSellPerKg.toFixed(2)} PHP</td>
-                    <td class="${grandTotalStockKg < 0 ? 'text-danger' : ''}">${grandTotalStockKg.toFixed(2)} kg</td>
-                    <td class="${overallTurboPerKg >= 0 ? 'text-success' : 'text-danger'}">${overallTurboPerKg.toFixed(2)} PHP</td>
-                `;
-                tbody.appendChild(summaryTr);
-            } else {
-                tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">Wala pang sapat na datos para sa pagsusuri.</td></tr>';
+            if (!hasData) {
+                marginHtml = '<tr><td colspan="9" class="text-center text-muted">Wala pang sapat na datos para sa pagsusuri.</td></tr>';
             }
+            marginTbody.innerHTML = marginHtml;
 
-            // --- ZWEITER BLOCK: Taggenauer Rohertrag (Wareneinsatz = verkaufte Menge * Average) ---
-            const dailyProfitTbody = document.getElementById('dailyProfitTableBody');
-            dailyProfitTbody.innerHTML = '';
+            // Daily Profit Calculation
+            let dailyProfitTbody = document.getElementById('dailyProfitTableBody');
+            let dailyMap = {};
+            let avgCostPerArticle = {};
 
-            const dailyData = {};
-            sales.forEach(s => {
-                const date = s.date;
-                if (!date) return;
-                if (!dailyData[date]) {
-                    dailyData[date] = { totalKg: 0, revenue: 0, cost: 0 };
+            articles.forEach(art => {
+                let data = stats[art];
+                avgCostPerArticle[art] = data.buyKg > 0 ? (data.buyPHP / data.buyKg) : 0;
+            });
+
+            sHistory.forEach(item => {
+                let day = item.date;
+                if (!day) return;
+                if (!dailyMap[day]) {
+                    dailyMap[day] = { kg: 0, salesPHP: 0, cogs: 0 };
                 }
-                const kg = s.quantity || 0;
-                const rev = s.total || (kg * (s.price || 0));
-                const avgCost = articleAvgBuyPrice[s.article] || 0;
-                const cost = kg * avgCost; // Wareneinsatz = verkaufte Menge * Average Buy Price
-
-                dailyData[date].totalKg += kg;
-                dailyData[date].revenue += rev;
-                dailyData[date].cost += cost;
+                dailyMap[day].kg += item.quantity;
+                dailyMap[day].salesPHP += item.totalValue;
+                let unitCost = avgCostPerArticle[item.article] || 0;
+                dailyMap[day].cogs += (item.quantity * unitCost);
             });
 
-            const sortedDates = Object.keys(dailyData).sort();
-            let hasDailyData = false;
-            let totalDailyRevenue = 0;
-            let totalDailyCost = 0;
-            let totalDailyKg = 0;
+            let dailyHtml = '';
+            let sortedDays = Object.keys(dailyMap).sort();
 
-            sortedDates.forEach(date => {
-                hasDailyData = true;
-                const data = dailyData[date];
-                const profit = data.revenue - data.cost; // Rohertrag = Umsatz - Wareneinsatz
-
-                totalDailyRevenue += data.revenue;
-                totalDailyCost += data.cost;
-                totalDailyKg += data.totalKg;
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong>${date}</strong></td>
-                    <td>${data.totalKg.toFixed(2)} kg</td>
-                    <td>${data.revenue.toFixed(2)} PHP</td>
-                    <td>${data.cost.toFixed(2)} PHP</td>
-                    <td class="${profit >= 0 ? 'text-success fw-bold' : 'text-danger fw-bold'}">${profit.toFixed(2)} PHP</td>
-                `;
-                dailyProfitTbody.appendChild(tr);
-            });
-
-            if (hasDailyData) {
-                const totalProfit = totalDailyRevenue - totalDailyCost;
-                const summaryTr = document.createElement('tr');
-                summaryTr.className = 'table-secondary fw-bold';
-                summaryTr.innerHTML = `
-                    <td>GESAMT / SUMMEN</td>
-                    <td>${totalDailyKg.toFixed(2)} kg</td>
-                    <td>${totalDailyRevenue.toFixed(2)} PHP</td>
-                    <td>${totalDailyCost.toFixed(2)} PHP</td>
-                    <td class="${totalProfit >= 0 ? 'text-success' : 'text-danger'}">${totalProfit.toFixed(2)} PHP</td>
-                `;
-                dailyProfitTbody.appendChild(summaryTr);
+            if (sortedDays.length === 0) {
+                dailyHtml = '<tr><td colspan="5" class="text-center text-muted">Wala pang sapat na datos ng benta para sa araw-araw na ulat.</td></tr>';
             } else {
-                dailyProfitTbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Wala pang sapat na datos ng benta para sa araw-araw na ulat.</td></tr>';
+                sortedDays.forEach(day => {
+                    let d = dailyMap[day];
+                    let profit = d.salesPHP - d.cogs;
+                    dailyHtml += `<tr>
+                        <td>${day}</td>
+                        <td>${d.kg.toFixed(2)}</td>
+                        <td>${d.salesPHP.toFixed(2)}</td>
+                        <td>${d.cogs.toFixed(2)}</td>
+                        <td class="${profit < 0 ? 'text-danger' : 'text-success'} fw-bold">${profit.toFixed(2)}</td>
+                    </tr>`;
+                });
             }
+            dailyProfitTbody.innerHTML = dailyHtml;
         }
+
+        window.onload = function() {
+            loadHistory('purchase');
+            loadHistory('sale');
+        };
     </script>
 </body>
 </html>
