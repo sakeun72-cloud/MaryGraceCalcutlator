@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rice Inventory System</title>
+    <title>Rice Inventory System (Supabase)</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- Supabase-Bibliothek laden -->
+    <!-- Supabase-Bibliothek -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -128,7 +128,7 @@
                         </div>
 
                         <div class="text-end mt-3">
-                            <button type="button" class="btn btn-success btn-lg" onclick="submitBatch('purchase')">Isumite nang Pinal (Save Buy)</button>
+                            <button type="button" class="btn btn-success btn-lg" onclick="submitBatch('purchase')">Isumite sa Cloud (Save Buy)</button>
                         </div>
                     </div>
                 </div>
@@ -174,7 +174,7 @@
             <!-- Logbuch Buy -->
             <div class="card shadow-sm">
                 <div class="card-header bg-secondary text-white">
-                    <h5 class="mb-0">Talaan ng Kasaysayan (Buy History)</h5>
+                    <h5 class="mb-0">Talaan ng Kasaysayan (Buy History - Supabase)</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -191,7 +191,7 @@
                                 </tr>
                             </thead>
                             <tbody id="pLogTableBody">
-                                <tr><td colspan="7" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>
+                                <tr><td colspan="7" class="text-center text-muted">Naglo-load mula sa Supabase...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -275,7 +275,7 @@
                         </div>
 
                         <div class="text-end mt-3">
-                            <button type="button" class="btn btn-success btn-lg" onclick="submitBatch('sale')">Isumite nang Pinal (Save Sell)</button>
+                            <button type="button" class="btn btn-success btn-lg" onclick="submitBatch('sale')">Isumite sa Cloud (Save Sell)</button>
                         </div>
                     </div>
                 </div>
@@ -321,7 +321,7 @@
             <!-- Logbuch Sell -->
             <div class="card shadow-sm">
                 <div class="card-header bg-secondary text-white">
-                    <h5 class="mb-0">Talaan ng Kasaysayan (Sell History)</h5>
+                    <h5 class="mb-0">Talaan ng Kasaysayan (Sell History - Supabase)</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -337,7 +337,7 @@
                                 </tr>
                             </thead>
                             <tbody id="sLogTableBody">
-                                <tr><td colspan="6" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>
+                                <tr><td colspan="6" class="text-center text-muted">Naglo-load mula sa Supabase...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -363,7 +363,7 @@
             <!-- 1. Artikelübersicht -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">Tubo & Stock Analysis</h5>
+                    <h5 class="mb-0">Tubo & Stock Analysis (Cloud Data)</h5>
                 </div>
                 <div class="card-body">
                     <p class="text-muted">Paghahambing ng pagpasok, paglabas, average na presyo kada kilo, at ang tubo (marge).</p>
@@ -384,7 +384,7 @@
                                 </tr>
                             </thead>
                             <tbody id="marginTableBody">
-                                <tr><td colspan="9" class="text-center text-muted">Wala pang sapat na datos para sa pagsusuri.</td></tr>
+                                <tr><td colspan="9" class="text-center text-muted">Kinakalkula ang data mula sa Supabase...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -411,7 +411,7 @@
                                 </tr>
                             </thead>
                             <tbody id="dailyProfitTableBody">
-                                <tr><td colspan="5" class="text-center text-muted">Wala pang sapat na datos ng benta para sa araw-araw na ulat.</td></tr>
+                                <tr><td colspan="5" class="text-center text-muted">Naglo-load...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -421,8 +421,14 @@
 
     </div>
 
-    <!-- Vollständiges JavaScript -->
+    <!-- JavaScript mit Supabase Integration -->
     <script>
+        // 🔑 HIER DEINE SUPABASE SCHLÜSSEL EINTRAGEN
+        const SUPABASE_URL = 'DEINE_SUPABASE_URL_HIER_EINTRAGEN';
+        const SUPABASE_KEY = 'DEINEN_SUPABASE_ANON_KEY_HIER_EINTRAGEN';
+        
+        const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         let currentPurchaseBatch = [];
         let currentSalesBatch = [];
 
@@ -614,112 +620,114 @@
             }
         }
 
-        function submitBatch(type) {
+        // ☁️ SUPABASE: Senden der Batches
+        async function submitBatch(type) {
             if (type === 'purchase') {
                 if (currentPurchaseBatch.length === 0) return alert('Walang laman ang batch.');
-                let history = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
-                history.push(...currentPurchaseBatch);
-                localStorage.setItem('purchaseHistory', JSON.stringify(history));
+                const { error } = await _supabase.from('purchases').insert(currentPurchaseBatch);
+                if (error) {
+                    alert('Error sa pag-save sa Supabase: ' + error.message);
+                    return;
+                }
                 currentPurchaseBatch = [];
                 renderBatchTable('purchase');
                 loadHistory('purchase');
-                alert('Matagumpay na nai-save ang Buy log!');
+                alert('Matagumpay na nai-save sa Supabase (Buy)!');
             } else if (type === 'sale') {
                 if (currentSalesBatch.length === 0) return alert('Walang laman ang batch.');
-                let history = JSON.parse(localStorage.getItem('salesHistory') || '[]');
-                history.push(...currentSalesBatch);
-                localStorage.setItem('salesHistory', JSON.stringify(history));
+                const { error } = await _supabase.from('sales').insert(currentSalesBatch);
+                if (error) {
+                    alert('Error sa pag-save sa Supabase: ' + error.message);
+                    return;
+                }
                 currentSalesBatch = [];
                 renderBatchTable('sale');
                 loadHistory('sale');
-                alert('Matagumpay na nai-save ang Sell log!');
+                alert('Matagumpay na nai-save sa Supabase (Sell)!');
             }
         }
 
-        function loadHistory(type) {
+        // ☁️ SUPABASE: Laden der Historie
+        async function loadHistory(type) {
             if (type === 'purchase') {
-                let history = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
+                const { data: history, error } = await _supabase.from('purchases').select('*').order('date', { ascending: false });
                 let tbody = document.getElementById('pLogTableBody');
-                if (history.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>';
+                if (error || !history || history.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Wala pang mga tala sa Supabase.</td></tr>';
                     return;
                 }
                 let html = '';
-                history.forEach((item, index) => {
+                history.forEach((item) => {
                     html += `<tr>
                         <td>${item.date}</td>
                         <td>${item.article}</td>
                         <td>${item.quantity}</td>
                         <td>${item.totalKg} kg</td>
-                        <td>${item.sackPrice.toFixed(2)}</td>
-                        <td>${item.pricePerKg.toFixed(2)}</td>
-                        <td><button class="btn btn-outline-danger btn-sm" onclick="deleteHistoryItem('purchase', ${index})">Burahin</button></td>
+                        <td>${Number(item.sackPrice).toFixed(2)}</td>
+                        <td>${Number(item.pricePerKg).toFixed(2)}</td>
+                        <td><button class="btn btn-outline-danger btn-sm" onclick="deleteHistoryItem('purchase', '${item.id}')">Burahin</button></td>
                     </tr>`;
                 });
                 tbody.innerHTML = html;
             } else if (type === 'sale') {
-                let history = JSON.parse(localStorage.getItem('salesHistory') || '[]');
+                const { data: history, error } = await _supabase.from('sales').select('*').order('date', { ascending: false });
                 let tbody = document.getElementById('sLogTableBody');
-                if (history.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Wala pang mga tala sa logbook.</td></tr>';
+                if (error || !history || history.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Wala pang mga tala sa Supabase.</td></tr>';
                     return;
                 }
                 let html = '';
-                history.forEach((item, index) => {
+                history.forEach((item) => {
                     html += `<tr>
                         <td>${item.date}</td>
                         <td>${item.article}</td>
                         <td>${item.quantity} kg</td>
-                        <td>${item.price.toFixed(2)}</td>
-                        <td>${item.totalValue.toFixed(2)} PHP</td>
-                        <td><button class="btn btn-outline-danger btn-sm" onclick="deleteHistoryItem('sale', ${index})">Burahin</button></td>
+                        <td>${Number(item.price).toFixed(2)}</td>
+                        <td>${Number(item.totalValue).toFixed(2)} PHP</td>
+                        <td><button class="btn btn-outline-danger btn-sm" onclick="deleteHistoryItem('sale', '${item.id}')">Burahin</button></td>
                     </tr>`;
                 });
                 tbody.innerHTML = html;
             }
         }
 
-        function deleteHistoryItem(type, index) {
-            if (confirm('Sigurado ka bang nais mong burahin ang talang ito?')) {
-                if (type === 'purchase') {
-                    let history = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
-                    history.splice(index, 1);
-                    localStorage.setItem('purchaseHistory', JSON.stringify(history));
-                    loadHistory('purchase');
-                } else if (type === 'sale') {
-                    let history = JSON.parse(localStorage.getItem('salesHistory') || '[]');
-                    history.splice(index, 1);
-                    localStorage.setItem('salesHistory', JSON.stringify(history));
-                    loadHistory('sale');
+        // ☁️ SUPABASE: Löschen eines Eintrags
+        async function deleteHistoryItem(type, id) {
+            if (confirm('Sigurado ka bang nais mong burahin ang talang ito sa Supabase?')) {
+                let tableName = type === 'purchase' ? 'purchases' : 'sales';
+                const { error } = await _supabase.from(tableName).delete().eq('id', id);
+                if (error) {
+                    alert('Error sa pag-delete: ' + error.message);
+                } else {
+                    loadHistory(type);
                 }
             }
         }
 
-        function filterReport(type) {
+        // Berichte filtern (Cloud-basiert)
+        async function filterReport(type) {
             if (type === 'purchase') {
                 let start = document.getElementById('pStartDate').value;
                 let end = document.getElementById('pEndDate').value;
-                let history = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
-                let tbody = document.getElementById('pReportTableBody');
                 
-                let filtered = history.filter(item => {
-                    if (!start && !end) return true;
-                    if (start && !end) return item.date >= start;
-                    if (!start && end) return item.date <= end;
-                    return item.date >= start && item.date <= end;
-                });
+                let query = _supabase.from('purchases').select('*');
+                if (start) query = query.gte('date', start);
+                if (end) query = query.lte('date', end);
+
+                let { data: filtered, error } = await query;
+                let tbody = document.getElementById('pReportTableBody');
+
+                if (error || !filtered || filtered.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Walang nakitang datos sa napiling panahon.</td></tr>';
+                    return;
+                }
 
                 let summary = {};
                 filtered.forEach(item => {
                     if (!summary[item.article]) summary[item.article] = { kg: 0, total: 0 };
-                    summary[item.article].kg += item.totalKg;
-                    summary[item.article].total += item.total;
+                    summary[item.article].kg += Number(item.totalKg);
+                    summary[item.article].total += Number(item.total);
                 });
-
-                if (Object.keys(summary).length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Walang nakitang datos sa napiling panahon.</td></tr>';
-                    return;
-                }
 
                 let html = '';
                 for (let art in summary) {
@@ -733,27 +741,25 @@
             } else if (type === 'sale') {
                 let start = document.getElementById('sStartDate').value;
                 let end = document.getElementById('sEndDate').value;
-                let history = JSON.parse(localStorage.getItem('salesHistory') || '[]');
-                let tbody = document.getElementById('sReportTableBody');
                 
-                let filtered = history.filter(item => {
-                    if (!start && !end) return true;
-                    if (start && !end) return item.date >= start;
-                    if (!start && end) return item.date <= end;
-                    return item.date >= start && item.date <= end;
-                });
+                let query = _supabase.from('sales').select('*');
+                if (start) query = query.gte('date', start);
+                if (end) query = query.lte('date', end);
+
+                let { data: filtered, error } = await query;
+                let tbody = document.getElementById('sReportTableBody');
+
+                if (error || !filtered || filtered.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Walang nakitang datos sa napiling panahon.</td></tr>';
+                    return;
+                }
 
                 let summary = {};
                 filtered.forEach(item => {
                     if (!summary[item.article]) summary[item.article] = { kg: 0, total: 0 };
-                    summary[item.article].kg += item.quantity;
-                    summary[item.article].total += item.totalValue;
+                    summary[item.article].kg += Number(item.quantity);
+                    summary[item.article].total += Number(item.totalValue);
                 });
-
-                if (Object.keys(summary).length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Walang nakitang datos sa napiling panahon.</td></tr>';
-                    return;
-                }
 
                 let html = '';
                 for (let art in summary) {
@@ -767,9 +773,13 @@
             }
         }
 
-        function updateMarginAndStock() {
-            let pHistory = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
-            let sHistory = JSON.parse(localStorage.getItem('salesHistory') || '[]');
+        // ☁️ Tubo & Stock Auswertung über Supabase
+        async function updateMarginAndStock() {
+            const { data: pHistory } = await _supabase.from('purchases').select('*');
+            const { data: sHistory } = await _supabase.from('sales').select('*');
+
+            let pList = pHistory || [];
+            let sList = sHistory || [];
 
             let articles = ["Fuji", "Perfect", "Master Aroma", "Sweet Hasmin", "Coco pandan", "Jasmine original", "Master Alsa", "Brown rice", "Malagkit/k"];
             let stats = {};
@@ -778,17 +788,17 @@
                 stats[art] = { buyKg: 0, buyPHP: 0, sellKg: 0, sellPHP: 0 };
             });
 
-            pHistory.forEach(item => {
+            pList.forEach(item => {
                 if (stats[item.article]) {
-                    stats[item.article].buyKg += item.totalKg;
-                    stats[item.article].buyPHP += item.total;
+                    stats[item.article].buyKg += Number(item.totalKg);
+                    stats[item.article].buyPHP += Number(item.total);
                 }
             });
 
-            sHistory.forEach(item => {
+            sList.forEach(item => {
                 if (stats[item.article]) {
-                    stats[item.article].sellKg += item.quantity;
-                    stats[item.article].sellPHP += item.totalValue;
+                    stats[item.article].sellKg += Number(item.quantity);
+                    stats[item.article].sellPHP += Number(item.totalValue);
                 }
             });
 
@@ -820,7 +830,7 @@
             });
 
             if (!hasData) {
-                marginHtml = '<tr><td colspan="9" class="text-center text-muted">Wala pang sapat na datos para sa pagsusuri.</td></tr>';
+                marginHtml = '<tr><td colspan="9" class="text-center text-muted">Wala pang sapat na datos sa Supabase.</td></tr>';
             }
             marginTbody.innerHTML = marginHtml;
 
@@ -834,23 +844,23 @@
                 avgCostPerArticle[art] = data.buyKg > 0 ? (data.buyPHP / data.buyKg) : 0;
             });
 
-            sHistory.forEach(item => {
+            sList.forEach(item => {
                 let day = item.date;
                 if (!day) return;
                 if (!dailyMap[day]) {
                     dailyMap[day] = { kg: 0, salesPHP: 0, cogs: 0 };
                 }
-                dailyMap[day].kg += item.quantity;
-                dailyMap[day].salesPHP += item.totalValue;
+                dailyMap[day].kg += Number(item.quantity);
+                dailyMap[day].salesPHP += Number(item.totalValue);
                 let unitCost = avgCostPerArticle[item.article] || 0;
-                dailyMap[day].cogs += (item.quantity * unitCost);
+                dailyMap[day].cogs += (Number(item.quantity) * unitCost);
             });
 
             let dailyHtml = '';
             let sortedDays = Object.keys(dailyMap).sort();
 
             if (sortedDays.length === 0) {
-                dailyHtml = '<tr><td colspan="5" class="text-center text-muted">Wala pang sapat na datos ng benta para sa araw-araw na ulat.</td></tr>';
+                dailyHtml = '<tr><td colspan="5" class="text-center text-muted">Wala pang sapat na datos ng benta sa Supabase.</td></tr>';
             } else {
                 sortedDays.forEach(day => {
                     let d = dailyMap[day];
@@ -867,6 +877,7 @@
             dailyProfitTbody.innerHTML = dailyHtml;
         }
 
+        // Beim Laden der Seite Daten aus Supabase abrufen
         window.onload = function() {
             loadHistory('purchase');
             loadHistory('sale');
