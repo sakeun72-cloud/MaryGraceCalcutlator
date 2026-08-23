@@ -172,14 +172,11 @@ function toggleNavEdit(){ const el=document.getElementById('nav-edit'); el.class
 function saveNavLinks(){ for(let i=0;i<5;i++){ navLinks[i]={name:document.getElementById('nav-name-'+i).value||('Button '+(i+1)), url:document.getElementById('nav-url-'+i).value||''}; document.getElementById('nav-label-'+i).textContent=navLinks[i].name } localStorage.setItem('navLinks_fb', JSON.stringify(navLinks)); document.getElementById('nav-edit').classList.add('hidden') }
 function loadNavLabels(){ for(let i=0;i<5;i++){ const lbl=document.getElementById('nav-label-'+i); if(lbl&&navLinks[i]) lbl.textContent=navLinks[i].name } }
 
-const savedConf = JSON.parse(localStorage.getItem('supabase_config')||'{}')
-if(savedConf.url) document.getElementById('sb-url').value=savedConf.url
-if(savedConf.key) document.getElementById('sb-key').value=savedConf.key
-if(savedConf.url && savedConf.key) initSupabase(savedConf.url, savedConf.key)
-else loadLocal()
-
-function initSupabase(url,key){
-  try{ sbClient=supabase.createClient(url,key); document.getElementById('sb-status').textContent='✅ Connected'; loadFromSupabase() }catch(e){ document.getElementById('sb-status').textContent='❌ '+e.message; loadLocal() }
+// HARDCODED Supabase Credentials - fixed by assistant
+const SUPABASE_URL = "https://crdtuptjybxbsezxtksp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_GU6AAlF0zc3LB4hFlKK0fw_TNxo9z7q";
+localStorage.setItem("supabase_config", JSON.stringify({url: SUPABASE_URL, key: SUPABASE_KEY}));
+ document.getElementById('sb-status').textContent='✅ Connected'; loadFromSupabase() }catch(e){ document.getElementById('sb-status').textContent='❌ '+e.message; loadLocal() }
 }
 function saveSB(){ const u=document.getElementById('sb-url').value.trim(), k=document.getElementById('sb-key').value.trim(); if(!u||!k) return; localStorage.setItem('supabase_config', JSON.stringify({url:u,key:k})); initSupabase(u,k) }
 
@@ -205,9 +202,20 @@ function loadLocal(){
 }
 
 async function loadFromSupabase(){
-  if(!sbClient){ loadLocal(); return }
-  const {data, error} = await sbClient.from('stammdaten').select('*').order('artikelnummer')
-  if(error){ console.error(error); loadLocal(); return }
+  if(!sbClient){
+    sbClient = supabase.createClient("https://crdtuptjybxbsezxtksp.supabase.co", "sb_publishable_GU6AAlF0zc3LB4hFlKK0fw_TNxo9z7q");
+  }
+  document.getElementById('sb-status').textContent='⏳ Lade aus Supabase...';
+  try{
+    const {data, error} = await sbClient.from('stammdaten').select('*').order('artikelnummer');
+    if(error) throw error;
+    console.log('Supabase data:', data?.length);
+    if(!data || data.length===0){
+      document.getElementById('sb-status').textContent='⚠️ Keine Daten in Tabelle stammdaten';
+      loadLocal();
+      return;
+    }
+
   // Map supabase to local format + keep base64 if any
   articles=data.map(d=>{
     const m=d.marketing||{}
