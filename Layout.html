@@ -393,7 +393,36 @@ function renderLayouts(){
 }
 
 
-function downloadLayout(id){
+async function downloadLayout(id){
+  const el = document.getElementById(id)
+  if(!el){ alert('Layout nicht gefunden'); return }
+  const artNr = current?.artikelnummer || '000'
+  const fileName = `Kingfields_${artNr}_${id}_${lang}_${new Date().toISOString().slice(0,10)}.png`
+  const btn = event?.target
+  const origText = btn ? btn.textContent : ''
+  if(btn) { btn.textContent = '⏳ Export...'; btn.disabled = true }
+  try{
+    const canvas = await html2canvas(el, {scale:2, useCORS:true, allowTaint:true, backgroundColor:null, logging:false})
+    const link = document.createElement('a')
+    link.download = fileName
+    link.href = canvas.toDataURL('image/png', 1.0)
+    link.click()
+    if(btn) { btn.textContent = '✅ Fertig!'; setTimeout(()=>{ btn.textContent = origText; btn.disabled=false }, 2000) }
+  }catch(e){
+    console.error(e)
+    alert('Export Fehler: '+e.message)
+    if(btn) { btn.textContent = origText; btn.disabled=false }
+  }
+}
+async function downloadAllLayouts(){
+  if(!current){ alert('Erst Artikel wählen'); return }
+  for(const id of ['layout1','layout2','layout3','layout4']){
+    await downloadLayout(id)
+    await new Promise(r=>setTimeout(r,500))
+  }
+}
+// old removed
+function _old_download(id){
   alert('PNG Export: In finaler Version nutze ich html2canvas. Für jetzt Screenshot machen (Rechtsklick > Screenshot). Soll ich html2canvas gleich einbauen für 1-Klick Download 1080x1080?')
 }
 
