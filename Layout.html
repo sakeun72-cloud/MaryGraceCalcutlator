@@ -39,10 +39,10 @@
     <!-- 5 NAV BUTTONS -->
     <div class="flex flex-wrap gap-2 border-t pt-3 mt-3">
       <button onclick="openNavLink(0)" class="bg-zinc-900 text-white px-4 py-2 rounded-full text-[13px] font-medium hover:bg-black">📋 <span id="nav-label-0">Preisliste</span></button>
-      <button onclick="openNavLink(1)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">🛒 <span id="nav-label-1">Shop</span></button>
+      <button onclick="openNavLink(1)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">🛒 <span id="nav-label-1">Stammdaten</span></button>
       <button onclick="openNavLink(2)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">📦 <span id="nav-label-2">Katalog</span></button>
       <button onclick="openNavLink(3)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">🌐 <span id="nav-label-3">Website</span></button>
-      <button onclick="openNavLink(4)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">📊 <span id="nav-label-4">Facebook Studio</span></button>
+      <button onclick="openNavLink(4)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">📊 <span id="nav-label-4">Facebook Page</span></button>
       <button onclick="toggleNavEdit()" class="ml-auto text-[11px] border px-3 py-1 rounded-full bg-white">⚙️ Edit Links</button>
     </div>
     <div id="nav-edit" class="hidden mt-3 bg-zinc-50 p-3 rounded-xl grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -53,7 +53,12 @@
       <div class="flex gap-2"><input id="nav-name-4" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-4" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
       <button onclick="saveNavLinks()" class="bg-black text-white px-4 py-1.5 rounded-full text-xs w-fit">Save Links</button>
     </div>
-    <!-- Supabase moved to bottom -->
+    <div class="mt-3 flex flex-wrap gap-2 text-[11px] text-zinc-600 border-t pt-3">
+      <span>Supabase URL:</span><input id="sb-url" class="border rounded-full px-2 py-1 text-[11px] min-w-[200px]" placeholder="https://xyz.supabase.co">
+      <input id="sb-key" type="password" class="border rounded-full px-2 py-1 text-[11px] min-w-[200px]" placeholder="anon key">
+      <button onclick="saveSB()" class="bg-black text-white px-3 py-1 rounded-full text-[11px]">Connect</button>
+      <span id="sb-status" class="text-[11px]">Lokal: nutzt letzte Stammdaten</span>
+    </div>
   </div>
 
   <!-- NO DATA HINT -->
@@ -269,143 +274,6 @@ function selectArticle(artNr){
   if(!current) return
   document.getElementById('articleSelect').value=artNr
   renderLayouts()
-}
-
-function val(field){
-  if(lang==='EN') return current[field+'En']||''
-  if(lang==='TL') return current[field+'Tl']||''
-  return current[field+'De']||''
-}
-
-function setLang(l){
-  lang=l; localStorage.setItem('lang',l)
-  document.querySelectorAll('[id^=btn-]').forEach(b=>b.className='px-4 py-1.5 rounded-full text-xs text-zinc-600')
-  document.getElementById('btn-'+l.toLowerCase()).className='px-4 py-1.5 rounded-full text-xs bg-black text-white'
-  if(current) renderLayouts()
-}
-
-function renderLayouts(){
-  if(!current) return
-  function hasVal(k){
-    try{
-      const v = val(k);
-      if(v===undefined || v===null) return false;
-      const s = String(v).trim();
-      return s!=='' && s.toLowerCase()!=='null' && s.toLowerCase()!=='undefined' && s!=='-' && s.length>0;
-    }catch(e){ return false; }
-  }
-  const sackSrc = current.bildSackUrl||current.bildSack||'';
-  const reisSrc = current.bildReisUrl||current.bildReis||'';
-
-  const textureBlock = hasVal('textur') ? `
-        <div style="background:#f4f4f5;border-radius:16px;padding:14px 18px;">
-          <div style="font-size:11px;letter-spacing:2px;color:#a1a1aa;font-family:'Plus Jakarta Sans';font-weight:600;">TEXTURE</div>
-          <div style="font-size:15px;font-weight:600;margin-top:4px;color:#18181b;">${val('textur')}</div>
-        </div>
-        ` : '';
-
-  const pairsBlock = hasVal('passtZu') ? `
-        <div style="background:#fefce8;border:1px solid #fef08a;border-radius:16px;padding:14px 18px;">
-          <div style="font-size:11px;letter-spacing:2px;color:#a16207;font-family:'Plus Jakarta Sans';font-weight:600;">PAIRS WELL WITH / PASST ZU</div>
-          <div style="font-size:15px;font-weight:600;margin-top:4px;color:#713f12;">${val('passtZu')}</div>
-        </div>
-        ` : '';
-
-  const cookingBlock = hasVal('kochmethode') ? `
-        <div style="background:#18181b;color:white;border-radius:16px;padding:14px 18px;">
-          <div style="font-size:11px;letter-spacing:2px;color:#a1a1aa;font-family:'Plus Jakarta Sans';font-weight:600;">COOKING</div>
-          <div style="font-size:14px;margin-top:4px;">${val('kochmethode')}</div>
-        </div>
-        ` : '';
-
-  const tasteAromaBlock = (hasVal('geschmack') || hasVal('aroma')) ? `
-        <div style="display:flex;gap:16px;align-items:flex-start;">
-          ${reisSrc? `<img src="${reisSrc}" style="width:88px;height:88px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid #e4e4e7;">`:''}
-          <div>
-            <div style="font-size:11px;letter-spacing:2px;color:#a1a1aa;font-family:'Plus Jakarta Sans';font-weight:600;">TASTE & AROMA</div>
-            ${hasVal('geschmack')? `<div style="font-size:18px;font-weight:700;margin-top:6px;line-height:1.2;color:#18181b;">${val('geschmack')}</div>`:''}
-            ${hasVal('aroma')? `<div style="font-size:14px;color:#71717a;margin-top:4px;">${val('aroma')}</div>`:''}
-          </div>
-        </div>
-        ` : '';
-
-  const layout1 = `
-    <div style="width:1080px;height:1080px;background:#fcfbf8;display:flex;flex-direction:row;padding:32px;box-sizing:border-box;font-family:'Fraunces',serif;position:relative;">
-      <div style="width:50%;display:flex;flex-direction:column;justify-content:space-between;">
-        <div>
-          <div style="font-size:13px;letter-spacing:2px;color:#a1a1aa;text-transform:uppercase;">• ${val('marke')||'Fuji'} • ${val('qualitaet')||'Premium'}</div>
-          <div style="font-size:44px;font-weight:700;line-height:1.05;margin-top:12px;color:#18181b;">${val('nameKurz')||val('sorte')||''} ${val('slogan')? `<div style="font-size:18px;font-weight:400;color:#52525b;margin-top:8px;">${val('slogan')}</div>` : ''}</div>
-          ${hasVal('short')? `<div style="font-size:16px;color:#71717a;margin-top:12px;">${val('short')}</div>`:''}
-        </div>
-        <div style="width:100%;height:560px;background:white;border-radius:24px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
-          ${sackSrc? `<img src="${sackSrc}" style="width:95%;height:95%;object-fit:contain;">` : `<div style="color:#aaa;">Kein Sack Bild</div>`}
-        </div>
-        <div style="font-size:13px;color:#a1a1aa;">${val('artikelnummer')} • ${val('gewicht')}${val('einheit')} • ${val('herkunft')} ${val('erntejahr')}</div>
-      </div>
-      <div style="width:50%;padding-left:32px;display:flex;flex-direction:column;gap:16px;">
-        ${tasteAromaBlock}
-        ${textureBlock}
-        ${pairsBlock}
-        ${cookingBlock}
-        <div style="flex:1"></div>
-        <div style="font-size:12px;color:#a1a1aa;text-align:right;">Kingfields Trade • Thailand</div>
-      </div>
-    </div>
-  `;
-
-  const layout2 = `
-    <div style="width:1080px;height:1080px;background:#f6f5f2;padding:32px;box-sizing:border-box;display:flex;gap:24px;font-family:'Plus Jakarta Sans';">
-      <div style="width:44%;background:white;border-radius:24px;padding:20px;display:flex;flex-direction:column;align-items:center;">
-        <div style="width:100%;height:520px;background:white;border-radius:16px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
-          ${sackSrc? `<img src="${sackSrc}" style="width:100%;height:100%;object-fit:contain;">`:''}
-        </div>
-        ${hasVal('passtZu')? `<div style="margin-top:16px;width:100%;text-align:center;"><div style="font-size:10px;letter-spacing:2px;color:#a1a1aa;">PASST ZU</div><div style="margin-top:8px;font-size:14px;">${val('passtZu').split(',').map(s=>s.trim()).filter(Boolean).join(' • ')}</div></div>`:''}
-      </div>
-      <div style="width:56%;display:flex;flex-direction:column;justify-content:center;">
-        <div style="font-size:11px;letter-spacing:3px;color:#71717a;">${val('marke')} • ${val('herkunft')}</div>
-        <div style="font-family:'Fraunces';font-size:52px;font-weight:700;line-height:0.95;margin-top:12px;">${val('nameKurz')||'Thai Duftreis'}</div>
-        ${hasVal('short')? `<div style="font-size:18px;color:#52525b;margin-top:12px;">${val('short')}</div>`:''}
-        <div style="margin-top:24px;display:flex;flex-direction:column;gap:12px;">
-          ${hasVal('geschmack')? `<div><div style="font-size:10px;color:#a1a1aa;letter-spacing:1px;">GESCHMACK</div><div style="font-weight:600;">${val('geschmack')}</div></div>`:''}
-          ${hasVal('aroma')? `<div><div style="font-size:10px;color:#a1a1aa;letter-spacing:1px;">AROMA</div><div style="font-weight:600;">${val('aroma')}</div></div>`:''}
-          ${hasVal('textur')? `<div><div style="font-size:10px;color:#a1a1aa;letter-spacing:1px;">TEXTUR</div><div style="font-weight:600;">${val('textur')}</div></div>`:''}
-          ${hasVal('kochmethode')? `<div style="margin-top:12px;padding:12px 16px;background:white;border-radius:12px;border:1px solid #e4e4e7;"><div style="font-size:10px;color:#a1a1aa;">KOCHMETHODE</div><div style="font-weight:600;">${val('kochmethode')}</div></div>`:''}
-        </div>
-      </div>
-    </div>
-  `;
-
-  const layout3 = `
-    <div style="width:1080px;height:1920px;background:#18181b;color:white;padding:48px;box-sizing:border-box;display:flex;flex-direction:column;font-family:'Fraunces';">
-      <div style="font-size:12px;letter-spacing:4px;color:#a1a1aa;">${val('marke')} • ${val('qualitaet')}</div>
-      <div style="font-size:64px;line-height:0.9;margin-top:16px;font-weight:700;">${val('nameKurz')||'Thai Duftreis'}</div>
-      <div style="margin-top:32px;width:100%;height:500px;background:white;border-radius:24px;overflow:hidden;display:flex;align-items:center;justify-content:center;">
-        ${sackSrc? `<img src="${sackSrc}" style="width:85%;height:85%;object-fit:contain;">`:''}
-      </div>
-      <div style="margin-top:32px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-        ${hasVal('geschmack')? `<div style="background:#27272a;border-radius:16px;padding:16px;"><div style="font-size:10px;letter-spacing:2px;color:#a1a1aa;">TASTE</div><div style="margin-top:6px;font-size:16px;">${val('geschmack')}</div></div>`:''}
-        ${hasVal('aroma')? `<div style="background:#27272a;border-radius:16px;padding:16px;"><div style="font-size:10px;letter-spacing:2px;color:#a1a1aa;">AROMA</div><div style="margin-top:6px;font-size:16px;">${val('aroma')}</div></div>`:''}
-        ${hasVal('textur')? `<div style="background:#27272a;border-radius:16px;padding:16px;"><div style="font-size:10px;letter-spacing:2px;color:#a1a1aa;">TEXTURE</div><div style="margin-top:6px;font-size:16px;">${val('textur')}</div></div>`:''}
-        ${hasVal('passtZu')? `<div style="background:#fefce8;color:#18181b;border-radius:16px;padding:16px;"><div style="font-size:10px;letter-spacing:2px;">PAIRS WELL WITH</div><div style="margin-top:6px;font-size:16px;font-weight:600;">${val('passtZu')}</div></div>`:''}
-      </div>
-      ${hasVal('kochmethode')? `<div style="margin-top:16px;background:white;color:black;border-radius:16px;padding:16px;"><div style="font-size:10px;letter-spacing:2px;color:#71717a;">COOKING</div><div style="margin-top:6px;">${val('kochmethode')}</div></div>`:''}
-    </div>
-  `;
-
-  const layout4 = layout1;
-
-  document.getElementById('preview1').innerHTML = layout1;
-  document.getElementById('preview2').innerHTML = layout2;
-  document.getElementById('preview3').innerHTML = layout3;
-  document.getElementById('preview4').innerHTML = layout4;
-  window._layouts = {layout1, layout2, layout3, layout4};
-}
-
-function val(field){
-  if(!current) return '';
-  if(lang==='EN') return (current[field+'En']||'').trim();
-  if(lang==='TL') return (current[field+'Tl']||'').trim();
-  return (current[field+'De']||'').trim();
 }
 
 function val(field){
