@@ -1,3 +1,4 @@
+T FIXED BEDIENBAR
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -137,10 +138,47 @@ function getClient(){let u=SUPABASE_URL.replace(/\/rest\/v1\/?$/,'').replace(/\/
 function fmt(it){return '₱'+Number(it.price).toLocaleString('en-PH')+' / '+it.kg+'kg';}
 function getCheapestId(){if(items.length===0) return null;let cheapest=items[0];let min=cheapest.price/cheapest.kg;for(let it of items){let per=it.price/it.kg;if(per<min-0.001){min=per;cheapest=it;}}return cheapest.id;}
 function autoAssignPinakaMura(){const cheapestId=getCheapestId();if(!cheapestId) return;items=items.map(function(it){let badge=it.badge||'';if(badge.toUpperCase().includes('PINAKA MURA')){badge=badge.replace(/PINAKA MURA/gi,'').trim();}if(it.id===cheapestId){if(!badge.toUpperCase().includes('PINAKA MURA')){badge=(badge?badge+' ':'')+'PINAKA MURA';badge=badge.trim();}}return Object.assign({},it,{badge:badge});});}
-function grundpreis(it){return (it.price/it.kg).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});}
-function setLang(lang){currentLang=lang;localStorage.setItem('mg_lang',lang);render();}
-function updateGrundLabel(){document.getElementById('grundLabel').textContent=showGrundpreis?'Grundpreis: AN':'Grundpreis: AUS';}
-function toggleGrund(val){showGrundpreis=val;manualGrund=true;localStorage.setItem('mg_grund',val?'1':'0');localStorage.setItem('mg_grund_manual','1');updateGrundLabel();render();}
+function grundpreis(it){
+  if(!it.kg || it.kg==0) return '0,00';
+  var per = it.price / it.kg;
+  return per.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function setLang(lang){
+currentLang=lang;
+localStorage.setItem('mg_lang',lang);
+var t={de:{grundOn:'Grundpreis: AN',grundOff:'Grundpreis: AUS'},en:{grundOn:'Unit price: ON',grundOff:'Unit price: OFF'},tl:{grundOn:'Presyo per kg: ON',grundOff:'Presyo per kg: OFF'}};
+if(!manualGrund){
+  showGrundpreis=(lang==='de');
+  var chk=document.getElementById('grundToggle');
+  if(chk) chk.checked=showGrundpreis;
+}
+updateGrundLabel();
+document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.remove('active');});
+var activeBtn=document.getElementById('lang-'+lang);
+if(activeBtn) activeBtn.classList.add('active');
+render();
+}
+function updateGrundLabel(){
+  var el=document.getElementById('grundLabel');
+  if(!el) return;
+  if(currentLang==='en'){
+    el.textContent=showGrundpreis?'Unit price: ON':'Unit price: OFF';
+  }else if(currentLang==='tl'){
+    el.textContent=showGrundpreis?'Presyo per kg: ON':'Presyo per kg: OFF';
+  }else{
+    el.textContent=showGrundpreis?'Grundpreis: AN':'Grundpreis: AUS';
+  }
+}
+function toggleGrund(val){
+  showGrundpreis=val;
+  manualGrund=true;
+  localStorage.setItem('mg_grund',val?'1':'0');
+  localStorage.setItem('mg_grund_manual','1');
+  updateGrundLabel();
+  render();
+  // also redraw canvas
+  if(typeof drawAutoCanvas==='function') drawAutoCanvas();
+}
 function render(){
 autoAssignPinakaMura();
 document.getElementById('badges').innerHTML=badges.map(function(b){return '<div class="badge" style="background:'+b.color+'"><span data-bid="'+b.id+'" '+(edit?'contenteditable="true" onblur="editBadge(this)"':'')+'>'+b.label+'</span>'+(edit?'<span style="cursor:pointer" onclick="delBadge(\''+b.id+'\')">×</span>':'')+'</div>';}).join('');
@@ -178,7 +216,11 @@ if(groups[kg]) groups[kg].sort(function(a,b){return (a.price/a.kg)-(b.price/b.kg
 if(groups[kg].length>0){
 t+='--- '+kg+'KG ---\n';
 groups[kg].forEach(function(it){
-t+=it.name+' '+(it.badge||'')+' - '+fmt(it)+'\n';
+if(showGrundpreis && it.kg!=1){
+  t+=it.name+' '+(it.badge||'')+' - '+fmt(it)+' (Grundpreis: ₱'+grundpreis(it)+'/kg)\n';
+}else{
+  t+=it.name+' '+(it.badge||'')+' - '+fmt(it)+'\n';
+}
 });
 t+='\n';
 }
