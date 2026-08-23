@@ -285,6 +285,369 @@ function setLang(l){
 }
 
 function renderLayouts(){
+  function hasVal(k){
+    try{
+      const v = val(k);
+      if(v===undefined || v===null) return false;
+      const s = String(v).trim();
+      return s!=='' && s.toLowerCase()!=='null' && s.toLowerCase()!=='undefined' && s!=='-' && s!=='—';
+    }catch(e){ return false; }
+  }
+  const get = (k)=>{ try{ const v=val(k); return v||'' }catch(e){ return '' } };
+
+  const textureBlock = hasVal('textur') ? `
+        <div style="background:#f4f4f5;border-radius:16px;padding:14px 18px;">
+          <div style="font-size:11px;letter-spacing:2px;color:#a1a1aa;font-family:'Plus Jakarta Sans';font-weight:600;">TEXTURE</div>
+          <div style="font-size:15px;font-weight:600;margin-top:4px;color:#18181b;">${get('textur')}</div>
+        </div>
+        ` : '';
+
+  const pairsBlock = hasVal('passtZu') ? `
+        <div style="background:#fefce8;border:1px solid #fef08a;border-radius:16px;padding:14px 18px;">
+          <div style="font-size:11px;letter-spacing:2px;color:#a16207;font-family:'Plus Jakarta Sans';font-weight:600;">PAIRS WELL WITH / PASST ZU</div>
+          <div style="font-size:15px;font-weight:600;margin-top:4px;color:#713f12;">${get('passtZu')}</div>
+        </div>
+        ` : '';
+
+  const cookingBlock = hasVal('kochmethode') ? `
+        <div style="background:#18181b;color:white;border-radius:16px;padding:14px 18px;">
+          <div style="font-size:11px;letter-spacing:2px;color:#a1a1aa;font-family:'Plus Jakarta Sans';font-weight:600;">COOKING</div>
+          <div style="font-size:14px;margin-top:4px;">${get('kochmethode')}</div>
+        </div>
+        ` : '';
+
+  const tasteAromaBlock = (hasVal('geschmack') || hasVal('aroma')) ? `
+        <div style="display:flex;gap:16px;align-items:flex-start;">
+          ${hasVal('bildReisUrl')? `<img src="${get('bildReisUrl')}" style="width:88px;height:88px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid #e4e4e7;">`:''}
+          <div>
+            <div style="font-size:11px;letter-spacing:2px;color:#a1a1aa;font-family:'Plus Jakarta Sans';font-weight:600;">TASTE & AROMA</div>
+            ${hasVal('geschmack')? `<div style="font-size:18px;font-weight:700;margin-top:6px;line-height:1.2;color:#18181b;">${get('geschmack')}</div>`:''}
+            ${hasVal('aroma')? `<div style="font-size:14px;color:#71717a;margin-top:4px;">${get('aroma')}</div>`:''}
+          </div>
+        </div>
+        ` : '';
+
+  const layout1 = `
+    <div style="width:1080px;height:1080px;background:#fcfbf8;display:flex;flex-direction:row;padding:32px;box-sizing:border-box;font-family:'Fraunces',serif;position:relative;">
+      <div style="width:50%;display:flex;flex-direction:column;justify-content:space-between;">
+        <div>
+          <div style="font-size:13px;letter-spacing:2px;color:#a1a1aa;text-transform:uppercase;">• ${get('marke')||'Fuji'} • ${get('qualitaet')||'Premium'}</div>
+          <div style="font-size:44px;font-weight:700;line-height:1.05;margin-top:12px;color:#18181b;">${get('nameKurz') ? get('nameKurz') : 'Thai Duftreis - Premium Qualität'}</div>
+          <div style="font-size:18px;color:#71717a;margin-top:12px;">${get('short')||'Süßes Aroma, weiche Textur'}</div>
+        </div>
+        <div style="width:100%;height:560px;background:white;border-radius:24px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+          ${hasVal('bildSackUrl')? `<img src="${get('bildSackUrl')}" style="width:95%;height:95%;object-fit:contain;">` : `<div style="color:#aaa;">Kein Sack Bild</div>`}
+        </div>
+        <div style="font-size:13px;color:#a1a1aa;">${get('artikelnummer')} • ${get('gewicht')}${get('einheit')} • ${get('herkunft')} ${get('erntejahr')}</div>
+      </div>
+      <div style="width:50%;padding-left:32px;display:flex;flex-direction:column;gap:16px;">
+        ${tasteAromaBlock}
+        ${textureBlock}
+        ${pairsBlock}
+        ${cookingBlock}
+        <div style="flex:1"></div>
+        <div style="font-size:12px;color:#a1a1aa;text-align:right;">Kingfields Trade • Thailand</div>
+      </div>
+    </div>
+  `;
+
+  const layout2 = layout1;
+  const layout3 = layout1;
+  const layout4 = layout1;
+
+  document.getElementById('preview1').innerHTML = layout1;
+  document.getElementById('preview2').innerHTML = layout2;
+  document.getElementById('preview3').innerHTML = layout3;
+  document.getElementById('preview4').innerHTML = layout4;
+  window._layouts = {layout1, layout2, layout3, layout4};
+}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kingfields - Facebook Product Layouts aus Stammdaten</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script><script>if(typeof html2canvas==="undefined"){document.write('<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"><\/script>')}</script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+.font-display{font-family:"Fraunces",serif}
+.font-body{font-family:"Plus Jakarta Sans",sans-serif}
+.chessboard{background-image:linear-gradient(45deg,#e5e7eb 25%,transparent 25%),linear-gradient(-45deg,#e5e7eb 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#e5e7eb 75%),linear-gradient(-45deg,transparent 75%,#e5e7eb 75%);background-size:20px 20px;background-position:0 0,0 10px,10px -10px,-10px 0px}
+</style>
+</head>
+<body class="bg-[#f6f5f2] font-body">
+<div class="max-w-[1600px] mx-auto p-4">
+
+  <!-- HEADER -->
+  <div class="bg-white rounded-[20px] shadow-sm border p-4 mb-4">
+    <div class="flex flex-wrap justify-between items-center gap-3">
+      <div>
+        <h1 class="font-display text-2xl font-bold">Facebook Product Studio</h1>
+        <p class="text-xs text-zinc-500">Wählt Artikel aus Stammdaten • Layout wird automatisch befüllt • Ready für Facebook</p>
+      </div>
+      <div class="flex gap-2 items-center flex-wrap">
+        <select id="articleSelect" onchange="selectArticle(this.value)" class="border rounded-full px-4 py-2 text-sm bg-zinc-50 min-w-[220px]">
+          <option value="">-- Artikel wählen (DR Menü) --</option>
+        </select>
+        <div class="flex bg-zinc-100 rounded-full p-1">
+          <button onclick="setLang('EN')" id="btn-en" class="px-4 py-1.5 rounded-full text-xs bg-black text-white">EN</button>
+          <button onclick="setLang('TL')" id="btn-tl" class="px-4 py-1.5 rounded-full text-xs">TL</button>
+          <button onclick="setLang('DE')" id="btn-de" class="px-4 py-1.5 rounded-full text-xs">DE</button>
+        </div>
+        <button onclick="loadFromSupabase()" class="bg-yellow-50 border border-yellow-200 px-4 py-2 rounded-full text-xs">🔄 Aus Supabase laden</button>
+      </div>
+    </div>
+    <!-- 5 NAV BUTTONS -->
+    <div class="flex flex-wrap gap-2 border-t pt-3 mt-3">
+      <button onclick="openNavLink(0)" class="bg-zinc-900 text-white px-4 py-2 rounded-full text-[13px] font-medium hover:bg-black">📋 <span id="nav-label-0">Preisliste</span></button>
+      <button onclick="openNavLink(1)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">🛒 <span id="nav-label-1">Stammdaten</span></button>
+      <button onclick="openNavLink(2)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">📦 <span id="nav-label-2">Katalog</span></button>
+      <button onclick="openNavLink(3)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">🌐 <span id="nav-label-3">Website</span></button>
+      <button onclick="openNavLink(4)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">📊 <span id="nav-label-4">Facebook Page</span></button>
+      <button onclick="toggleNavEdit()" class="ml-auto text-[11px] border px-3 py-1 rounded-full bg-white">⚙️ Edit Links</button>
+    </div>
+    <div id="nav-edit" class="hidden mt-3 bg-zinc-50 p-3 rounded-xl grid grid-cols-1 md:grid-cols-2 gap-2">
+      <div class="flex gap-2"><input id="nav-name-0" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-0" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
+      <div class="flex gap-2"><input id="nav-name-1" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-1" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
+      <div class="flex gap-2"><input id="nav-name-2" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-2" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
+      <div class="flex gap-2"><input id="nav-name-3" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-3" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
+      <div class="flex gap-2"><input id="nav-name-4" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-4" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
+      <button onclick="saveNavLinks()" class="bg-black text-white px-4 py-1.5 rounded-full text-xs w-fit">Save Links</button>
+    </div>
+<!-- Supabase moved to bottom -->
+  </div>
+
+  <!-- NO DATA HINT -->
+  <div id="no-data" class="bg-white rounded-[20px] p-12 text-center border">
+    <div class="font-display text-xl mb-2">Keine Stammdaten gefunden</div>
+    <p class="text-sm text-zinc-500 mb-4">Erst in der Stammdatenpflege Artikel mit 001 anlegen und speichern. Dann erscheinen sie hier im Dropdown.</p>
+    <div class="flex justify-center gap-2">
+      <button onclick="loadDemo()" class="bg-black text-white px-6 py-2 rounded-full text-sm">Demo Daten laden (3 Beispiel Artikel)</button>
+    </div>
+  </div>
+
+  <!-- LAYOUTS -->
+  <div id="layouts" class="hidden">
+    <div class="mb-4 flex flex-wrap justify-between items-center gap-3">
+      <div>
+        <h2 class="font-display text-lg font-semibold">4 Facebook-Ready Layout Ideen - Wie es aussehen könnte:</h2>
+        <p class="text-xs text-zinc-500">Alle Layouts ziehen automatisch: Sack Bild, Reis Detail, Geschmack, Passt zu, Aroma, Textur, Slogan aus deinen Stammdaten</p>
+      </div>
+      <button onclick="downloadAllLayouts()" class="bg-black text-white px-5 py-2 rounded-full text-sm font-bold">📥 Alle 4 als PNG exportieren (1080px)</button>
+    </div>
+
+    <div class="grid grid-cols-12 gap-4">
+      
+      <!-- LAYOUT 1: Classic Square 1080x1080 -->
+      <div class="col-span-12 lg:col-span-6">
+        <div class="bg-white rounded-[20px] border shadow-sm p-4">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="font-semibold text-sm">Layout 1: Classic Product Card • 1080x1080 (Facebook Feed)</h3>
+            <button onclick="downloadLayout('layout1')" class="text-[11px] border px-3 py-1 rounded-full">📥 PNG Export</button>
+          </div>
+          <div id="layout1" class="aspect-square bg-white border-2 border-zinc-100 rounded-[20px] overflow-hidden relative flex">
+            <!-- Content will be injected -->
+          </div>
+          <p class="text-[11px] text-zinc-500 mt-2">Perfekt für normalen Facebook Post. Sack links groß, Eigenschaften rechts.</p>
+        </div>
+      </div>
+
+      <!-- LAYOUT 2: Food Pairing Focus -->
+      <div class="col-span-12 lg:col-span-6">
+        <div class="bg-white rounded-[20px] border shadow-sm p-4">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="font-semibold text-sm">Layout 2: Food Pairing • 1080x1080 (Passt zu Essen)</h3>
+            <button onclick="downloadLayout('layout2')" class="text-[11px] border px-3 py-1 rounded-full">📥 PNG Export</button>
+          </div>
+          <div id="layout2" class="aspect-square bg-[#fef9ec] border-2 border-zinc-100 rounded-[20px] overflow-hidden relative">
+          </div>
+          <p class="text-[11px] text-zinc-500 mt-2">Fokus auf "Passt gut zu" - ideal für Engagement: Leute taggen was sie dazu essen.</p>
+        </div>
+      </div>
+
+      <!-- LAYOUT 3: Story 9:16 -->
+      <div class="col-span-12 lg:col-span-4">
+        <div class="bg-white rounded-[20px] border shadow-sm p-4">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="font-semibold text-sm">Layout 3: Story • 1080x1920</h3>
+            <button onclick="downloadLayout('layout3')" class="text-[11px] border px-3 py-1 rounded-full">📥 Export</button>
+          </div>
+          <div id="layout3" class="aspect-[9/16] bg-zinc-900 border-2 border-zinc-100 rounded-[20px] overflow-hidden relative max-h-[600px] mx-auto w-full">
+          </div>
+        </div>
+      </div>
+
+      <!-- LAYOUT 4: Minimal Premium Ad -->
+      <div class="col-span-12 lg:col-span-8">
+        <div class="bg-white rounded-[20px] border shadow-sm p-4">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="font-semibold text-sm">Layout 4: Minimal Premium Ad • 1200x628 (Facebook Ads)</h3>
+            <button onclick="downloadLayout('layout4')" class="text-[11px] border px-3 py-1 rounded-full">📥 PNG Export</button>
+          </div>
+          <div id="layout4" class="aspect-[1200/628] bg-white border-2 border-zinc-100 rounded-[20px] overflow-hidden relative">
+          </div>
+          <p class="text-[11px] text-zinc-500 mt-2">Für bezahlte Facebook Ads optimiert - wenig Text (20% Regel), großer Slogan.</p>
+        </div>
+        
+        <!-- TECH INFO -->
+        <div class="bg-white rounded-[20px] border shadow-sm p-4 mt-4">
+          <h3 class="font-semibold text-sm mb-2">🔧 Umsetzung - So funktioniert es:</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-[12px]">
+            <div class="bg-zinc-50 p-3 rounded-xl">
+              <b>1. Daten kommen aus Supabase</b><br>
+              Tabelle <code>stammdaten</code> • Feld <code>marketing</code> JSONB enthält EN/TL/DE<br>
+              Bild URLs: <code>bild_sack_url</code> + <code>bild_reis_url</code> echte https:// links
+            </div>
+            <div class="bg-zinc-50 p-3 rounded-xl">
+              <b>2. Dropdown füllt Layouts</b><br>
+              JS: <code>supabase.from('stammdaten').select('*')</code> -> füllt Select<br>
+              Bei Auswahl: alle 4 Layouts werden mit <code>artikel.marketing[lang]</code> befüllt
+            </div>
+            <div class="bg-zinc-50 p-3 rounded-xl">
+              <b>3. Facebook Ready Export</b><br>
+              Button "PNG Export" nutzt html2canvas -> 1080px PNG<br>
+              Direkt hochladen zu Facebook Page / Ads Manager. Kein Photoshop nötig.
+            </div>
+          </div>
+          <div class="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-[11px]">
+            <b>Dein nächster Schritt:</b> Du hast jetzt Stammdatenpflege (Eingabe) + diese Seite (Ausgabe). Beide nutzen gleiche Supabase Tabelle. Tablet für Eingabe, diese Seite für Facebook Erstellung. Willst du dass ich den PNG Export (html2canvas) gleich fest einbaue + automatischen Upload zu Facebook Page?
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+let navLinks = JSON.parse(localStorage.getItem('navLinks_fb') || '[{"name":"Preisliste","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Pricelist.html"},{"name":"Stammdaten","url":""},{"name":"Katalog","url":""},{"name":"Website","url":""},{"name":"Facebook Page","url":""}]')
+let lang = localStorage.getItem('lang') || 'EN'
+let articles = []
+let current = null
+let sbClient = null
+
+function openNavLink(i){ const l=navLinks[i]; if(l&&l.url) window.open(l.url,'_blank'); else { alert('Kein Link für '+l.name+' - klick auf Edit Links'); toggleNavEdit() } }
+function toggleNavEdit(){ const el=document.getElementById('nav-edit'); el.classList.toggle('hidden'); for(let i=0;i<5;i++){ document.getElementById('nav-name-'+i).value=navLinks[i]?.name||''; document.getElementById('nav-url-'+i).value=navLinks[i]?.url||'' } }
+function saveNavLinks(){ for(let i=0;i<5;i++){ navLinks[i]={name:document.getElementById('nav-name-'+i).value||('Button '+(i+1)), url:document.getElementById('nav-url-'+i).value||''}; document.getElementById('nav-label-'+i).textContent=navLinks[i].name } localStorage.setItem('navLinks_fb', JSON.stringify(navLinks)); document.getElementById('nav-edit').classList.add('hidden') }
+function loadNavLabels(){ for(let i=0;i<5;i++){ const lbl=document.getElementById('nav-label-'+i); if(lbl&&navLinks[i]) lbl.textContent=navLinks[i].name } }
+
+const savedConf = JSON.parse(localStorage.getItem('supabase_config')||'{}')
+if(savedConf.url) document.getElementById('sb-url').value=savedConf.url
+if(savedConf.key) document.getElementById('sb-key').value=savedConf.key
+if(savedConf.url && savedConf.key) initSupabase(savedConf.url, savedConf.key)
+else loadLocal()
+
+function initSupabase(url,key){
+  try{ sbClient=supabase.createClient(url,key); document.getElementById('sb-status').textContent='✅ Connected'; loadFromSupabase() }catch(e){ document.getElementById('sb-status').textContent='❌ '+e.message; loadLocal() }
+}
+function saveSB(){ const u=document.getElementById('sb-url').value.trim(), k=document.getElementById('sb-key').value.trim(); if(!u||!k) return; localStorage.setItem('supabase_config', JSON.stringify({url:u,key:k})); initSupabase(u,k) }
+
+function loadLocal(){
+  // Try all possible localStorage keys
+  let local = JSON.parse(localStorage.getItem('kingfields_full_v3')||'[]')
+  if(local.length===0) local = JSON.parse(localStorage.getItem('kingfields_full_v2')||'[]')
+  if(local.length===0) local = JSON.parse(localStorage.getItem('kingfields')||'[]')
+  if(local.length===0) {
+    // Try to find any key with articles
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i)
+      try{
+        const v=JSON.parse(localStorage.getItem(k))
+        if(Array.isArray(v) && v.length>0 && v[0].artikelnummer) { local=v; console.log('Found in',k); break }
+      }catch(e){}
+    }
+  }
+  console.log('Local articles found:', local.length, local[0])
+  if(local.length===0) return
+  articles=local
+  fillSelect()
+}
+
+async function loadFromSupabase(){
+  if(!sbClient){ loadLocal(); return }
+  const {data, error} = await sbClient.from('stammdaten').select('*').order('artikelnummer')
+  if(error){ console.error(error); loadLocal(); return }
+  // Map supabase to local format + keep base64 if any
+  articles=data.map(d=>{
+    const m=d.marketing||{}
+    const en=m.en||{}, tl=m.tl||{}, de=m.de||{}
+    return {
+      id:d.artikelnummer,
+      artikelnummer:d.artikelnummer,
+      nameKurz:d.name_kurz||'',
+      nameLang:d.name_lang||'',
+      marke:d.marke||'',
+      sorte:d.sorte||'',
+      qualitaet:d.qualitaet||'Premium',
+      herkunft:d.herkunft||'Thailand',
+      erntejahr:d.erntejahr||'2024',
+      gewicht:d.gewicht||'5',
+      einheit:d.einheit||'kg',
+      bildSackUrl:d.bild_sack_url||d.bild_sack||'',
+      bildReisUrl:d.bild_reis_url||d.bild_reis||'',
+      bildSack:d.bild_sack||'',
+      bildReis:d.bild_reis||'',
+      // Support all naming variants
+      geschmackEn:en.geschmack||m.geschmack||'', geschmackTl:tl.geschmack||'', geschmackDe:de.geschmack||m.geschmack_de||'',
+      aromaEn:en.aroma||'', aromaTl:tl.aroma||'', aromaDe:de.aroma||'',
+      texturEn:en.textur||'', texturTl:tl.textur||'', texturDe:de.textur||'',
+      passtZuEn:en.passtZu||en.passt_zu||'', passtZuTl:tl.passtZu||'', passtZuDe:de.passtZu||'',
+      kochmethodeEn:en.kochmethode||'', kochmethodeTl:tl.kochmethode||'', kochmethodeDe:de.kochmethode||'',
+      sloganEn:en.slogan||'', sloganTl:tl.slogan||'', sloganDe:de.slogan||'',
+      shortEn:en.short||'', shortTl:tl.short||'', shortDe:de.short||'',
+      storyEn:en.story||'', storyTl:tl.story||'', storyDe:de.story||'',
+      tasteEn:en.taste||'', tasteTl:tl.taste||'', tasteDe:de.taste||'',
+      originEn:en.origin||'', originTl:tl.origin||'', originDe:de.origin||'',
+      cookingEn:en.cooking||'', cookingTl:tl.cooking||'', cookingDe:de.cooking||'',
+    }
+  })
+  console.log('Supabase articles:', articles)
+  fillSelect()
+}
+
+function fillSelect(){
+  const sel=document.getElementById('articleSelect')
+  sel.innerHTML='<option value="">-- Artikel wählen (DR Menü) --</option>' + articles.map(a=>`<option value="${a.artikelnummer}">${a.artikelnummer} • ${a.nameKurz||a.sorte} • ${a.marke}</option>`).join('')
+  if(articles.length>0){
+    document.getElementById('no-data').classList.add('hidden')
+    document.getElementById('layouts').classList.remove('hidden')
+    if(!current) selectArticle(articles[0].artikelnummer)
+  }
+}
+
+function loadDemo(){
+  articles=[
+    {artikelnummer:'001', nameKurz:'Hasmin 5kg', marke:'Kingfields', sorte:'Hasmin', qualitaet:'Premium', herkunft:'Thailand', erntejahr:'2024', gewicht:'5', einheit:'kg', bildSackUrl:'', bildReisUrl:'', geschmackEn:'Soft, fluffy, fragrant', geschmackDe:'Weich, fluffig, duftend', geschmackTl:'Malambot, mabango', aromaEn:'Natural jasmine aroma', aromaDe:'Natürliches Jasmin', aromaTl:'Natural jasmine', texturEn:'Soft & slightly sticky', texturDe:'Weich & leicht klebrig', texturTl:'Malambot at medyo malagkit', passtZuEn:'Curry, grilled meat, vegetables, adobo, fish', passtZuDe:'Curry, Grillfleisch, Gemüse, Adobo, Fisch', passtZuTl:'Curry, inihaw, gulay, adobo', kochmethodeEn:'1 cup rice : 1.2 water, 15 min', kochmethodeDe:'1 Tasse : 1,2 Wasser, 15 Min', kochmethodeTl:'1 tasa : 1.2 tubig, 15 min', sloganEn:'Thai Soft Rice - Premium Quality', sloganDe:'Thai Duftreis - Premium Qualität', sloganTl:'De Kalidad na Bigas', shortEn:'Sweet aroma, soft texture', shortDe:'Süßes Aroma, weiche Textur', shortTl:'Mabango at malambot'},
+    {artikelnummer:'002', nameKurz:'Jasmin 10kg', marke:'Kingfields', sorte:'Jasmin', qualitaet:'Premium', herkunft:'Thailand', erntejahr:'2024', gewicht:'10', einheit:'kg', bildSackUrl:'', bildReisUrl:'', geschmackEn:'Extra fragrant', geschmackDe:'Extra duftend', geschmackTl:'Sobrang mabango', aromaEn:'Strong jasmine', aromaDe:'Starkes Jasmin', aromaTl:'Matapang na jasmine', texturEn:'Fluffy', texturDe:'Fluffig', texturTl:'Malambot', passtZuEn:'Fried rice, curry, stir fry', passtZuDe:'Bratreis, Curry, Wok', passtZuTl:'Sinangag, curry', kochmethodeEn:'1:1.2 ratio', kochmethodeDe:'1:1,2 Verhältnis', kochmethodeTl:'1:1.2', sloganEn:'Everyday Jasmine', sloganDe:'Alltags Jasmin', sloganTl:'Araw-araw na Jasmine', shortEn:'Daily premium rice', shortDe:'Täglicher Premium Reis', shortTl:'Araw-araw na premium'},
+    {artikelnummer:'003', nameKurz:'Bio Hasmin 5kg', marke:'Kingfields Bio', sorte:'Hasmin', qualitaet:'Organic', herkunft:'Thailand', erntejahr:'2024', gewicht:'5', einheit:'kg', bildSackUrl:'', bildReisUrl:'', geschmackEn:'Natural, soft', geschmackDe:'Natürlich, weich', geschmackTl:'Natural, malambot', aromaEn:'Organic natural', aromaDe:'Bio natürlich', aromaTl:'Organic', texturEn:'Soft natural', texturDe:'Weich natürlich', texturTl:'Malambot', passtZuEn:'Healthy bowls, vegetables, fish', passtZuDe:'Healthy Bowls, Gemüse, Fisch', passtZuTl:'Healthy, gulay, isda', kochmethodeEn:'Rinse well, 1:1.2', kochmethodeDe:'Gut waschen, 1:1,2', kochmethodeTl:'Hugasang mabuti', sloganEn:'Organic Choice', sloganDe:'Bio Wahl', sloganTl:'Organic na pagpipilian', shortEn:'100% organic', shortDe:'100% Bio', shortTl:'100% organic'},
+  ]
+  fillSelect()
+}
+
+function selectArticle(artNr){
+  current=articles.find(a=>a.artikelnummer===artNr)
+  if(!current) return
+  document.getElementById('articleSelect').value=artNr
+  renderLayouts()
+}
+
+function val(field){
+  if(lang==='EN') return current[field+'En']||''
+  if(lang==='TL') return current[field+'Tl']||''
+  return current[field+'De']||''
+}
+
+function setLang(l){
+  lang=l; localStorage.setItem('lang',l)
+  document.querySelectorAll('[id^=btn-]').forEach(b=>b.className='px-4 py-1.5 rounded-full text-xs text-zinc-600')
+  document.getElementById('btn-'+l.toLowerCase()).className='px-4 py-1.5 rounded-full text-xs bg-black text-white'
+  if(current) renderLayouts()
+}
+
+function renderLayouts(){
   function hasVal(k){ const v = (typeof val === 'function' ? val(k) : ''); return v && String(v).trim()!=='' && String(v).trim().toLowerCase()!=='null' && String(v).trim()!=='-' }
   function showIf(k, content){ return hasVal(k) ? content : ''; }
 
