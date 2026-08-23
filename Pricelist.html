@@ -67,7 +67,9 @@ footer{background:#0d5cb6;color:#fff;text-align:center;padding:14px;margin-top:2
      <span id="grundLabel">Grundpreis: AN</span>
     </div>
   </div>
-  <div class="toolbar-right">
+  <div class="toolbar-right" style="display:flex;gap:6px;flex-wrap:wrap">
+    <button onclick="downloadPricelistPNG()" style="background:#d32f2f;color:#fff;border:3px solid #000;border-radius:999px;padding:8px 14px;font-weight:900;font-size:12px;box-shadow:2px 2px 0 #000;cursor:pointer">🔴 PNG DOWNLOAD</button>
+    <button onclick="downloadPricelistHTML()" style="background:#b71c1c;color:#fff;border:3px solid #000;border-radius:999px;padding:8px 14px;font-weight:900;font-size:12px;box-shadow:2px 2px 0 #000;cursor:pointer">🔴 HTML DOWNLOAD</button>
     <button id="toggle" class="edit-toggle">✏️ EDITIEREN - OFF</button>
   </div>
 </div>
@@ -111,7 +113,17 @@ footer{background:#0d5cb6;color:#fff;text-align:center;padding:14px;margin-top:2
 </div>
 </div>
 
+<div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+  <button onclick="downloadPricelistPNG()" style="background:#d32f2f;color:#fff;border:4px solid #000;border-radius:12px;padding:16px 24px;font-weight:900;font-size:16px;box-shadow:4px 4px 0 #000;cursor:pointer;width:100%;max-width:320px">🔴 PREISLISTE DOWNLOAD<br><span style="font-size:12px">PNG für Facebook</span></button>
+  <button onclick="downloadPricelistHTML()" style="background:#b71c1c;color:#fff;border:4px solid #000;border-radius:12px;padding:16px 24px;font-weight:900;font-size:16px;box-shadow:4px 4px 0 #000;cursor:pointer;width:100%;max-width:320px">🔴 PRICELIST DOWNLOAD<br><span style="font-size:12px">HTML mit Grundpreis</span></button>
+</div>
 <div class="fb-box"><div style="display:flex;justify-content:space-between"><h3 data-i18n="fbTitle">📋 FÜR FACEBOOK KOPIEREN</h3><button class="btn btn-black" onclick="copyFB()" data-i18n="copy">Kopieren</button></div><textarea id="fbText"></textarea></div>
+<div style="margin-top:12px;background:#ffebee;border:3px solid #d32f2f;border-radius:12px;padding:12px;text-align:center">
+  <div style="font-weight:900;font-size:14px">📤 Für Supabase Upload:</div>
+  <div style="font-size:11px;margin:6px 0">Deine URL: crdtuptj.../Pricelist/murang-bigas-mary-grace-rice-supply.png</div>
+  <button onclick="window.open('https://crdtuptjybxbsezxtksp.supabase.co/storage/v1/object/public/Pricelist/murang-bigas-mary-grace-rice-supply.png','_blank')" style="background:#0d5cb6;color:#fff;border:2px solid #000;border-radius:999px;padding:8px 16px;font-weight:900;cursor:pointer">🔗 Aktuelle URL öffnen</button>
+</div>
+
 </div>
 <footer>
 <div id="footWarn" style="color:#ffeb3b;font-weight:900;font-size:12px; text-transform:uppercase"></div>
@@ -409,7 +421,31 @@ async function loadFromSupabase(){
   }
  }catch(e){document.getElementById('status').textContent='❌ '+e.message; render();}
 }
+window.downloadPricelistPNG = async ()=>{
+  // Erstelle Screenshot via Canvas - einfache Methode: öffne PNG URL
+  const url = "https://crdtuptjybxbsezxtksp.supabase.co/storage/v1/object/public/Pricelist/murang-bigas-mary-grace-rice-supply.png";
+  window.open(url, '_blank');
+  // Zusätzlich aktuelle Seite als Bild speichern via Browser print
+  alert("PNG Download: Das aktuelle Bild von Supabase öffnet sich. Zum Aktualisieren musst du zuerst in Supabase das neue Bild hochladen. Alternativ nutze HTML Download!");
+}
+window.downloadPricelistHTML = ()=>{
+  const htmlContent = document.documentElement.outerHTML;
+  const blob = new Blob([htmlContent], {type: 'text/html'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = "Mary-Grace-Preisliste-" + new Date().toISOString().split('T')[0] + ".html";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+window.downloadForSupabase = ()=>{
+  // Download PNG das direkt auf Supabase URL passt
+  const a = document.createElement('a');
+  a.href = "/mnt/data/murang-bigas-mary-grace-rice-supply.png";
+  a.download = "murang-bigas-mary-grace-rice-supply.png";
+  a.click();
+}
 async function saveToSupabase(){
+
  const c=getClient();
  document.getElementById('status').textContent='Speichert...';
  try{
