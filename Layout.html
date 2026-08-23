@@ -6,6 +6,7 @@
 <title>Kingfields - Facebook Product Layouts aus Stammdaten</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 .font-display{font-family:"Fraunces",serif}
@@ -71,9 +72,12 @@
 
   <!-- LAYOUTS -->
   <div id="layouts" class="hidden">
-    <div class="mb-4">
-      <h2 class="font-display text-lg font-semibold">4 Facebook-Ready Layout Ideen - Wie es aussehen könnte:</h2>
-      <p class="text-xs text-zinc-500">Alle Layouts ziehen automatisch: Sack Bild, Reis Detail, Geschmack, Passt zu, Aroma, Textur, Slogan aus deinen Stammdaten</p>
+    <div class="mb-4 flex flex-wrap justify-between items-center gap-3">
+      <div>
+        <h2 class="font-display text-lg font-semibold">4 Facebook-Ready Layout Ideen - Wie es aussehen könnte:</h2>
+        <p class="text-xs text-zinc-500">Alle Layouts ziehen automatisch: Sack Bild, Reis Detail, Geschmack, Passt zu, Aroma, Textur, Slogan aus deinen Stammdaten</p>
+      </div>
+      <button onclick="downloadAllLayouts()" class="bg-black text-white px-5 py-2 rounded-full text-sm font-bold">📥 Alle 4 als PNG exportieren (1080px)</button>
     </div>
 
     <div class="grid grid-cols-12 gap-4">
@@ -407,9 +411,54 @@ function renderLayouts(){
   `
 }
 
-function downloadLayout(id){
-  alert('PNG Export: In finaler Version nutze ich html2canvas. Für jetzt Screenshot machen (Rechtsklick > Screenshot). Soll ich html2canvas gleich einbauen für 1-Klick Download 1080x1080?')
+async function downloadLayout(id){
+  const el = document.getElementById(id)
+  if(!el){ alert('Layout nicht gefunden'); return }
+  const artNr = current?.artikelnummer || '000'
+  const langSuffix = lang
+  const fileName = `Kingfields_${artNr}_${id}_${langSuffix}_${new Date().toISOString().slice(0,10)}.png`
+  
+  // Show loading
+  const btn = event?.target
+  const origText = btn ? btn.textContent : ''
+  if(btn) { btn.textContent = '⏳ Export...'; btn.disabled = true }
+  
+  try{
+    // For high quality 1080px export, scale up
+    const canvas = await html2canvas(el, {
+      scale: 2, // 2x for 1080 quality (element is ~540px, scale 2 = 1080)
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: null,
+      logging: false,
+      width: el.offsetWidth,
+      height: el.offsetHeight
+    })
+    
+    // Download
+    const link = document.createElement('a')
+    link.download = fileName
+    link.href = canvas.toDataURL('image/png', 1.0)
+    link.click()
+    
+    if(btn) { btn.textContent = '✅ Exported!'; setTimeout(()=>{ btn.textContent = origText; btn.disabled=false }, 2000) }
+    
+    console.log('Exported', fileName, canvas.width+'x'+canvas.height)
+  }catch(e){
+    console.error('Export failed', e)
+    alert('Export Fehler: '+e.message+'\n\nVersuch: Rechtsklick auf Layout > Screenshot speichern als Workaround')
+    if(btn) { btn.textContent = origText; btn.disabled=false }
+  }
 }
+
+async function downloadAllLayouts(){
+  if(!current){ alert('Erst Artikel wählen'); return }
+  for(const id of ['layout1','layout2','layout3','layout4']){
+    await downloadLayout(id)
+    await new Promise(r=>setTimeout(r, 500))
+  }
+}
+
 
 // Init
 setLang(lang)
