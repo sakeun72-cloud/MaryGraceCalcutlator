@@ -120,7 +120,7 @@ footer{background:#0d5cb6;color:#fff;text-align:center;padding:14px;margin-top:2
 </footer>
 
 <script>
-const DEFAULT_URL=""; const DEFAULT_KEY="";
+const DEFAULT_URL="https://crdtuptjybxbsezxtksp.supabase.co"; const DEFAULT_KEY="sb_publishable_GU6AAlF0zc3LB4hFlKK0fw_TNxo9z7q";
 let badges=[
 {id:"b1",label:"GCash Only",color:"#1e88e5"},
 {id:"b2",label:"FREE DELIVERY",color:"#2e7d32"},
@@ -137,11 +137,21 @@ let items=[
 ];
 let edit=false; let supa=null;
 function client(){
- const url=document.getElementById('sbUrl').value.trim()||DEFAULT_URL;
- const key=document.getElementById('sbKey').value.trim()||DEFAULT_KEY;
- if(!url||!key) return null;
+ let urlRaw=document.getElementById('sbUrl').value.trim()||DEFAULT_URL;
+ let keyRaw=document.getElementById('sbKey').value.trim()||DEFAULT_KEY;
+ // Fix: remove /rest/v1/ if user pasted full REST URL
+ let url = urlRaw.replace(/\/rest\/v1\/?$/, '').replace(/\/$/, '');
+ if(!url||!keyRaw) return null;
  if(supa) return supa;
- supa=window.supabase.createClient(url,key);return supa;
+ try{
+  supa=window.supabase.createClient(url, keyRaw);
+ }catch(e){
+  console.error(e);
+  document.getElementById('status').textContent='❌ '+e.message;
+  return null;
+ }
+ return supa;
+}
 }
 function fmt(it){ return `₱${Number(it.price).toLocaleString('en-PH')} / ${it.kg}kg`; }
 
@@ -224,7 +234,7 @@ async function loadFromSupabase(){
  const c=client(); if(!c){document.getElementById('status').textContent='URL+KEY!';return}
  document.getElementById('status').textContent='Lädt...';
  try{
-  const table=document.getElementById('sbTable').value;
+  let table=document.getElementById('sbTable').value.trim()||'pricelist_config';
   const {data,error}=await c.from(table).select('data').eq('id',1).single();
   if(error) throw error;
   if(data?.data?.items) items=data.data.items;
@@ -237,7 +247,7 @@ async function saveToSupabase(){
  const c=client(); if(!c){document.getElementById('status').textContent='URL+KEY!';return}
  document.getElementById('status').textContent='Speichert...';
  try{
-  const table=document.getElementById('sbTable').value;
+  let table=document.getElementById('sbTable').value.trim()||'pricelist_config';
   const payload={id:1,data:{items,badges,
    hTitle:document.getElementById('hTitle').textContent,
    hAddr:document.getElementById('hAddr').textContent
