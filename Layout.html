@@ -6,13 +6,6 @@
 <title>Kingfields - Facebook Product Layouts aus Stammdaten</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script>
-// Fallback if cdnjs blocked
-if(typeof html2canvas === 'undefined'){
-  document.write('<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"><\/script>')
-}
-</script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 .font-display{font-family:"Fraunces",serif}
@@ -78,12 +71,9 @@ if(typeof html2canvas === 'undefined'){
 
   <!-- LAYOUTS -->
   <div id="layouts" class="hidden">
-    <div class="mb-4 flex flex-wrap justify-between items-center gap-3">
-      <div>
-        <h2 class="font-display text-lg font-semibold">4 Facebook-Ready Layout Ideen - Wie es aussehen könnte:</h2>
-        <p class="text-xs text-zinc-500">Alle Layouts ziehen automatisch: Sack Bild, Reis Detail, Geschmack, Passt zu, Aroma, Textur, Slogan aus deinen Stammdaten</p>
-      </div>
-      <button onclick="downloadAllLayouts()" class="bg-black text-white px-5 py-2 rounded-full text-sm font-bold">📥 Alle 4 als PNG exportieren (1080px)</button>
+    <div class="mb-4">
+      <h2 class="font-display text-lg font-semibold">4 Facebook-Ready Layout Ideen - Wie es aussehen könnte:</h2>
+      <p class="text-xs text-zinc-500">Alle Layouts ziehen automatisch: Sack Bild, Reis Detail, Geschmack, Passt zu, Aroma, Textur, Slogan aus deinen Stammdaten</p>
     </div>
 
     <div class="grid grid-cols-12 gap-4">
@@ -297,56 +287,48 @@ function setLang(l){
 
 function renderLayouts(){
   if(!current) return
-  console.log('Current article:', current)
-  // Sack: try URL first, then base64 (bildSack, bild_sack, Sack Base64)
   const sackSrc = current.bildSackUrl || current.bild_sack_url || current.bildSack || current.bild_sack || current.sackBase64 || ''
   const reisSrc = current.bildReisUrl || current.bild_reis_url || current.bildReis || current.bild_reis || current.reisBase64 || ''
-  const sack = sackSrc ? `<img src="${sackSrc}" class="w-full h-full object-contain" onerror="this.parentElement.innerHTML='<div class=\'text-[10px] text-red-500 p-2\'>Bild Fehler: URL ungültig</div>'">` : `<div class="w-full h-full chessboard flex items-center justify-center text-[10px] text-zinc-400">Kein Sack Bild<br>${current.artikelnummer}</div>`
-  const reis = reisSrc ? `<img src="${reisSrc}" class="w-full h-full object-cover rounded-full" onerror="this.parentElement.innerHTML='<div class=\'w-full h-full bg-amber-100 rounded-full flex items-center justify-center text-[10px]\'>Fehler</div>'">` : `<div class="w-full h-full bg-amber-100 rounded-full flex items-center justify-center text-[10px]">Kein Reis Bild</div>`
+  const zoom = current.bildReisZoom || current.bild_reis_zoom || 1
+  const panX = current.bildReisPanX || current.bild_reis_pan_x || 0
+  const panY = current.bildReisPanY || current.bild_reis_pan_y || 0
+  const sackImg = sackSrc ? `<img src="${sackSrc}" class="w-full h-full object-contain" crossorigin="anonymous">` : `<div class="w-full h-full chessboard flex items-center justify-center text-[10px] text-zinc-400">Kein Bild</div>`
+  const reisImgSimple = reisSrc ? `<img src="${reisSrc}" crossorigin="anonymous" style="transform: translate(${panX}px, ${panY}px) scale(${zoom}); transform-origin:center; width:100%; height:100%; object-fit:cover;">` : `<div class="w-full h-full bg-amber-100 flex items-center justify-center text-[10px]">Kein Reis Bild</div>`
 
-  // LAYOUT 1 Classic
+  // LAYOUT 1 - Classic ohne Artikelnummer
   document.getElementById('layout1').innerHTML=`
     <div class="flex w-full h-full">
       <div class="w-[48%] bg-[#f9f8f6] p-6 flex flex-col justify-between">
         <div>
-          <div class="text-[10px] tracking-widest text-zinc-400 font-bold">${current.marke} • ${current.sorte} • ${current.qualitaet}</div>
-          <div class="font-display text-[28px] leading-[0.9] font-bold mt-2">${val('slogan')}</div>
-          <div class="text-[13px] mt-3 text-zinc-600">${val('short')}</div>
+          <div class="text-[10px] tracking-widest text-zinc-400 font-bold uppercase">${current.marke} • ${current.sorte} • ${current.qualitaet}</div>
+          <div class="font-display text-[30px] leading-[1.05] font-bold mt-3">${val('slogan')}</div>
+          <div class="text-[13px] mt-3 text-zinc-600 leading-[1.4]">${val('short')}</div>
         </div>
-        <div class="w-full h-[62%] mt-4">${sack}</div>
-        <div class="text-[10px] text-zinc-400 mt-2">${current.artikelnummer} • ${current.gewicht}${current.einheit} • ${current.herkunft} ${current.erntejahr}</div>
+        <div class="w-full h-[58%] mt-4 flex items-center justify-center">${sackImg}</div>
+        <div class="text-[10px] text-zinc-400 mt-2">${current.gewicht}${current.einheit} • ${current.herkunft} • ${current.qualitaet}</div>
       </div>
       <div class="w-[52%] p-6 flex flex-col justify-between bg-white">
         <div>
           <div class="flex gap-3 items-center">
-            <div class="w-20 h-20 rounded-full overflow-hidden border">${reis}</div>
+            <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-white shadow-sm flex-shrink-0">${reisImgSimple}</div>
             <div>
-              <div class="text-[11px] font-bold uppercase tracking-widest text-zinc-400">Taste & Aroma</div>
-              <div class="text-[13px] font-semibold">${val('geschmack')}</div>
-              <div class="text-[12px] text-zinc-500">${val('aroma')}</div>
+              <div class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Taste & Aroma</div>
+              <div class="text-[13px] font-semibold leading-[1.2] mt-1">${val('geschmack')}</div>
+              <div class="text-[12px] text-zinc-500 leading-[1.3] mt-1">${val('aroma')}</div>
             </div>
           </div>
           <div class="mt-6 space-y-3">
-            <div class="bg-zinc-50 rounded-xl p-3">
-              <div class="text-[10px] font-bold tracking-widest text-zinc-400">TEXTURE</div>
-              <div class="text-[12px]">${val('textur')}</div>
-            </div>
-            <div class="bg-amber-50 border border-amber-100 rounded-xl p-3">
-              <div class="text-[10px] font-bold tracking-widest text-amber-800">PAIRS WELL WITH / PASST ZU</div>
-              <div class="text-[13px] font-semibold text-amber-900">${val('passtZu')}</div>
-            </div>
-            <div class="bg-zinc-900 text-white rounded-xl p-3">
-              <div class="text-[10px] tracking-widest text-zinc-400">COOKING</div>
-              <div class="text-[12px]">${val('kochmethode')}</div>
-            </div>
+            <div class="bg-zinc-50 rounded-xl p-3"><div class="text-[10px] font-bold tracking-widest text-zinc-400">TEXTURE</div><div class="text-[12px] mt-1 leading-[1.3]">${val('textur')}</div></div>
+            <div class="bg-amber-50 border border-amber-100 rounded-xl p-3"><div class="text-[10px] font-bold tracking-widest text-amber-800">PASST PERFEKT ZU</div><div class="text-[13px] font-semibold text-amber-900 mt-1 leading-[1.3]">${val('passtZu')}</div></div>
+            <div class="bg-zinc-900 text-white rounded-xl p-3"><div class="text-[10px] tracking-widest text-zinc-400">COOKING</div><div class="text-[12px] mt-1 leading-[1.3]">${val('kochmethode')}</div></div>
           </div>
         </div>
-        <div class="text-[10px] text-zinc-400">Kingfields Trade • ${current.herkunft}</div>
+        <div class="text-[10px] text-zinc-400">Kingfields Trade • Premium Quality</div>
       </div>
     </div>
   `
 
-  // LAYOUT 2 - NEU: KEIN SCHWARZ, nur Text mit Punkt, GROSS, FETT
+  // LAYOUT 2 - NUR TEXT MIT PUNKT, KEIN SCHWARZ, GROSS, FETT (DEIN WUNSCH)
   document.getElementById('layout2').innerHTML=`
     <div class="w-full h-full p-8 flex flex-col bg-[#fffaf0]">
       <div class="text-center">
@@ -355,12 +337,10 @@ function renderLayouts(){
       </div>
       <div class="flex-1 flex items-center justify-center gap-10 mt-10">
         <div class="w-[38%] aspect-[3/4] rounded-[24px] overflow-hidden border-2 border-zinc-200 bg-white shadow-sm p-4 flex items-center justify-center">${sackImg}</div>
-        <div class="w-[42%] aspect-square rounded-full overflow-hidden border-4 border-white shadow-xl bg-white" style="${reisContainerStyle}">
-          ${reisImgSimple}
-        </div>
+        <div class="w-[42%] aspect-square rounded-full overflow-hidden border-4 border-white shadow-xl bg-white">${reisImgSimple}</div>
       </div>
       <div class="mt-auto bg-white rounded-[24px] p-8 border-2 border-zinc-100 shadow-sm">
-        <div class="text-[14px] font-black tracking-[0.18em] text-center mb-4 text-zinc-900 uppercase">🍚 Passt perfekt zu</div>
+        <div class="text-[14px] font-black tracking-[0.18em] text-center mb-4 text-zinc-900 uppercase">Passt perfekt zu</div>
         <div class="text-center text-[22px] font-bold leading-[1.4] text-zinc-900">
           ${val('passtZu').split(',').map(s=>s.trim()).filter(Boolean).join(' <span style="color:#bbb; margin:0 10px; font-weight:300;">•</span> ')}
         </div>
@@ -371,52 +351,42 @@ function renderLayouts(){
     </div>
   `
 
-  // LAYOUT 3
-
-  // LAYOUT 3  // LAYOUT 3 Story 9:16
+  // LAYOUT 3 - Story 9:16
   document.getElementById('layout3').innerHTML=`
     <div class="w-full h-full flex flex-col p-5 text-white relative">
       <div class="absolute inset-0 bg-gradient-to-b from-zinc-800 to-zinc-900"></div>
       <div class="relative z-10 flex flex-col h-full">
-        <div class="text-[10px] tracking-widest opacity-60">${current.marke} • ${current.sorte} • ${current.artikelnummer}</div>
-        <div class="font-display text-[32px] font-bold leading-[0.9] mt-4">${val('slogan')}</div>
-        <div class="mt-4 w-full h-[42%] rounded-[20px] overflow-hidden bg-white p-2">${sack}</div>
-        <div class="mt-4 flex gap-3">
-          <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-white/20 flex-shrink-0">${reis}</div>
-          <div class="text-[12px] leading-snug">
-            <div class="font-bold">${val('geschmack')}</div>
-            <div class="opacity-70 text-[11px] mt-1">${val('aroma')}<br>${val('textur')}</div>
-          </div>
+        <div class="text-[10px] tracking-[0.15em] opacity-60 uppercase">${current.marke} • ${current.sorte}</div>
+        <div class="font-display text-[34px] font-bold leading-[1.05] mt-4">${val('slogan')}</div>
+        <div class="text-[12px] opacity-70 mt-3 leading-[1.4]">${val('short')}</div>
+        <div class="mt-5 w-full h-[38%] rounded-[20px] overflow-hidden bg-white p-3 flex items-center justify-center">${sackImg}</div>
+        <div class="mt-5 flex gap-3 items-start">
+          <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-white/20 flex-shrink-0 bg-white">${reisImgSimple}</div>
+          <div class="text-[12px] leading-[1.4]"><div class="font-bold leading-[1.2]">${val('geschmack')}</div><div class="opacity-70 text-[11px] mt-1.5 leading-[1.3]">${val('aroma')}<br>${val('textur')}</div></div>
         </div>
-        <div class="mt-auto bg-white text-zinc-900 rounded-[16px] p-4">
-          <div class="text-[10px] font-bold tracking-widest">PASST ZU</div>
-          <div class="text-[13px] font-semibold mt-1">${val('passtZu')}</div>
-          <div class="text-[11px] text-zinc-500 mt-2">${val('kochmethode')}</div>
+        <div class="mt-auto bg-white text-zinc-900 rounded-[20px] p-4">
+          <div class="text-[10px] font-bold tracking-[0.15em]">PASST ZU</div>
+          <div class="text-[13px] font-semibold mt-1.5 leading-[1.3]">${val('passtZu')}</div>
+          <div class="text-[11px] text-zinc-500 mt-2.5 leading-[1.3]">${val('kochmethode')}</div>
           <div class="mt-3 text-[10px] text-zinc-400">${current.gewicht}${current.einheit} • ${current.herkunft} • ${current.qualitaet}</div>
         </div>
       </div>
     </div>
   `
 
-  // LAYOUT 4 Minimal Ad
+  // LAYOUT 4 - Minimal Premium Ad
   document.getElementById('layout4').innerHTML=`
-    <div class="w-full h-full flex">
-      <div class="w-[35%] p-6 flex flex-col justify-center bg-[#f9f8f6]">
-        <div class="w-full aspect-[3/4] rounded-xl overflow-hidden bg-white border p-1">${sack}</div>
-      </div>
+    <div class="w-full h-full flex bg-white">
+      <div class="w-[32%] p-5 flex flex-col justify-center bg-[#f9f8f6]"><div class="w-full aspect-[3/4] rounded-xl overflow-hidden bg-white border p-2 flex items-center justify-center">${sackImg}</div></div>
       <div class="flex-1 p-8 flex flex-col justify-center">
-        <div class="text-[10px] tracking-widest font-bold text-zinc-400">${current.marke} • ${current.artikelnummer} • ${current.gewicht}${current.einheit}</div>
-        <div class="font-display text-[32px] font-bold leading-[0.9] mt-2">${val('slogan')}</div>
-        <div class="text-[14px] text-zinc-600 mt-3">${val('short')}</div>
-        <div class="flex gap-2 mt-4">
-          <span class="bg-zinc-900 text-white px-3 py-1 rounded-full text-[11px]">${val('geschmack')}</span>
-          <span class="border px-3 py-1 rounded-full text-[11px]">${current.qualitaet}</span>
-        </div>
-        <div class="text-[11px] text-zinc-500 mt-4">✓ ${val('passtZu').substring(0,60)}...</div>
+        <div class="text-[10px] tracking-[0.15em] font-bold text-zinc-400 uppercase">${current.marke} • ${current.gewicht}${current.einheit}</div>
+        <div class="font-display text-[34px] font-bold leading-[1.05] mt-3">${val('slogan')}</div>
+        <div class="text-[15px] text-zinc-600 mt-4 leading-[1.4]">${val('short')}</div>
+        <div class="text-[12px] text-zinc-500 mt-5 leading-[1.4]">✓ ${val('passtZu').substring(0,70)}...</div>
       </div>
-      <div class="w-[18%] bg-zinc-900 text-white p-4 flex flex-col justify-between">
-        <div class="w-16 h-16 rounded-full overflow-hidden mx-auto border border-white/20">${reis}</div>
-        <div class="text-[10px] text-center opacity-60">${val('kochmethode')}</div>
+      <div class="w-[18%] bg-zinc-900 text-white p-4 flex flex-col justify-between items-center">
+        <div class="w-16 h-16 rounded-full overflow-hidden border border-white/20 bg-white">${reisImgSimple}</div>
+        <div class="text-[10px] text-center opacity-60 leading-[1.3]">${val('kochmethode')}</div>
       </div>
     </div>
   `
@@ -425,50 +395,34 @@ function renderLayouts(){
 async function downloadLayout(id){
   const el = document.getElementById(id)
   if(!el){ alert('Layout nicht gefunden'); return }
+  if(typeof html2canvas === 'undefined'){ alert('html2canvas lädt noch... bitte 2 Sekunden warten und nochmal klicken'); return }
   const artNr = current?.artikelnummer || '000'
-  const langSuffix = lang
-  const fileName = `Kingfields_${artNr}_${id}_${langSuffix}_${new Date().toISOString().slice(0,10)}.png`
-  
-  // Show loading
+  const fileName = `Kingfields_${artNr}_${id}_${lang}_${new Date().toISOString().slice(0,10)}.png`
   const btn = event?.target
   const origText = btn ? btn.textContent : ''
   if(btn) { btn.textContent = '⏳ Export...'; btn.disabled = true }
-  
   try{
-    // For high quality 1080px export, scale up
-    const canvas = await html2canvas(el, {
-      scale: 2, // 2x for 1080 quality (element is ~540px, scale 2 = 1080)
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: null,
-      logging: false,
-      width: el.offsetWidth,
-      height: el.offsetHeight
-    })
-    
-    // Download
+    const canvas = await html2canvas(el, {scale:2, useCORS:true, allowTaint:true, backgroundColor:null, logging:false, width: el.offsetWidth, height: el.offsetHeight})
     const link = document.createElement('a')
     link.download = fileName
     link.href = canvas.toDataURL('image/png', 1.0)
     link.click()
-    
-    if(btn) { btn.textContent = '✅ Exported!'; setTimeout(()=>{ btn.textContent = origText; btn.disabled=false }, 2000) }
-    
-    console.log('Exported', fileName, canvas.width+'x'+canvas.height)
+    if(btn) { btn.textContent = '✅ Fertig!'; setTimeout(()=>{ btn.textContent = origText; btn.disabled=false }, 2000) }
   }catch(e){
-    console.error('Export failed', e)
-    alert('Export Fehler: '+e.message+'\n\nVersuch: Rechtsklick auf Layout > Screenshot speichern als Workaround')
+    console.error(e)
+    alert('Export Fehler: '+e.message+'
+Versuch: Screenshot machen')
     if(btn) { btn.textContent = origText; btn.disabled=false }
   }
 }
-
 async function downloadAllLayouts(){
   if(!current){ alert('Erst Artikel wählen'); return }
   for(const id of ['layout1','layout2','layout3','layout4']){
     await downloadLayout(id)
-    await new Promise(r=>setTimeout(r, 500))
+    await new Promise(r=>setTimeout(r, 800))
   }
 }
+function _old_download_placeholder(){}
 
 
 // Init
