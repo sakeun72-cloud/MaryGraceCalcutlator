@@ -1,891 +1,326 @@
+
 <!DOCTYPE html>
-<html lang="tl">
+<html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rice Inventory System (Supabase)</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Supabase-Bibliothek -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <style>
-        .section-view { display: none; }
-        .active-view { display: block; }
-        .sticky-nav {
-            position: sticky;
-            top: 0;
-            background-color: #f8f9fa;
-            z-index: 1000;
-            padding: 10px;
-            border-bottom: 2px solid #dee2e6;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MARY GRACE RICE SUPPLY - Pricelist</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+  body{font-family:'Inter',system-ui,Arial,sans-serif;background:#fffbe6;color:#000}
+  .header{background:#0d5cb6;padding:18px 16px 16px;color:#fff}
+  .header h1{font-weight:900;font-size:28px;letter-spacing:.3px;text-transform:uppercase;line-height:1}
+  .header .loc{margin-top:6px;font-weight:800;font-size:14px;display:flex;gap:6px;align-items:center}
+  .yellow-bar{height:9px;background:#ffb900;width:100%}
+  .wrap{max-width:780px;margin:0 auto;padding:14px 12px 0}
+  .badges{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+  .badge{border-radius:999px;padding:6px 14px;font-weight:900;font-size:12px;color:#fff;letter-spacing:.2px;text-transform:uppercase}
+  .title{color:#0a2a7a;font-weight:900;font-size:24px;text-transform:uppercase;margin:14px 0 8px;letter-spacing:.2px}
+  .warn-bar{display:flex;border:2px solid #000;background:#fff;overflow:hidden;border-radius:2px}
+  .warn-left{flex:1;padding:7px 10px;font-weight:900;font-size:13px;text-transform:uppercase;background:#fff}
+  .warn-right{background:#ffb900;padding:7px 16px;font-weight:900;font-size:13px;text-transform:uppercase;min-width:120px;text-align:center}
+  .list{position:relative;margin-top:14px}
+  .watermark{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:.07;font-weight:900;font-size:90px;transform:rotate(-18deg);letter-spacing:6px;color:#000;z-index:0}
+  .card{position:relative;z-index:1;background:#fff;border:1px solid #e5ddd0;border-radius:12px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;box-shadow:0 1px 0 rgba(0,0,0,.04)}
+  .card.master{background:#fff9c4;border:1.5px solid #ffb900}
+  .card.fuji{background:#e6f4ea;border:1px solid #c8e6c9}
+  .left{display:flex;align-items:center;gap:10px}
+  .sack{width:44px;height:44px;background:#000;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#ffeb3b;font-weight:900;line-height:1}
+  .sack b{font-size:12px;color:#ffeb3b}
+  .sack span{font-size:9px;color:#fff;margin-top:1px;letter-spacing:.5px}
+  .name{font-weight:900;font-size:15px;color:#0a1a5e;text-transform:uppercase;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .mini-badge{font-size:9px;font-weight:900;padding:3px 7px;border-radius:999px;text-transform:uppercase}
+  .mini-badge.peach{background:#ffe4c4;color:#b45309}
+  .mini-badge.mint{background:#c8e6c9;color:#1b5e20}
+  .price{font-weight:900;font-size:16px;color:#0d3b8c;white-space:nowrap}
+  .price-input{width:90px;padding:5px 6px;border:2px solid #ffb900;border-radius:6px;font-weight:900}
+  .edit-btn{position:fixed;top:10px;right:10px;z-index:50;background:#000;color:#fff;border-radius:999px;padding:8px 14px;font-weight:900;font-size:12px;border:2px solid #000;cursor:pointer;box-shadow:3px 3px 0 #000}
+  .edit-btn.on{background:#ffb900;color:#000}
+  .admin{margin-top:16px;border:2px dashed #000;background:#fff;padding:12px;border-radius:10px;display:none}
+  .admin.open{display:block}
+  .admin input{width:100%;padding:7px 8px;border:1.5px solid #000;border-radius:6px;font-family:monospace;font-size:12px;margin-top:4px}
+  .admin label{font-weight:900;font-size:11px;text-transform:uppercase;margin-top:8px;display:block}
+  .btn{padding:7px 14px;border-radius:999px;font-weight:900;font-size:12px;cursor:pointer;border:2px solid #000}
+  .btn-primary{background:#0d5cb6;color:#fff}
+  .btn-black{background:#000;color:#fff}
+  .fb-box{margin-top:22px;background:#fff;border:2px solid #000;border-radius:12px;padding:12px;box-shadow:3px 3px 0 #000}
+  .fb-box h3{font-weight:900;text-transform:uppercase;font-size:14px}
+  .fb-box textarea{width:100%;min-height:380px;margin-top:10px;background:#fffbe6;border:2px solid #ffb900;border-radius:10px;padding:10px;font-family:monospace;font-size:12px;line-height:1.4;resize:vertical}
+  footer{background:#0d5cb6;color:#fff;text-align:center;padding:14px 10px;margin-top:24px}
+  .foot-yellow{color:#ffeb3b;font-weight:900;text-transform:uppercase;font-size:12px}
+  .foot-white{font-weight:800;font-size:12px;margin-top:6px}
+  .hidden{display:none}
+</style>
 </head>
-<body class="bg-light">
+<body>
 
+<button id="editToggle" class="edit-btn">✏️ Edit Mode OFF</button>
 
-<!-- Sticky Navigation -->
-<div class="sticky-nav text-center">
-    <div class="btn-group w-100 mb-2 flex-wrap" role="group">
-        <button class="btn btn-primary m-1" onclick="showSection('purchaseSection')">Buy</button>
-        <button class="btn btn-warning text-dark fw-bold m-1" onclick="showSection('salesSection')">Sell</button>
-        <button class="btn btn-secondary m-1" onclick="showSection('ordersSection')">Orders</button>
-        <button class="btn btn-info text-white m-1" onclick="showSection('marginSection')">Tubo</button>
-        <!-- Neuer Button für Pricelist -->
-        <a href="https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Pricelist.html" target="_blank" class="btn btn-success m-1">FB Text and Pricelist</a>
+<div class="header">
+  <h1 id="shopTitle">MARY GRACE RICE SUPPLY</h1>
+  <div class="loc">📍 <span id="address" contenteditable="false">Wood Town Block 7 Lot 3 Phase 3</span></div>
+</div>
+<div class="yellow-bar"></div>
+
+<div class="wrap">
+  <div class="badges" id="badges"></div>
+
+  <div class="title">MURANG BIGAS - PRESYO (25KG SAKTO)</div>
+
+  <div class="warn-bar">
+    <div class="warn-left">⚠️ HINDI 20KG, HINDI 10KG - 25KG SAKTO PO!</div>
+    <div class="warn-right">25KG SACK</div>
+  </div>
+
+  <div class="list" id="list">
+    <div class="watermark">25KG SACK</div>
+    <div id="cards"></div>
+  </div>
+
+  <div id="admin" class="admin">
+    <h3 style="font-weight:900">⚙️ SUPABASE - Nur hier Keys eintragen, dann automatisch gespeichert</h3>
+    <label>Supabase URL</label>
+    <input id="sbUrl" placeholder="https://xxxx.supabase.co">
+    <label>Supabase ANON KEY</label>
+    <input id="sbKey" placeholder="eyJ...">
+    <label>Table Name</label>
+    <input id="sbTable" value="pricelist_config">
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <button class="btn btn-black" onclick="loadFromSupabase()">Load von Supabase</button>
+      <button class="btn btn-primary" onclick="saveToSupabase()">💾 Alles in Supabase speichern</button>
+      <span id="sbStatus" style="font-weight:900;font-size:11px"></span>
     </div>
-    <a href="http://www.bantaypresyo.da.gov.ph/" target="_blank" class="btn btn-outline-info btn-sm">
-        Bantay Presyo (DA)
-    </a>
+    <div style="margin-top:10px;background:#000;color:#ffb900;padding:8px;border-radius:6px;font-family:monospace;font-size:10px;line-height:1.4">
+      SQL einmalig in Supabase ausführen:<br>
+      CREATE TABLE pricelist_config (id int PRIMARY KEY, data jsonb, updated_at timestamptz);<br>
+      INSERT INTO pricelist_config (id, data) VALUES (1, '{}'::jsonb) ON CONFLICT (id) DO NOTHING;<br>
+      -- RLS aktivieren und Policy: anon darf SELECT, INSERT, UPDATE
+    </div>
+    <div style="margin-top:10px">
+      <button class="btn btn-black" onclick="addItem()">+ Neues Produkt</button>
+      <span style="font-size:10px;font-weight:800;margin-left:6px">Cash / GCash änderst du bei Badges oben (z.B. GCash Only -> Cash & GCash)</span>
+    </div>
+  </div>
+
+  <div class="fb-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+      <h3>📋 FÜR FACEBOOK KOPIEREN (mit Emojis)</h3>
+      <button class="btn btn-black" id="copyBtn" onclick="copyFacebook()">Kopieren</button>
+    </div>
+    <div style="font-size:11px;font-weight:800;opacity:.6;margin-top:4px">Auto-generiert aus aktuellen Preisen. Im Edit Mode live aktualisiert.</div>
+    <textarea id="fbTextarea" readonly></textarea>
+  </div>
 </div>
 
-    <div class="container pb-5">
-        
-        <!-- ================= BUY SEKTION ================= -->
-        <div id="purchaseSection" class="section-view active-view">
-            <h2 class="text-primary mb-4 text-center">Buy Log (25kg Sacks)</h2>
+<footer>
+  <div class="foot-yellow">⚠️ HINDI 20KG, HINDI 10KG - 25KG SAKTO PO! LAHAT NG SAKO 25KG!</div>
+  <div class="foot-white" id="footerLine">✅ GCash ONLY (walang COD) | 🛵 FREE DELIVERY Wood Town | 25KG SAKTO</div>
+  <div class="foot-white" style="opacity:.9;font-size:11px;margin-top:4px">✉️ https://m.me/marygrace.rangas | Pa-reserve na po! Available po bukas!</div>
+</footer>
 
-            <!-- Eingabeformular Buy -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Mag-rekord ng Bagong Pagtanggap (Add Buy)</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-2">
-                            <label class="form-label">Petsa (Date)</label>
-                            <input type="date" class="form-control" id="pDate" required>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Produkto / Artikel</label>
-                            <select class="form-select" id="pArticle">
-                                <option value="" disabled selected>Pumili...</option>
-                                <option value="Fuji">Fuji</option>
-                                <option value="Perfect">Perfect</option>
-                                <option value="Master Aroma">Master Aroma</option>
-                                <option value="Sweet Hasmin">Sweet Hasmin</option>
-                                <option value="Coco pandan">Coco pandan</option>
-                                <option value="Jasmine original">Jasmine original</option>
-                                <option value="Master Alsa">Master Alsa</option>
-                                <option value="Brown rice">Brown rice</option>
-                                <option value="Malagkit/k">Malagkit/k</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Bilang ng Sako</label>
-                            <input type="number" class="form-control" id="pQuantity" min="1" step="1" placeholder="Sacks">
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Kilo Gesamt</label>
-                            <input type="number" class="form-control fw-bold text-success" id="pTotalKg" min="0.1" step="any" placeholder="kg">
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Presyo / Sako (25kg)</label>
-                            <input type="number" class="form-control" id="pSackPrice" min="0.01" step="0.01" placeholder="0.00">
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Presyo / Kilo</label>
-                            <input type="number" class="form-control" id="pPricePerKg" min="0.01" step="0.01" placeholder="0.00">
-                        </div>
-                    </div>
+<script>
+// === KONFIG - HIER DEINE DATEN EINTRAGEN, DANN FUNKTIONIERT AUTOMATISCH ===
+const DEFAULT_SUPABASE_URL = ""; // z.B. https://abcdefgh.supabase.co
+const DEFAULT_SUPABASE_KEY = ""; // dein anon key
+const TABLE = "pricelist_config";
+// ==========================================================================
 
-                    <div class="row g-3 align-items-center border-top pt-3">
-                        <div class="col-md-4">
-                            <label class="form-label text-muted">Kalkuladong Halaga:</label>
-                            <input type="text" class="form-control bg-white fw-bold" id="pRowTotal" value="0.00 PHP" disabled>
-                        </div>
-                        <div class="col-md-8 text-end">
-                            <button type="button" class="btn btn-secondary" onclick="addPosition('purchase')">Idagdag sa Listahan (Add Position)</button>
-                        </div>
-                    </div>
+const DEFAULT_BADGES = [
+  {id:"gcash", label:"GCash Only", color:"#1e88e5"},
+  {id:"delivery", label:"FREE DELIVERY", color:"#2e7d32"},
+  {id:"location", label:"Wood Town", color:"#ff9800"},
+];
 
-                    <!-- Temporäre Erfassungsliste Buy -->
-                    <div class="mt-4">
-                        <h6>Kasalukuyang Listahan (Current Batch):</h6>
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-sm">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Produkto</th>
-                                        <th>Dami (Sako)</th>
-                                        <th>Kilogramm Gesamt</th>
-                                        <th>Presyo / Sako</th>
-                                        <th>Presyo / Kilo</th>
-                                        <th>Kabuuan</th>
-                                        <th>Aksyon</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="pBatchTableBody">
-                                    <tr><td colspan="7" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
+const DEFAULT_ITEMS = [
+  {id:"master", name:"MASTER", badge:"PINAKA MURA", badgeTone:"peach", price:1180, variant:"master"},
+  {id:"sweet", name:"SWEET HASMIN", price:1300, variant:"normal"},
+  {id:"jasmine", name:"JASMINE ORIGINAL", price:1310, variant:"normal"},
+  {id:"coco", name:"COCO PANDAN", price:1330, variant:"normal"},
+  {id:"perfect", name:"PERFECT", price:1340, variant:"normal"},
+  {id:"aroma", name:"MASTER AROMA", price:1340, variant:"normal"},
+  {id:"fuji", name:"FUJI", badge:"PREMIUM", badgeTone:"mint", price:1400, variant:"fuji"},
+];
 
-                        <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded border">
-                            <h4 class="mb-0">Kabuuang Halaga para sa Pagsusuri:</h4>
-                            <h3 class="mb-0 text-primary" id="pBatchTotalDisplay">0.00 PHP</h3>
-                        </div>
+let badges = JSON.parse(JSON.stringify(DEFAULT_BADGES));
+let items = JSON.parse(JSON.stringify(DEFAULT_ITEMS));
+let editMode = false;
+let supabaseClient = null;
 
-                        <div class="text-end mt-3">
-                            <button type="button" class="btn btn-success btn-lg" onclick="submitBatch('purchase')">Isumite sa Cloud (Save Buy)</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+function getClient(){
+  const url = document.getElementById('sbUrl').value.trim() || DEFAULT_SUPABASE_URL;
+  const key = document.getElementById('sbKey').value.trim() || DEFAULT_SUPABASE_KEY;
+  if(!url || !key) return null;
+  if(supabaseClient) return supabaseClient;
+  supabaseClient = window.supabase.createClient(url, key);
+  return supabaseClient;
+}
 
-            <!-- Auswertung nach Zeitraum Buy -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">Ulat ayon sa Panahon (Buy by Period - in kg)</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-4">
-                            <label class="form-label">Mula sa Petsa (Von)</label>
-                            <input type="date" class="form-control" id="pStartDate">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Hanggang sa Petsa (Bis)</label>
-                            <input type="date" class="form-control" id="pEndDate">
-                        </div>
-                        <div class="col-md-4 d-flex align-items-end">
-                            <button class="btn btn-outline-success w-100" onclick="filterReport('purchase')">Ipakita ang Ulat (Show Report)</button>
-                        </div>
-                    </div>
+function formatPrice(n){ return `₱${Number(n).toLocaleString('en-PH')} / 25kg`; }
 
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Produkto / Artikel</th>
-                                    <th>Kabuuang Dami (Kilo)</th>
-                                    <th>Kabuuang Halaga (PHP)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="pReportTableBody">
-                                <tr><td colspan="3" class="text-center text-muted">Mangyaring pumili ng panahon at suriin.</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Logbuch Buy -->
-            <div class="card shadow-sm">
-                <div class="card-header bg-secondary text-white">
-                    <h5 class="mb-0">Talaan ng Kasaysayan (Buy History - Supabase)</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-sm table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Petsa</th>
-                                    <th>Produkto</th>
-                                    <th>Dami (Sako)</th>
-                                    <th>Kilogramm Gesamt</th>
-                                    <th>Presyo / Sako</th>
-                                    <th>Presyo / Kilo</th>
-                                    <th>Aksyon</th>
-                                </tr>
-                            </thead>
-                            <tbody id="pLogTableBody">
-                                <tr><td colspan="7" class="text-center text-muted">Naglo-load mula sa Supabase...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= SELL SEKTION ================= -->
-        <div id="salesSection" class="section-view">
-            <h2 class="text-warning mb-4 text-center">Sell Log (in Kilo)</h2>
-
-            <!-- Eingabeformular Sell -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0">Mag-rekord ng Bagong Benta (Add Sell in kg)</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-3">
-                            <label class="form-label">Petsa (Date)</label>
-                            <input type="date" class="form-control" id="sDate" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Produkto / Artikel</label>
-                            <select class="form-select" id="sArticle">
-                                <option value="" disabled selected>Pumili...</option>
-                                <option value="Fuji">Fuji</option>
-                                <option value="Perfect">Perfect</option>
-                                <option value="Master Aroma">Master Aroma</option>
-                                <option value="Sweet Hasmin">Sweet Hasmin</option>
-                                <option value="Coco pandan">Coco pandan</option>
-                                <option value="Jasmine original">Jasmine original</option>
-                                <option value="Master Alsa">Master Alsa</option>
-                                <option value="Brown rice">Brown rice</option>
-                                <option value="Malagkit/k">Malagkit/k</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Dami sa Kilo (kg)</label>
-                            <input type="number" class="form-control" id="sQuantity" min="0.1" step="any" placeholder="Kilo">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Gesamtwert des Auftrages (PHP)</label>
-                            <input type="number" class="form-control fw-bold text-dark" id="sTotalValue" style="background-color: #fff3cd;" min="0.01" step="0.01" placeholder="0.00">
-                        </div>
-                    </div>
-
-                    <div class="row g-3 align-items-center border-top pt-3">
-                        <div class="col-md-4">
-                            <label class="form-label text-muted">Presyo bawat Kilo (PHP) - Berechnet:</label>
-                            <input type="number" class="form-control bg-white fw-bold" id="sPrice" min="0.01" step="0.01" placeholder="0.00">
-                        </div>
-                        <div class="col-md-8 text-end">
-                            <button type="button" class="btn btn-secondary" onclick="addPosition('sale')">Idagdag sa Listahan (Add Position)</button>
-                        </div>
-                    </div>
-
-                    <!-- Temporäre Erfassungsliste Sell -->
-                    <div class="mt-4">
-                        <h6>Kasalukuyang Listahan (Current Batch):</h6>
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-sm">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Produkto</th>
-                                        <th>Kilogramm Gesamt</th>
-                                        <th>Presyo bawat Kilo</th>
-                                        <th>Kabuuan</th>
-                                        <th>Aksyon</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="sBatchTableBody">
-                                    <tr><td colspan="5" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded border">
-                            <h4 class="mb-0">Kabuuang Halaga para sa Pagsusuri:</h4>
-                            <h3 class="mb-0 text-warning text-dark" id="sBatchTotalDisplay">0.00 PHP</h3>
-                        </div>
-
-                        <div class="text-end mt-3">
-                            <button type="button" class="btn btn-success btn-lg" onclick="submitBatch('sale')">Isumite sa Cloud (Save Sell)</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Auswertung nach Zeitraum Sell -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0">Ulat ayon sa Panahon (Sell by Period - in kg)</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-4">
-                            <label class="form-label">Mula sa Petsa (Von)</label>
-                            <input type="date" class="form-control" id="sStartDate">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Hanggang sa Petsa (Bis)</label>
-                            <input type="date" class="form-control" id="sEndDate">
-                        </div>
-                        <div class="col-md-4 d-flex align-items-end">
-                            <button class="btn btn-outline-warning text-dark w-100" onclick="filterReport('sale')">Ipakita ang Ulat (Show Report)</button>
-                        </div>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Produkto / Artikel</th>
-                                    <th>Kabuuang Dami (Kilo)</th>
-                                    <th>Kabuuang Halaga (PHP)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="sReportTableBody">
-                                <tr><td colspan="3" class="text-center text-muted">Mangyaring pumili ng panahon at suriin.</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Logbuch Sell -->
-            <div class="card shadow-sm">
-                <div class="card-header bg-secondary text-white">
-                    <h5 class="mb-0">Talaan ng Kasaysayan (Sell History - Supabase)</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-sm table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Petsa</th>
-                                    <th>Produkto</th>
-                                    <th>Kilogramm Gesamt</th>
-                                    <th>Presyo (bawat Kilo)</th>
-                                    <th>Gesamtwert</th>
-                                    <th>Aksyon</th>
-                                </tr>
-                            </thead>
-                            <tbody id="sLogTableBody">
-                                <tr><td colspan="6" class="text-center text-muted">Naglo-load mula sa Supabase...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= ORDERS SEKTION ================= -->
-        <div id="ordersSection" class="section-view">
-            <h2 class="text-secondary mb-4 text-center">Orders (Bestellungen)</h2>
-            <div class="card shadow-sm mb-4">
-                <div class="card-body text-center text-muted py-5">
-                    <h4>Paparating na ang pamamahala ng Orders...</h4>
-                    <p class="mb-0">Hier wird im nächsten Schritt die Erfassung und Verwaltung von neuen Bestellungen eingerichtet.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= TUBO SEKTION ================= -->
-        <div id="marginSection" class="section-view">
-            <h2 class="text-info mb-4 text-center">Tubo & Inventory Overview</h2>
-            
-            <!-- 1. Artikelübersicht -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">Tubo & Stock Analysis (Cloud Data)</h5>
-                </div>
-                <div class="card-body">
-                    <p class="text-muted">Paghahambing ng pagpasok, paglabas, average na presyo kada kilo, at ang tubo (marge).</p>
-                    
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped align-middle text-center">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Artikel</th>
-                                    <th>Buy (kg)</th>
-                                    <th>Buy (PHP)</th>
-                                    <th>Average Buy / kg</th>
-                                    <th>Sell (kg)</th>
-                                    <th>Sell (PHP)</th>
-                                    <th>Average Sell / kg</th>
-                                    <th>Stock (kg)</th>
-                                    <th>Tubo / kg</th>
-                                </tr>
-                            </thead>
-                            <tbody id="marginTableBody">
-                                <tr><td colspan="9" class="text-center text-muted">Kinakalkula ang data mula sa Supabase...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 2. Taggenauer Rohertrag (Daily Profit / Tubo Araw-araw) -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-secondary text-white">
-                    <h5 class="mb-0">Ulat ng Tubo Bawat Araw (Daily Profit / Tubo araw-araw)</h5>
-                </div>
-                <div class="card-body">
-                    <p class="text-muted">Buod ng nakuhang tubo (benta minus gastos sa produkto) na nakatala ayon sa bawat araw ng pagbebenta.</p>
-                    
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped align-middle text-center">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Petsa (Date)</th>
-                                    <th>Dami ng Naibenta (kg)</th>
-                                    <th>Benta (PHP)</th>
-                                    <th>Gastos sa Produkto (PHP)</th>
-                                    <th>Tubo (PHP)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="dailyProfitTableBody">
-                                <tr><td colspan="5" class="text-center text-muted">Naglo-load...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+function render(){
+  // badges
+  const bWrap = document.getElementById('badges');
+  bWrap.innerHTML = badges.map(b=>`
+    <div class="badge" style="background:${b.color}">
+      <span contenteditable="${editMode}" data-badge-id="${b.id}" onblur="onBadgeEdit(this)" style="outline:none">${b.label}</span>
     </div>
+  `).join('');
 
-    <!-- JavaScript mit Supabase Integration -->
-    <script>
+  // cards
+  const cWrap = document.getElementById('cards');
+  cWrap.innerHTML = items.map(it=>`
+    <div class="card ${it.variant}">
+      <div class="left">
+        <div class="sack"><b>25KG</b><span>SAKTO</span></div>
+        <div class="name">
+          <span contenteditable="${editMode}" data-name-id="${it.id}" onblur="onNameEdit(this)" style="outline:none">${it.name}</span>
+          ${it.badge ? `<span class="mini-badge ${it.badgeTone||''}" contenteditable="${editMode}" data-item-badge="${it.id}" onblur="onItemBadgeEdit(this)" style="outline:none">${it.badge}</span>` : (editMode ? `<span class="mini-badge peach" data-item-badge="${it.id}" contenteditable="true" onblur="onItemBadgeEdit(this)">+</span>` : '')}
+        </div>
+      </div>
+      <div class="price" data-price-id="${it.id}">
+        ${editMode ? `<input type="number" class="price-input" value="${it.price}" onchange="onPriceEdit('${it.id}', this.value)" onblur="onPriceEdit('${it.id}', this.value)"> <span style="font-size:12px">/ 25kg</span>` : `${formatPrice(it.price)}`}
+      </div>
+    </div>
+  `).join('');
 
-       // 🔑 HIER DEINE KORRIGIERTEN SUPABASE SCHLÜSSEL EINTRAGEN
-        const SUPABASE_URL = 'https://crdtuptjybxbsezxtksp.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_GU6AAlF0zc3LB4hFlKK0fw_TNxo9z7q';
-        
-        const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  // footer
+  const b1 = badges[0]?.label || 'GCash ONLY';
+  const b2 = badges[1]?.label || 'FREE DELIVERY';
+  const b3 = badges[2]?.label || 'Wood Town';
+  document.getElementById('footerLine').textContent = `✅ ${b1} (walang COD) | 🛵 ${b2} ${b3} | 25KG SAKTO`;
 
-        let currentPurchaseBatch = [];
-        let currentSalesBatch = [];
+  // facebook text
+  buildFacebookText();
+}
 
-        function showSection(sectionId) {
-            document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active-view'));
-            document.getElementById(sectionId).classList.add('active-view');
-            if (sectionId === 'marginSection') {
-                updateMarginAndStock();
-            }
-        }
+function buildFacebookText(){
+  const b1 = badges[0]?.label || 'GCash Only';
+  const b2 = badges[1]?.label || 'FREE DELIVERY';
+  const b3 = badges[2]?.label || 'Wood Town';
+  let txt = `MARY GRACE RICE SUPPLY\n📍 Wood Town Block 7 Lot 3 Phase 3\n\n`;
+  txt += `🟦 ${b1} | 🟩 ${b2} | 🟧 ${b3}\n\n`;
+  txt += `MURANG BIGAS - PRESYO (25KG SAKTO)\n`;
+  txt += `⚠️ HINDI 20KG, HINDI 10KG - 25KG SAKTO PO! - 25KG SACK\n\n`;
+  items.forEach(it=>{
+    const badgePart = it.badge ? ` ${it.badge}` : '';
+    txt += `${it.name}${badgePart} - ${formatPrice(it.price)}\n`;
+  });
+  txt += `\n⚠️ Hindi 20kg, hindi 10kg - 25KG SAKTO po! Lahat ng sako 25KG!\n`;
+  txt += `✅ ${b1} (walang COD) | 🛵 ${b2} ${b3} | 25KG SAKTO\n`;
+  txt += `✉️ https://m.me/marygrace.rangas | Pa-reserve na po! Available po bukas!`;
+  document.getElementById('fbTextarea').value = txt;
+}
 
-        // Live Calculations for Purchase (Buy)
-        document.getElementById('pQuantity').addEventListener('input', calculatePurchase);
-        document.getElementById('pTotalKg').addEventListener('input', calculatePurchaseFromKg);
-        document.getElementById('pSackPrice').addEventListener('input', calculatePurchaseFromSack);
-        document.getElementById('pPricePerKg').addEventListener('input', calculatePurchaseFromKgPrice);
+window.onPriceEdit = (id, val)=>{
+  const n = parseInt(val,10);
+  if(isNaN(n)) return;
+  items = items.map(it=> it.id===id ? {...it, price:n} : it);
+  buildFacebookText();
+  if(!editMode) render();
+  else { buildFacebookText(); document.querySelector(`[data-price-id="${id}"]`)?.parentElement; }
+}
 
-        function calculatePurchase() {
-            let sacks = parseFloat(document.getElementById('pQuantity').value) || 0;
-            let totalKg = sacks * 25;
-            document.getElementById('pTotalKg').value = totalKg > 0 ? totalKg : '';
-            let sackPrice = parseFloat(document.getElementById('pSackPrice').value) || 0;
-            if (sackPrice > 0) {
-                let total = sacks * sackPrice;
-                document.getElementById('pRowTotal').value = total.toFixed(2) + ' PHP';
-                document.getElementById('pPricePerKg').value = (sackPrice / 25).toFixed(2);
-            }
-        }
+window.onNameEdit = (el)=>{
+  const id = el.getAttribute('data-name-id');
+  items = items.map(it=> it.id===id ? {...it, name: el.textContent.toUpperCase().trim()} : it);
+  buildFacebookText();
+}
 
-        function calculatePurchaseFromKg() {
-            let totalKg = parseFloat(document.getElementById('pTotalKg').value) || 0;
-            let sacks = totalKg / 25;
-            document.getElementById('pQuantity').value = sacks > 0 ? sacks : '';
-            let sackPrice = parseFloat(document.getElementById('pSackPrice').value) || 0;
-            if (sackPrice > 0 && sacks > 0) {
-                let total = sacks * sackPrice;
-                document.getElementById('pRowTotal').value = total.toFixed(2) + ' PHP';
-            }
-        }
+window.onBadgeEdit = (el)=>{
+  const id = el.getAttribute('data-badge-id');
+  badges = badges.map(b=> b.id===id ? {...b, label: el.textContent.trim()} : b);
+  buildFacebookText();
+  render();
+}
 
-        function calculatePurchaseFromSack() {
-            let sackPrice = parseFloat(document.getElementById('pSackPrice').value) || 0;
-            let sacks = parseFloat(document.getElementById('pQuantity').value) || 0;
-            if (sacks > 0) {
-                let total = sacks * sackPrice;
-                document.getElementById('pRowTotal').value = total.toFixed(2) + ' PHP';
-                document.getElementById('pPricePerKg').value = (sackPrice / 25).toFixed(2);
-            }
-        }
+window.onItemBadgeEdit = (el)=>{
+  const id = el.getAttribute('data-item-badge');
+  const val = el.textContent.trim().toUpperCase();
+  items = items.map(it=> it.id===id ? {...it, badge: val==='+'?'':val} : it);
+  buildFacebookText();
+}
 
-        function calculatePurchaseFromKgPrice() {
-            let kgPrice = parseFloat(document.getElementById('pPricePerKg').value) || 0;
-            if (kgPrice > 0) {
-                let sackPrice = kgPrice * 25;
-                document.getElementById('pSackPrice').value = sackPrice.toFixed(2);
-                let sacks = parseFloat(document.getElementById('pQuantity').value) || 0;
-                if (sacks > 0) {
-                    let total = sacks * sackPrice;
-                    document.getElementById('pRowTotal').value = total.toFixed(2) + ' PHP';
-                }
-            }
-        }
+window.addItem = ()=>{
+  const name = prompt('Name für neues Produkt:','NEW RICE');
+  if(!name) return;
+  const price = parseInt(prompt('Preis (nur Zahl):','1400')||'1400',10);
+  items.push({id:'item_'+Date.now(), name:name.toUpperCase(), price:price, variant:'normal'});
+  render();
+}
 
-        // Live Calculations for Sales (Sell)
-        document.getElementById('sQuantity').addEventListener('input', calculateSales);
-        document.getElementById('sTotalValue').addEventListener('input', calculateSalesFromTotal);
-        document.getElementById('sPrice').addEventListener('input', calculateSalesFromPrice);
+window.copyFacebook = async ()=>{
+  const txt = document.getElementById('fbTextarea').value;
+  try{
+    await navigator.clipboard.writeText(txt);
+    const btn = document.getElementById('copyBtn');
+    btn.textContent='Kopiert!';
+    setTimeout(()=>btn.textContent='Kopieren',2000);
+  }catch{
+    document.getElementById('fbTextarea').select();
+    document.execCommand('copy');
+  }
+}
 
-        function calculateSales() {
-            let kg = parseFloat(document.getElementById('sQuantity').value) || 0;
-            let totalVal = parseFloat(document.getElementById('sTotalValue').value) || 0;
-            if (kg > 0 && totalVal > 0) {
-                document.getElementById('sPrice').value = (totalVal / kg).toFixed(2);
-            } else if (kg > 0) {
-                let pricePerKg = parseFloat(document.getElementById('sPrice').value) || 0;
-                if (pricePerKg > 0) {
-                    document.getElementById('sTotalValue').value = (kg * pricePerKg).toFixed(2);
-                }
-            }
-        }
+async function loadFromSupabase(){
+  const client = getClient();
+  const table = document.getElementById('sbTable').value.trim() || TABLE;
+  if(!client){ document.getElementById('sbStatus').textContent='❌ URL + KEY eintragen'; return; }
+  document.getElementById('sbStatus').textContent='Lädt...';
+  try{
+    const {data, error} = await client.from(table).select('data').eq('id',1).single();
+    if(error) throw error;
+    if(data?.data?.items){ items = data.data.items; }
+    if(data?.data?.badges){ badges = data.data.badges; }
+    if(data?.data?.address){ document.getElementById('address').textContent = data.data.address; }
+    render();
+    document.getElementById('sbStatus').textContent='✅ Geladen';
+  }catch(e){
+    document.getElementById('sbStatus').textContent='❌ '+e.message;
+  }
+}
 
-        function calculateSalesFromTotal() {
-            let kg = parseFloat(document.getElementById('sQuantity').value) || 0;
-            let totalVal = parseFloat(document.getElementById('sTotalValue').value) || 0;
-            if (kg > 0) {
-                document.getElementById('sPrice').value = (totalVal / kg).toFixed(2);
-            }
-        }
+async function saveToSupabase(){
+  const client = getClient();
+  const table = document.getElementById('sbTable').value.trim() || TABLE;
+  if(!client){ document.getElementById('sbStatus').textContent='❌ URL + KEY eintragen'; return; }
+  document.getElementById('sbStatus').textContent='Speichert...';
+  try{
+    const payload = {
+      id:1,
+      data:{ items, badges, address: document.getElementById('address').textContent.trim() },
+      updated_at: new Date().toISOString()
+    };
+    const {error} = await client.from(table).upsert(payload, {onConflict:'id'});
+    if(error) throw error;
+    document.getElementById('sbStatus').textContent='✅ In Supabase gespeichert!';
+  }catch(e){
+    document.getElementById('sbStatus').textContent='❌ '+e.message;
+  }
+}
 
-        function calculateSalesFromPrice() {
-            let kg = parseFloat(document.getElementById('sQuantity').value) || 0;
-            let pricePerKg = parseFloat(document.getElementById('sPrice').value) || 0;
-            if (kg > 0) {
-                document.getElementById('sTotalValue').value = (kg * pricePerKg).toFixed(2);
-            }
-        }
+document.getElementById('editToggle').addEventListener('click', ()=>{
+  editMode = !editMode;
+  document.getElementById('editToggle').textContent = editMode ? '✏️ Edit Mode ON' : '✏️ Edit Mode OFF';
+  document.getElementById('editToggle').className = editMode ? 'edit-btn on' : 'edit-btn';
+  document.getElementById('admin').className = editMode ? 'admin open' : 'admin';
+  document.getElementById('address').contentEditable = editMode;
+  render();
+});
 
-        function addPosition(type) {
-            if (type === 'purchase') {
-                let date = document.getElementById('pDate').value;
-                let article = document.getElementById('pArticle').value;
-                let quantity = parseFloat(document.getElementById('pQuantity').value);
-                let totalKg = parseFloat(document.getElementById('pTotalKg').value);
-                let sackPrice = parseFloat(document.getElementById('pSackPrice').value);
-                let pricePerKg = parseFloat(document.getElementById('pPricePerKg').value);
-
-                if (!date || !article || !quantity || !sackPrice) {
-                    alert('Mangyaring punan ang lahat ng kinakailangang larangan.');
-                    return;
-                }
-
-                let total = quantity * sackPrice;
-                currentPurchaseBatch.push({ date, article, quantity, totalKg, sackPrice, pricePerKg, total });
-                renderBatchTable('purchase');
-            } else if (type === 'sale') {
-                let date = document.getElementById('sDate').value;
-                let article = document.getElementById('sArticle').value;
-                let quantity = parseFloat(document.getElementById('sQuantity').value);
-                let totalValue = parseFloat(document.getElementById('sTotalValue').value);
-                let price = parseFloat(document.getElementById('sPrice').value);
-
-                if (!date || !article || !quantity || !totalValue) {
-                    alert('Mangyaring punan ang lahat ng kinakailangang larangan.');
-                    return;
-                }
-
-                currentSalesBatch.push({ date, article, quantity, price, totalValue });
-                renderBatchTable('sale');
-            }
-        }
-
-        function renderBatchTable(type) {
-            if (type === 'purchase') {
-                let tbody = document.getElementById('pBatchTableBody');
-                let totalDisplay = document.getElementById('pBatchTotalDisplay');
-                if (currentPurchaseBatch.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>';
-                    totalDisplay.innerText = '0.00 PHP';
-                    return;
-                }
-                let html = '';
-                let sum = 0;
-                currentPurchaseBatch.forEach((item, index) => {
-                    sum += item.total;
-                    html += `<tr>
-                        <td>${item.article}</td>
-                        <td>${item.quantity}</td>
-                        <td>${item.totalKg} kg</td>
-                        <td>${item.sackPrice.toFixed(2)}</td>
-                        <td>${item.pricePerKg.toFixed(2)}</td>
-                        <td>${item.total.toFixed(2)} PHP</td>
-                        <td><button class="btn btn-danger btn-sm" onclick="removeItem('purchase', ${index})">Tanggalin</button></td>
-                    </tr>`;
-                });
-                tbody.innerHTML = html;
-                totalDisplay.innerText = sum.toFixed(2) + ' PHP';
-            } else if (type === 'sale') {
-                let tbody = document.getElementById('sBatchTableBody');
-                let totalDisplay = document.getElementById('sBatchTotalDisplay');
-                if (currentSalesBatch.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Wala pang idinagdag na posisyon.</td></tr>';
-                    totalDisplay.innerText = '0.00 PHP';
-                    return;
-                }
-                let html = '';
-                let sum = 0;
-                currentSalesBatch.forEach((item, index) => {
-                    sum += item.totalValue;
-                    html += `<tr>
-                        <td>${item.article}</td>
-                        <td>${item.quantity} kg</td>
-                        <td>${item.price.toFixed(2)}</td>
-                        <td>${item.totalValue.toFixed(2)} PHP</td>
-                        <td><button class="btn btn-danger btn-sm" onclick="removeItem('sale', ${index})">Tanggalin</button></td>
-                    </tr>`;
-                });
-                tbody.innerHTML = html;
-                totalDisplay.innerText = sum.toFixed(2) + ' PHP';
-            }
-        }
-
-        function removeItem(type, index) {
-            if (type === 'purchase') {
-                currentPurchaseBatch.splice(index, 1);
-                renderBatchTable('purchase');
-            } else if (type === 'sale') {
-                currentSalesBatch.splice(index, 1);
-                renderBatchTable('sale');
-            }
-        }
-
-        // ☁️ SUPABASE: Senden der Batches
-        async function submitBatch(type) {
-            if (type === 'purchase') {
-                if (currentPurchaseBatch.length === 0) return alert('Walang laman ang batch.');
-                const { error } = await _supabase.from('purchases').insert(currentPurchaseBatch);
-                if (error) {
-                    alert('Error sa pag-save sa Supabase: ' + error.message);
-                    return;
-                }
-                currentPurchaseBatch = [];
-                renderBatchTable('purchase');
-                loadHistory('purchase');
-                alert('Matagumpay na nai-save sa Supabase (Buy)!');
-            } else if (type === 'sale') {
-                if (currentSalesBatch.length === 0) return alert('Walang laman ang batch.');
-                const { error } = await _supabase.from('sales').insert(currentSalesBatch);
-                if (error) {
-                    alert('Error sa pag-save sa Supabase: ' + error.message);
-                    return;
-                }
-                currentSalesBatch = [];
-                renderBatchTable('sale');
-                loadHistory('sale');
-                alert('Matagumpay na nai-save sa Supabase (Sell)!');
-            }
-        }
-
-        // ☁️ SUPABASE: Laden der Historie
-        async function loadHistory(type) {
-            if (type === 'purchase') {
-                const { data: history, error } = await _supabase.from('purchases').select('*').order('date', { ascending: false });
-                let tbody = document.getElementById('pLogTableBody');
-                if (error || !history || history.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Wala pang mga tala sa Supabase.</td></tr>';
-                    return;
-                }
-                let html = '';
-                history.forEach((item) => {
-                    html += `<tr>
-                        <td>${item.date}</td>
-                        <td>${item.article}</td>
-                        <td>${item.quantity}</td>
-                        <td>${item.totalKg} kg</td>
-                        <td>${Number(item.sackPrice).toFixed(2)}</td>
-                        <td>${Number(item.pricePerKg).toFixed(2)}</td>
-                        <td><button class="btn btn-outline-danger btn-sm" onclick="deleteHistoryItem('purchase', '${item.id}')">Burahin</button></td>
-                    </tr>`;
-                });
-                tbody.innerHTML = html;
-            } else if (type === 'sale') {
-                const { data: history, error } = await _supabase.from('sales').select('*').order('date', { ascending: false });
-                let tbody = document.getElementById('sLogTableBody');
-                if (error || !history || history.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Wala pang mga tala sa Supabase.</td></tr>';
-                    return;
-                }
-                let html = '';
-                history.forEach((item) => {
-                    html += `<tr>
-                        <td>${item.date}</td>
-                        <td>${item.article}</td>
-                        <td>${item.quantity} kg</td>
-                        <td>${Number(item.price).toFixed(2)}</td>
-                        <td>${Number(item.totalValue).toFixed(2)} PHP</td>
-                        <td><button class="btn btn-outline-danger btn-sm" onclick="deleteHistoryItem('sale', '${item.id}')">Burahin</button></td>
-                    </tr>`;
-                });
-                tbody.innerHTML = html;
-            }
-        }
-
-        // ☁️ SUPABASE: Löschen eines Eintrags
-        async function deleteHistoryItem(type, id) {
-            if (confirm('Sigurado ka bang nais mong burahin ang talang ito sa Supabase?')) {
-                let tableName = type === 'purchase' ? 'purchases' : 'sales';
-                const { error } = await _supabase.from(tableName).delete().eq('id', id);
-                if (error) {
-                    alert('Error sa pag-delete: ' + error.message);
-                } else {
-                    loadHistory(type);
-                }
-            }
-        }
-
-        // Berichte filtern (Cloud-basiert)
-        async function filterReport(type) {
-            if (type === 'purchase') {
-                let start = document.getElementById('pStartDate').value;
-                let end = document.getElementById('pEndDate').value;
-                
-                let query = _supabase.from('purchases').select('*');
-                if (start) query = query.gte('date', start);
-                if (end) query = query.lte('date', end);
-
-                let { data: filtered, error } = await query;
-                let tbody = document.getElementById('pReportTableBody');
-
-                if (error || !filtered || filtered.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Walang nakitang datos sa napiling panahon.</td></tr>';
-                    return;
-                }
-
-                let summary = {};
-                filtered.forEach(item => {
-                    if (!summary[item.article]) summary[item.article] = { kg: 0, total: 0 };
-                    summary[item.article].kg += Number(item.totalKg);
-                    summary[item.article].total += Number(item.total);
-                });
-
-                let html = '';
-                for (let art in summary) {
-                    html += `<tr>
-                        <td>${art}</td>
-                        <td>${summary[art].kg.toFixed(2)} kg</td>
-                        <td>${summary[art].total.toFixed(2)} PHP</td>
-                    </tr>`;
-                }
-                tbody.innerHTML = html;
-            } else if (type === 'sale') {
-                let start = document.getElementById('sStartDate').value;
-                let end = document.getElementById('sEndDate').value;
-                
-                let query = _supabase.from('sales').select('*');
-                if (start) query = query.gte('date', start);
-                if (end) query = query.lte('date', end);
-
-                let { data: filtered, error } = await query;
-                let tbody = document.getElementById('sReportTableBody');
-
-                if (error || !filtered || filtered.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Walang nakitang datos sa napiling panahon.</td></tr>';
-                    return;
-                }
-
-                let summary = {};
-                filtered.forEach(item => {
-                    if (!summary[item.article]) summary[item.article] = { kg: 0, total: 0 };
-                    summary[item.article].kg += Number(item.quantity);
-                    summary[item.article].total += Number(item.totalValue);
-                });
-
-                let html = '';
-                for (let art in summary) {
-                    html += `<tr>
-                        <td>${art}</td>
-                        <td>${summary[art].kg.toFixed(2)} kg</td>
-                        <td>${summary[art].total.toFixed(2)} PHP</td>
-                    </tr>`;
-                }
-                tbody.innerHTML = html;
-            }
-        }
-
-        // ☁️ Tubo & Stock Auswertung über Supabase
-        async function updateMarginAndStock() {
-            const { data: pHistory } = await _supabase.from('purchases').select('*');
-            const { data: sHistory } = await _supabase.from('sales').select('*');
-
-            let pList = pHistory || [];
-            let sList = sHistory || [];
-
-            let articles = ["Fuji", "Perfect", "Master Aroma", "Sweet Hasmin", "Coco pandan", "Jasmine original", "Master Alsa", "Brown rice", "Malagkit/k"];
-            let stats = {};
-
-            articles.forEach(art => {
-                stats[art] = { buyKg: 0, buyPHP: 0, sellKg: 0, sellPHP: 0 };
-            });
-
-            pList.forEach(item => {
-                if (stats[item.article]) {
-                    stats[item.article].buyKg += Number(item.totalKg);
-                    stats[item.article].buyPHP += Number(item.total);
-                }
-            });
-
-            sList.forEach(item => {
-                if (stats[item.article]) {
-                    stats[item.article].sellKg += Number(item.quantity);
-                    stats[item.article].sellPHP += Number(item.totalValue);
-                }
-            });
-
-            let marginTbody = document.getElementById('marginTableBody');
-            let marginHtml = '';
-            let hasData = false;
-
-            articles.forEach(art => {
-                let data = stats[art];
-                if (data.buyKg > 0 || data.sellKg > 0) {
-                    hasData = true;
-                    let avgBuy = data.buyKg > 0 ? (data.buyPHP / data.buyKg) : 0;
-                    let avgSell = data.sellKg > 0 ? (data.sellPHP / data.sellKg) : 0;
-                    let stock = data.buyKg - data.sellKg;
-                    let tuboPerKg = avgSell > 0 && avgBuy > 0 ? (avgSell - avgBuy) : 0;
-
-                    marginHtml += `<tr>
-                        <td><strong>${art}</strong></td>
-                        <td>${data.buyKg.toFixed(2)}</td>
-                        <td>${data.buyPHP.toFixed(2)}</td>
-                        <td>${avgBuy.toFixed(2)}</td>
-                        <td>${data.sellKg.toFixed(2)}</td>
-                        <td>${data.sellPHP.toFixed(2)}</td>
-                        <td>${avgSell.toFixed(2)}</td>
-                        <td class="${stock < 0 ? 'text-danger fw-bold' : 'text-success fw-bold'}">${stock.toFixed(2)}</td>
-                        <td class="${tuboPerKg < 0 ? 'text-danger' : 'text-success'} fw-bold">${tuboPerKg.toFixed(2)}</td>
-                    </tr>`;
-                }
-            });
-
-            if (!hasData) {
-                marginHtml = '<tr><td colspan="9" class="text-center text-muted">Wala pang sapat na datos sa Supabase.</td></tr>';
-            }
-            marginTbody.innerHTML = marginHtml;
-
-            // Daily Profit Calculation
-            let dailyProfitTbody = document.getElementById('dailyProfitTableBody');
-            let dailyMap = {};
-            let avgCostPerArticle = {};
-
-            articles.forEach(art => {
-                let data = stats[art];
-                avgCostPerArticle[art] = data.buyKg > 0 ? (data.buyPHP / data.buyKg) : 0;
-            });
-
-            sList.forEach(item => {
-                let day = item.date;
-                if (!day) return;
-                if (!dailyMap[day]) {
-                    dailyMap[day] = { kg: 0, salesPHP: 0, cogs: 0 };
-                }
-                dailyMap[day].kg += Number(item.quantity);
-                dailyMap[day].salesPHP += Number(item.totalValue);
-                let unitCost = avgCostPerArticle[item.article] || 0;
-                dailyMap[day].cogs += (Number(item.quantity) * unitCost);
-            });
-
-            let dailyHtml = '';
-            let sortedDays = Object.keys(dailyMap).sort();
-
-            if (sortedDays.length === 0) {
-                dailyHtml = '<tr><td colspan="5" class="text-center text-muted">Wala pang sapat na datos ng benta sa Supabase.</td></tr>';
-            } else {
-                sortedDays.forEach(day => {
-                    let d = dailyMap[day];
-                    let profit = d.salesPHP - d.cogs;
-                    dailyHtml += `<tr>
-                        <td>${day}</td>
-                        <td>${d.kg.toFixed(2)}</td>
-                        <td>${d.salesPHP.toFixed(2)}</td>
-                        <td>${d.cogs.toFixed(2)}</td>
-                        <td class="${profit < 0 ? 'text-danger' : 'text-success'} fw-bold">${profit.toFixed(2)}</td>
-                    </tr>`;
-                });
-            }
-            dailyProfitTbody.innerHTML = dailyHtml;
-        }
-
-        // Beim Laden der Seite Daten aus Supabase abrufen
-        window.onload = function() {
-            loadHistory('purchase');
-            loadHistory('sale');
-        };
-    </script>
+// init
+(function init(){
+  const urlEl = document.getElementById('sbUrl');
+  const keyEl = document.getElementById('sbKey');
+  if(DEFAULT_SUPABASE_URL) urlEl.value = DEFAULT_SUPABASE_URL;
+  if(DEFAULT_SUPABASE_KEY) keyEl.value = DEFAULT_SUPABASE_KEY;
+  render();
+  // auto load wenn keys vorhanden
+  if(DEFAULT_SUPABASE_URL && DEFAULT_SUPABASE_KEY){
+    setTimeout(loadFromSupabase, 500);
+  }
+})();
+</script>
 </body>
 </html>
