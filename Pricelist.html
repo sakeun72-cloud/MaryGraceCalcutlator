@@ -1,9 +1,10 @@
+ KG Editierbar
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MARY GRACE - Alles Editierbar</title>
+<title>MARY GRACE - KG editierbar</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -11,15 +12,13 @@
 body{font-family:'Inter',sans-serif;background:#fffbe6}
 .edit-toggle{position:fixed;top:10px;right:10px;z-index:999;background:#000;color:#fff;border:2px solid #000;border-radius:999px;padding:10px 16px;font-weight:900;cursor:pointer;box-shadow:4px 4px 0 #000}
 .edit-toggle.on{background:#ffb900;color:#000}
-[contenteditable="true"]{outline:2px dashed #ffb900;background:rgba(255,185,0,.15);border-radius:4px;padding:0 3px}
-input.edit{border:2px solid #000;background:#fff;padding:4px 6px;border-radius:6px;font-weight:900}
+[contenteditable="true"]{outline:2px dashed #ffb900;background:rgba(255,185,0,.2);border-radius:4px}
 .header{background:#0d5cb6;padding:18px 16px;color:#fff}
 .header h1{font-weight:900;font-size:28px;text-transform:uppercase}
-.header .loc{margin-top:6px;font-weight:800}
 .yellow-bar{height:9px;background:#ffb900}
 .wrap{max-width:780px;margin:0 auto;padding:12px}
 .badges{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
-.badge{border-radius:999px;padding:6px 14px;font-weight:900;font-size:12px;color:#fff}
+.badge{border-radius:999px;padding:6px 14px;font-weight:900;font-size:12px;color:#fff;display:flex;align-items:center;gap:6px}
 .title{color:#0a2a7a;font-weight:900;font-size:24px;margin:14px 0 8px;text-transform:uppercase}
 .warn-bar{display:flex;border:2px solid #000;background:#fff}
 .warn-left{flex:1;padding:7px 10px;font-weight:900;font-size:13px;text-transform:uppercase}
@@ -30,157 +29,170 @@ input.edit{border:2px solid #000;background:#fff;padding:4px 6px;border-radius:6
 .card.master{background:#fff9c4;border:1.5px solid #ffb900}
 .card.fuji{background:#e6f4ea}
 .left{display:flex;align-items:center;gap:10px}
-.sack{width:44px;height:44px;background:#000;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#ffeb3b;font-weight:900;line-height:1}
-.sack b{font-size:12px}
+.sack{width:50px;height:46px;background:#000;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#ffeb3b;font-weight:900;cursor:pointer}
+.sack b{font-size:13px}
 .sack span{font-size:9px;color:#fff}
 .name{font-weight:900;font-size:15px;color:#0a1a5e;text-transform:uppercase;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .mini{font-size:9px;font-weight:900;padding:3px 7px;border-radius:999px}
 .mini.peach{background:#ffe4c4;color:#b45309}
 .mini.mint{background:#c8e6c9;color:#1b5e20}
-.price{font-weight:900;color:#0d3b8c}
+.price{font-weight:900;color:#0d3b8c;display:flex;align-items:center;gap:4px}
+.kg-select{border:2px solid #000;border-radius:6px;padding:3px 5px;font-weight:900;font-size:12px;background:#fff}
+.price-input{width:80px;border:2px solid #000;border-radius:6px;padding:4px;font-weight:900}
 .admin{margin-top:16px;border:2px dashed #000;background:#fff;padding:12px;border-radius:10px;display:none}
 .admin.open{display:block}
-.admin input{width:100%;padding:7px;border:1.5px solid #000;border-radius:6px;font-family:monospace;font-size:12px;margin-top:4px}
+.admin input, .admin select{width:100%;padding:7px;border:1.5px solid #000;border-radius:6px;font-size:12px;margin-top:4px}
 .btn{padding:8px 14px;border-radius:999px;font-weight:900;border:2px solid #000;cursor:pointer}
 .btn-primary{background:#0d5cb6;color:#fff}
 .btn-black{background:#000;color:#fff}
 .fb-box{margin-top:20px;background:#fff;border:2px solid #000;border-radius:12px;padding:12px;box-shadow:3px 3px 0 #000}
 .fb-box textarea{width:100%;min-height:400px;margin-top:10px;background:#fffbe6;border:2px solid #ffb900;border-radius:10px;padding:10px;font-family:monospace;font-size:12px}
 footer{background:#0d5cb6;color:#fff;text-align:center;padding:14px;margin-top:20px}
-.foot-y{color:#ffeb3b;font-weight:900;font-size:12px;text-transform:uppercase}
-.foot-w{font-weight:800;font-size:12px;margin-top:6px}
-.del{position:absolute;top:-6px;right:-6px;background:#ff0000;color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;cursor:pointer;display:none}
-.editing .del{display:flex}
+.del{position:absolute;top:-6px;right:-6px;background:#ff0000;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-weight:900;cursor:pointer}
 </style>
 </head>
 <body>
-
 <button id="toggle" class="edit-toggle">✏️ ALLES EDITIEREN - OFF</button>
 
 <div class="header">
 <h1 id="hTitle">MARY GRACE RICE SUPPLY</h1>
-<div class="loc">📍 <span id="hAddr">Wood Town Block 7 Lot 3 Phase 3</span></div>
+<div style="font-weight:800">📍 <span id="hAddr">Wood Town Block 7 Lot 3 Phase 3</span></div>
 </div>
 <div class="yellow-bar"></div>
 
 <div class="wrap">
 <div class="badges" id="badges"></div>
-<div class="title" id="mainTitle">MURANG BIGAS - PRESYO (25KG SAKTO)</div>
+<div class="title" id="mainTitle">MURANG BIGAS - PRESYO</div>
 <div class="warn-bar">
 <div class="warn-left" id="warnLeft">⚠️ HINDI 20KG, HINDI 10KG - 25KG SAKTO PO!</div>
-<div class="warn-right" id="warnRight">25KG SACK</div>
+<div class="warn-right" id="warnRight">SACK</div>
 </div>
 
-<div class="list" id="list">
-<div class="watermark">25KG SACK</div>
-<div id="cards"></div>
-</div>
+<div class="list"><div class="watermark">25KG SACK</div><div id="cards"></div></div>
 
 <div id="admin" class="admin">
-<h3 style="font-weight:900">⚙️ SUPABASE - Alles wird hier gespeichert (kein localStorage)</h3>
+<h3 style="font-weight:900">⚙️ SUPABASE + PRODUKTANLAGE mit KG</h3>
 <label>Supabase URL</label><input id="sbUrl" placeholder="https://xxx.supabase.co">
 <label>ANON KEY</label><input id="sbKey" placeholder="eyJ...">
 <label>Table</label><input id="sbTable" value="pricelist_config">
 <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
 <button class="btn btn-black" onclick="loadFromSupabase()">LADEN</button>
-<button class="btn btn-primary" onclick="saveToSupabase()">💾 IN SUPABASE SPEICHERN</button>
+<button class="btn btn-primary" onclick="saveToSupabase()">💾 SPEICHERN IN SUPABASE</button>
 <span id="status" style="font-weight:900;font-size:11px"></span>
 </div>
-<div style="margin-top:8px;display:flex;gap:8px">
-<button class="btn btn-black" onclick="addItem()">+ Produkt</button>
+
+<div style="margin-top:14px;border:2px solid #ffb900;border-radius:10px;padding:10px;background:#fffbe6">
+<div style="font-weight:900;font-size:13px;margin-bottom:8px">➕ WEITEREN ARTIKEL EINSTELLEN (mit KG Auswahl)</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<input id="qaName" placeholder="Name z.B. JASMINE DENORADO">
+<input id="qaPrice" type="number" placeholder="Preis z.B. 1450">
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px">
+<select id="qaKg">
+<option value="5">5 KG Sack</option>
+<option value="10">10 KG Sack</option>
+<option value="25" selected>25 KG Sack (Sakto)</option>
+</select>
+<input id="qaBadge" placeholder="Badge z.B. PREMIUM">
+<select id="qaVariant">
+<option value="normal">Normal</option>
+<option value="master">Master (gelb)</option>
+<option value="fuji">Fuji (grün)</option>
+</select>
+</div>
+<button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="quickAdd()">+ ARTIKEL HINZUFÜGEN (5/10/25 KG)</button>
+</div>
+
+<div style="margin-top:10px;display:flex;gap:8px">
 <button class="btn btn-black" onclick="addBadge()">+ Badge (z.B. Cash)</button>
 </div>
-<p style="font-size:10px;margin-top:8px;font-weight:800">Cash / GCash / Card änderst du oben bei den Badges - einfach Text ändern zu z.B. "Cash & GCash"</p>
 </div>
 
 <div class="fb-box">
-<div style="display:flex;justify-content:space-between"><h3>📋 FÜR FACEBOOK KOPIEREN (mit Emojis) - alles editierbar unten</h3><button class="btn btn-black" onclick="copyFB()">Kopieren</button></div>
+<div style="display:flex;justify-content:space-between;align-items:center"><h3>📋 FÜR FACEBOOK KOPIEREN</h3><button class="btn btn-black" onclick="copyFB()">Kopieren</button></div>
 <textarea id="fbText"></textarea>
 </div>
 </div>
 
 <footer>
-<div class="foot-y" id="footWarn">⚠️ HINDI 20KG, HINDI 10KG - 25KG SAKTO PO! LAHAT NG SAKO 25KG!</div>
-<div class="foot-w" id="footMid">✅ GCash ONLY (walang COD) | 🛵 FREE DELIVERY Wood Town | 25KG SAKTO</div>
-<div class="foot-w" style="opacity:.9;font-size:11px;margin-top:4px" id="footLink">✉️ https://m.me/marygrace.rangas | Pa-reserve na po! Available po bukas!</div>
+<div id="footWarn" style="color:#ffeb3b;font-weight:900;font-size:12px;text-transform:uppercase">⚠️ HINDI 20KG, HINDI 10KG - 25KG SAKTO PO! LAHAT NG SAKO 25KG!</div>
+<div id="footMid" style="font-weight:800;font-size:12px;margin-top:6px">✅ GCash ONLY (walang COD) | 🛵 FREE DELIVERY Wood Town</div>
+<div id="footLink" style="font-size:11px;margin-top:4px;opacity:.9">✉️ https://m.me/marygrace.rangas | Pa-reserve na po!</div>
 </footer>
 
 <script>
 const DEFAULT_URL=""; const DEFAULT_KEY="";
-const DEFAULT_BADGES=[
+let badges=[
 {id:"b1",label:"GCash Only",color:"#1e88e5"},
 {id:"b2",label:"FREE DELIVERY",color:"#2e7d32"},
 {id:"b3",label:"Wood Town",color:"#ff9800"},
 ];
-const DEFAULT_ITEMS=[
-{id:"master",name:"MASTER",badge:"PINAKA MURA",tone:"peach",price:1180,variant:"master"},
-{id:"sweet",name:"SWEET HASMIN",price:1300,variant:"normal"},
-{id:"jasmine",name:"JASMINE ORIGINAL",price:1310,variant:"normal"},
-{id:"coco",name:"COCO PANDAN",price:1330,variant:"normal"},
-{id:"perfect",name:"PERFECT",price:1340,variant:"normal"},
-{id:"aroma",name:"MASTER AROMA",price:1340,variant:"normal"},
-{id:"fuji",name:"FUJI",badge:"PREMIUM",tone:"mint",price:1400,variant:"fuji"},
+let items=[
+{id:"master",name:"MASTER",badge:"PINAKA MURA",tone:"peach",price:1180,variant:"master",kg:25},
+{id:"sweet",name:"SWEET HASMIN",price:1300,variant:"normal",kg:25},
+{id:"jasmine",name:"JASMINE ORIGINAL",price:1310,variant:"normal",kg:25},
+{id:"coco",name:"COCO PANDAN",price:1330,variant:"normal",kg:25},
+{id:"perfect",name:"PERFECT",price:1340,variant:"normal",kg:25},
+{id:"aroma",name:"MASTER AROMA",price:1340,variant:"normal",kg:25},
+{id:"fuji",name:"FUJI",badge:"PREMIUM",tone:"mint",price:1400,variant:"fuji",kg:25},
 ];
-
-let badges=JSON.parse(JSON.stringify(DEFAULT_BADGES));
-let items=JSON.parse(JSON.stringify(DEFAULT_ITEMS));
-let edit=false;
-let supa=null;
-
+let edit=false; let supa=null;
 function client(){
  const url=document.getElementById('sbUrl').value.trim()||DEFAULT_URL;
  const key=document.getElementById('sbKey').value.trim()||DEFAULT_KEY;
  if(!url||!key) return null;
  if(supa) return supa;
- supa=window.supabase.createClient(url,key);
- return supa;
+ supa=window.supabase.createClient(url,key);return supa;
 }
-function fmt(n){return `₱${Number(n).toLocaleString('en-PH')} / 25kg`}
+function fmt(it){ return `₱${Number(it.price).toLocaleString('en-PH')} / ${it.kg}kg`; }
 
 function render(){
- document.getElementById('badges').innerHTML=badges.map(b=>`
-  <div class="badge" style="background:${b.color}" data-bid="${b.id}">
-   <span id="badge-${b.id}" ${edit?'contenteditable="true" onblur="editBadge(this)"':''}>${b.label}</span>
-   ${edit?`<span style="margin-left:6px;cursor:pointer" onclick="delBadge('${b.id}')">×</span>`:''}
-  </div>`).join('');
+ document.getElementById('badges').innerHTML=badges.map(b=>`<div class="badge" style="background:${b.color}"><span ${edit?'contenteditable="true" onblur="editBadge(this)"':''} data-bid="${b.id}">${b.label}</span>${edit?`<span onclick="delBadge('${b.id}')" style="cursor:pointer;margin-left:4px">×</span>`:''}</div>`).join('');
 
  document.getElementById('cards').innerHTML=items.map(it=>`
-  <div class="card ${it.variant} ${edit?'editing':''}">
+  <div class="card ${it.variant}">
    ${edit?`<div class="del" onclick="delItem('${it.id}')">×</div>`:''}
    <div class="left">
-    <div class="sack"><b>25KG</b><span>SAKTO</span></div>
+    <div class="sack" onclick="toggleKg('${it.id}')" title="Klicken um KG zu ändern (5/10/25)">
+     <b>${it.kg}KG</b><span>SAKTO</span>
+    </div>
     <div class="name">
-     <span ${edit?'contenteditable="true"':''} onblur="editName('${it.id}',this)">${it.name}</span>
-     ${it.badge||edit?`<span class="mini ${it.tone||'peach'}" ${edit?'contenteditable="true"':''} onblur="editItemBadge('${it.id}',this)">${it.badge||'+BADGE'}</span>`:''}
+     <span ${edit?'contenteditable="true" onblur="editName(\''+it.id+'\',this)"':''}>${it.name}</span>
+     ${it.badge||edit?`<span class="mini ${it.tone||'peach'}" ${edit?'contenteditable="true" onblur="editItemBadge(\''+it.id+'\',this)"':''}>${it.badge||'+BADGE'}</span>`:''}
     </div>
    </div>
    <div class="price">
-    ${edit?`<input class="edit" type="number" value="${it.price}" style="width:80px" onchange="editPrice('${it.id}',this.value)"> / 25kg`:`${fmt(it.price)}`}
+    ${edit?`
+     <input class="price-input" type="number" value="${it.price}" onchange="editPrice('${it.id}',this.value)" style="width:80px">
+     <select class="kg-select" onchange="editKg('${it.id}',this.value)">
+      <option value="5" ${it.kg==5?'selected':''}>5kg</option>
+      <option value="10" ${it.kg==10?'selected':''}>10kg</option>
+      <option value="25" ${it.kg==25?'selected':''}>25kg</option>
+     </select>
+    `:`${fmt(it)}`}
    </div>
-  </div>`).join('');
+  </div>
+ `).join('');
 
- // editable headers/footers
- document.getElementById('hTitle').contentEditable=edit;
- document.getElementById('hAddr').contentEditable=edit;
- document.getElementById('mainTitle').contentEditable=edit;
- document.getElementById('warnLeft').contentEditable=edit;
- document.getElementById('warnRight').contentEditable=edit;
- document.getElementById('footWarn').contentEditable=edit;
- document.getElementById('footMid').contentEditable=edit;
- document.getElementById('footLink').contentEditable=edit;
-
+ ['hTitle','hAddr','mainTitle','warnLeft','warnRight','footWarn','footMid','footLink'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el) el.contentEditable=edit;
+ });
  buildFB();
 }
 
 function buildFB(){
- const b1=badges[0]?.label||'GCash Only';
- const b2=badges[1]?.label||'FREE DELIVERY';
- const b3=badges[2]?.label||'Wood Town';
  let t=`${document.getElementById('hTitle').textContent}\n📍 ${document.getElementById('hAddr').textContent}\n\n`;
- t+=`🟦 ${badges.map(b=>b.label).join(' | ')}\n\n`;
+ t+=`${badges.map(b=>b.label).join(' | ')}\n\n`;
  t+=`${document.getElementById('mainTitle').textContent}\n${document.getElementById('warnLeft').textContent}\n\n`;
- items.forEach(it=>{
-  t+=`${it.name}${it.badge?' - '+it.badge:''} - ${fmt(it.price)}\n`;
+ // Gruppiert nach KG
+ const byKg={5:[],10:[],25:[]};
+ items.forEach(it=>{ if(!byKg[it.kg]) byKg[it.kg]=[]; byKg[it.kg].push(it); });
+ [5,10,25].forEach(kg=>{
+  if(byKg[kg] && byKg[kg].length>0){
+   t+=`\n--- ${kg}KG SAKTO ---\n`;
+   byKg[kg].forEach(it=>{ t+=`${it.name}${it.badge?' - '+it.badge:''} - ${fmt(it)}\n`; });
+  }
  });
  t+=`\n${document.getElementById('footWarn').textContent}\n${document.getElementById('footMid').textContent}\n${document.getElementById('footLink').textContent}`;
  document.getElementById('fbText').value=t;
@@ -188,16 +200,29 @@ function buildFB(){
 
 window.editName=(id,el)=>{items=items.map(i=>i.id===id?{...i,name:el.textContent.toUpperCase().trim()}:i);buildFB()}
 window.editItemBadge=(id,el)=>{items=items.map(i=>i.id===id?{...i,badge:el.textContent.toUpperCase().trim()}:i);buildFB()}
-window.editBadge=function(el){const id=el.parentElement.getAttribute('data-bid');badges=badges.map(b=>b.id===id?{...b,label:el.textContent.trim()}:b);buildFB()}
-window.editPrice=(id,v)=>{const n=parseInt(v,10);if(isNaN(n))return;items=items.map(i=>i.id===id?{...i,price:n}:i);buildFB()}
+window.editBadge=function(el){const id=el.getAttribute('data-bid');badges=badges.map(b=>b.id===id?{...b,label:el.textContent.trim()}:b);buildFB()}
+window.editPrice=(id,v)=>{items=items.map(i=>i.id===id?{...i,price:parseInt(v,10)||0}:i);buildFB()}
+window.editKg=(id,v)=>{items=items.map(i=>i.id===id?{...i,kg:parseInt(v,10)}:i);render()}
+window.toggleKg=(id)=>{const it=items.find(i=>i.id===id); if(!it) return; const next = it.kg==25?5: it.kg==5?10:25; editKg(id,next);}
 window.delItem=id=>{if(confirm('Löschen?')){items=items.filter(i=>i.id!==id);render()}}
 window.delBadge=id=>{badges=badges.filter(b=>b.id!==id);render()}
-window.addItem=()=>{const n=prompt('Name:','NEW RICE');if(!n)return;const p=parseInt(prompt('Preis:','1400'),10);items.push({id:'id_'+Date.now(),name:n.toUpperCase(),price:p,variant:'normal'});render()}
-window.addBadge=()=>{const n=prompt('Badge Text z.B. Cash oder Cash & GCash:','Cash');if(!n)return;badges.push({id:'id_'+Date.now(),label:n,color:'#1e88e5'});render()}
-window.copyFB=async()=>{const t=document.getElementById('fbText').value;await navigator.clipboard.writeText(t);alert('Kopiert für Facebook!')}
+window.quickAdd=()=>{
+ const n=document.getElementById('qaName').value.trim();
+ const p=document.getElementById('qaPrice').value.trim();
+ const b=document.getElementById('qaBadge').value.trim();
+ const kg=parseInt(document.getElementById('qaKg').value,10);
+ const variant=document.getElementById('qaVariant').value;
+ if(!n||!p){alert('Name und Preis!');return}
+ items.push({id:'id_'+Date.now(),name:n.toUpperCase(),price:parseInt(p,10),badge:b.toUpperCase(),kg:kg,tone:b.toUpperCase().includes('PREMIUM')?'mint':b.toUpperCase().includes('MURA')?'peach':'',variant});
+ document.getElementById('qaName').value='';document.getElementById('qaPrice').value='';document.getElementById('qaBadge').value='';
+ render();
+ document.getElementById('status').textContent='✅ '+n+' ('+kg+'KG) hinzugefügt - jetzt speichern!';
+}
+window.addBadge=()=>{const n=prompt('Badge z.B. Cash');if(!n)return;badges.push({id:'id_'+Date.now(),label:n,color:'#1e88e5'});render()}
+window.copyFB=async()=>{await navigator.clipboard.writeText(document.getElementById('fbText').value);alert('Kopiert!')}
 
 async function loadFromSupabase(){
- const c=client(); if(!c){document.getElementById('status').textContent='URL+KEY eintragen';return}
+ const c=client(); if(!c){document.getElementById('status').textContent='URL+KEY!';return}
  document.getElementById('status').textContent='Lädt...';
  try{
   const table=document.getElementById('sbTable').value;
@@ -205,52 +230,33 @@ async function loadFromSupabase(){
   if(error) throw error;
   if(data?.data?.items) items=data.data.items;
   if(data?.data?.badges) badges=data.data.badges;
-  if(data?.data?.hTitle) document.getElementById('hTitle').textContent=data.data.hTitle;
-  if(data?.data?.hAddr) document.getElementById('hAddr').textContent=data.data.hAddr;
   render();
-  document.getElementById('status').textContent='✅ Geladen von Supabase';
+  document.getElementById('status').textContent='✅ Geladen';
  }catch(e){document.getElementById('status').textContent='❌ '+e.message}
 }
 async function saveToSupabase(){
- const c=client(); if(!c){document.getElementById('status').textContent='URL+KEY eintragen';return}
+ const c=client(); if(!c){document.getElementById('status').textContent='URL+KEY!';return}
  document.getElementById('status').textContent='Speichert...';
  try{
   const table=document.getElementById('sbTable').value;
-  const payload={
-   id:1,
-   data:{
-    items,badges,
-    hTitle:document.getElementById('hTitle').textContent,
-    hAddr:document.getElementById('hAddr').textContent,
-    mainTitle:document.getElementById('mainTitle').textContent,
-    warnLeft:document.getElementById('warnLeft').textContent,
-    warnRight:document.getElementById('warnRight').textContent,
-    footWarn:document.getElementById('footWarn').textContent,
-    footMid:document.getElementById('footMid').textContent,
-    footLink:document.getElementById('footLink').textContent
-   },
-   updated_at:new Date().toISOString()
-  };
+  const payload={id:1,data:{items,badges,
+   hTitle:document.getElementById('hTitle').textContent,
+   hAddr:document.getElementById('hAddr').textContent
+  },updated_at:new Date().toISOString()};
   const {error}=await c.from(table).upsert(payload,{onConflict:'id'});
   if(error) throw error;
-  document.getElementById('status').textContent='✅ Alles in Supabase gespeichert!';
+  document.getElementById('status').textContent='✅ In Supabase gespeichert!';
  }catch(e){document.getElementById('status').textContent='❌ '+e.message}
 }
 
 document.getElementById('toggle').addEventListener('click',()=>{
  edit=!edit;
- document.getElementById('toggle').textContent=edit?'✏️ EDIT MODUS AN - Alles editierbar!':'✏️ ALLES EDITIEREN - OFF';
+ document.getElementById('toggle').textContent=edit?'✏️ EDIT AN - Alles + KG editierbar!':'✏️ ALLES EDITIEREN - OFF';
  document.getElementById('toggle').className=edit?'edit-toggle on':'edit-toggle';
  document.getElementById('admin').className=edit?'admin open':'admin';
  render();
 });
-
-(function(){
- if(DEFAULT_URL) document.getElementById('sbUrl').value=DEFAULT_URL;
- if(DEFAULT_KEY) document.getElementById('sbKey').value=DEFAULT_KEY;
- render();
- if(DEFAULT_URL&&DEFAULT_KEY) setTimeout(loadFromSupabase,600);
-})();
+render();
 </script>
 </body>
 </html>
