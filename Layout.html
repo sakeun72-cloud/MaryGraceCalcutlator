@@ -53,12 +53,7 @@
       <div class="flex gap-2"><input id="nav-name-4" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-4" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
       <button onclick="saveNavLinks()" class="bg-black text-white px-4 py-1.5 rounded-full text-xs w-fit">Save Links</button>
     </div>
-    <div class="mt-3 flex flex-wrap gap-2 text-[11px] text-zinc-600 border-t pt-3">
-      <span>Supabase URL:</span><input id="sb-url" class="border rounded-full px-2 py-1 text-[11px] min-w-[200px]" placeholder="https://xyz.supabase.co">
-      <input id="sb-key" type="password" class="border rounded-full px-2 py-1 text-[11px] min-w-[200px]" placeholder="anon key">
-      <button onclick="saveSB()" class="bg-black text-white px-3 py-1 rounded-full text-[11px]">Connect</button>
-      <span id="sb-status" class="text-[11px]">Lokal: nutzt letzte Stammdaten</span>
-    </div>
+<!-- Supabase moved to bottom -->
   </div>
 
   <!-- NO DATA HINT -->
@@ -290,6 +285,9 @@ function setLang(l){
 }
 
 function renderLayouts(){
+  function hasVal(k){ const v = (typeof val === 'function' ? val(k) : ''); return v && String(v).trim()!=='' && String(v).trim().toLowerCase()!=='null' && String(v).trim()!=='-' }
+  function showIf(k, content){ return hasVal(k) ? content : ''; }
+
   if(!current) return
   console.log('Current article:', current)
   // Sack: try URL first, then base64 (bildSack, bild_sack, Sack Base64)
@@ -323,15 +321,15 @@ function renderLayouts(){
           <div class="mt-6 space-y-3">
             <div class="bg-zinc-50 rounded-xl p-3">
               <div class="text-[10px] font-bold tracking-widest text-zinc-400">TEXTURE</div>
-              <div class="text-[12px]">${val('textur')}</div>
+              <div class="text-[12px]">${hasVal('textur') ? val('textur') : ''}</div>
             </div>
             <div class="bg-amber-50 border border-amber-100 rounded-xl p-3">
               <div class="text-[10px] font-bold tracking-widest text-amber-800">PAIRS WELL WITH / PASST ZU</div>
-              <div class="text-[13px] font-semibold text-amber-900">${val('passtZu')}</div>
+              <div class="text-[13px] font-semibold text-amber-900">${hasVal('passtZu') ? val('passtZu') : ''}</div>
             </div>
             <div class="bg-zinc-900 text-white rounded-xl p-3">
               <div class="text-[10px] tracking-widest text-zinc-400">COOKING</div>
-              <div class="text-[12px]">${val('kochmethode')}</div>
+              <div class="text-[12px]">${hasVal('kochmethode') ? val('kochmethode') : ''}</div>
             </div>
           </div>
         </div>
@@ -357,7 +355,7 @@ function renderLayouts(){
           ${val('passtZu').split(',').map(s=>s.trim()).filter(Boolean).join(' <span style="color:#bbb; margin:0 10px;">•</span> ')}
         </div>
         <div class="text-center text-[16px] text-zinc-600 mt-6 font-medium">
-          ${val('aroma')} <span style="color:#bbb; margin:0 10px;">•</span> ${val('textur')} <span style="color:#bbb; margin:0 10px;">•</span> ${current.gewicht}${current.einheit}
+          ${val('aroma')} <span style="color:#bbb; margin:0 10px;">•</span> ${hasVal('textur') ? val('textur') : ''} <span style="color:#bbb; margin:0 10px;">•</span> ${current.gewicht}${current.einheit}
         </div>
       </div>
     </div>
@@ -375,13 +373,13 @@ function renderLayouts(){
           <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-white/20 flex-shrink-0">${reis}</div>
           <div class="text-[12px] leading-snug">
             <div class="font-bold">${val('geschmack')}</div>
-            <div class="opacity-70 text-[11px] mt-1">${val('aroma')}<br>${val('textur')}</div>
+            <div class="opacity-70 text-[11px] mt-1">${val('aroma')}<br>${hasVal('textur') ? val('textur') : ''}</div>
           </div>
         </div>
         <div class="mt-auto bg-white text-zinc-900 rounded-[16px] p-4">
           <div class="text-[10px] font-bold tracking-widest">PASST ZU</div>
-          <div class="text-[13px] font-semibold mt-1">${val('passtZu')}</div>
-          <div class="text-[11px] text-zinc-500 mt-2">${val('kochmethode')}</div>
+          <div class="text-[13px] font-semibold mt-1">${hasVal('passtZu') ? val('passtZu') : ''}</div>
+          <div class="text-[11px] text-zinc-500 mt-2">${hasVal('kochmethode') ? val('kochmethode') : ''}</div>
           <div class="mt-3 text-[10px] text-zinc-400">${current.gewicht}${current.einheit} • ${current.herkunft} • ${current.qualitaet}</div>
         </div>
       </div>
@@ -406,7 +404,7 @@ function renderLayouts(){
       </div>
       <div class="w-[18%] bg-zinc-900 text-white p-4 flex flex-col justify-between">
         <div class="w-16 h-16 rounded-full overflow-hidden mx-auto border border-white/20">${reis}</div>
-        <div class="text-[10px] text-center opacity-60">${val('kochmethode')}</div>
+        <div class="text-[10px] text-center opacity-60">${hasVal('kochmethode') ? val('kochmethode') : ''}</div>
       </div>
     </div>
   `
