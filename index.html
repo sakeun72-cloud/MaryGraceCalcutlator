@@ -4,86 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kingfields Trade - Vollständige Stammdaten - FIXED</title>
-<script src="https://cdn.tailwindcss.com">
-async function migrateLocalToSupabase(){
-  if(!sbClient){ showToast('❌ Kein Supabase Client'); return; }
-  const local = JSON.parse(localStorage.getItem('kingfields_full_v3')||'[]');
-  if(local.length===0){ showToast('Keine lokalen Artikel'); return; }
-  if(!confirm(local.length + ' Artikel aus localStorage nach Supabase pushen?')) return;
-  
-  document.getElementById('sb-status').textContent = '⏳ Migriere ' + local.length + ' Artikel...';
-  let ok=0, fail=0;
-  for(const a of local){
-    const payload={
-      artikelnummer: a.artikelnummer,
-      name_kurz: a.nameKurz||'',
-      name_lang: a.nameLang||'',
-      marke: a.marke||'',
-      sorte: a.sorte||'',
-      qualitaet: a.qualitaet||'Premium',
-      herkunft: a.herkunft||'Thailand',
-      erntejahr: a.erntejahr||'2024',
-      gewicht: a.gewicht||'5',
-      einheit: a.einheit||'kg',
-      marketing:{
-        en:{geschmack:a.geschmackEn||'', aroma:a.aromaEn||'', textur:a.texturEn||'', passtZu:a.passtZuEn||'', kochmethode:a.kochmethodeEn||'', slogan:a.sloganEn||'', short:a.shortEn||'', story:a.storyEn||'', taste:a.tasteEn||'', origin:a.originEn||'', cooking:a.cookingEn||''},
-        tl:{geschmack:a.geschmackTl||'', aroma:a.aromaTl||'', textur:a.texturTl||'', passtZu:a.passtZuTl||'', kochmethode:a.kochmethodeTl||'', slogan:a.sloganTl||'', short:a.shortTl||'', story:a.storyTl||'', taste:a.tasteTl||'', origin:a.originTl||'', cooking:a.cookingTl||''},
-        de:{geschmack:a.geschmackDe||'', aroma:a.aromaDe||'', textur:a.texturDe||'', passtZu:a.passtZuDe||'', kochmethode:a.kochmethodeDe||'', slogan:a.sloganDe||'', short:a.shortDe||'', story:a.storyDe||'', taste:a.tasteDe||'', origin:a.originDe||'', cooking:a.cookingDe||''}
-      },
-      bild_sack_url: a.bildSackUrl||'',
-      bild_reis_url: a.bildReisUrl||'',
-      status:'Active'
-    };
-    const {error} = await sbClient.from('stammdaten').upsert(payload, {onConflict:'artikelnummer'});
-    if(error){ console.error('Migrate error', a.artikelnummer, error); fail++; showToast('Fehler '+a.artikelnummer+': '+error.message); }
-    else { ok++; }
-  }
-  document.getElementById('sb-status').textContent = '✅ Migration: ' + ok + ' ok, ' + fail + ' fail';
-  showToast('✅ Migration fertig: ' + ok + ' Artikel nach Supabase');
-  loadFromSupabase();
-}
-
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js">
-async function migrateLocalToSupabase(){
-  if(!sbClient){ showToast('❌ Kein Supabase Client'); return; }
-  const local = JSON.parse(localStorage.getItem('kingfields_full_v3')||'[]');
-  if(local.length===0){ showToast('Keine lokalen Artikel'); return; }
-  if(!confirm(local.length + ' Artikel aus localStorage nach Supabase pushen?')) return;
-  
-  document.getElementById('sb-status').textContent = '⏳ Migriere ' + local.length + ' Artikel...';
-  let ok=0, fail=0;
-  for(const a of local){
-    const payload={
-      artikelnummer: a.artikelnummer,
-      name_kurz: a.nameKurz||'',
-      name_lang: a.nameLang||'',
-      marke: a.marke||'',
-      sorte: a.sorte||'',
-      qualitaet: a.qualitaet||'Premium',
-      herkunft: a.herkunft||'Thailand',
-      erntejahr: a.erntejahr||'2024',
-      gewicht: a.gewicht||'5',
-      einheit: a.einheit||'kg',
-      marketing:{
-        en:{geschmack:a.geschmackEn||'', aroma:a.aromaEn||'', textur:a.texturEn||'', passtZu:a.passtZuEn||'', kochmethode:a.kochmethodeEn||'', slogan:a.sloganEn||'', short:a.shortEn||'', story:a.storyEn||'', taste:a.tasteEn||'', origin:a.originEn||'', cooking:a.cookingEn||''},
-        tl:{geschmack:a.geschmackTl||'', aroma:a.aromaTl||'', textur:a.texturTl||'', passtZu:a.passtZuTl||'', kochmethode:a.kochmethodeTl||'', slogan:a.sloganTl||'', short:a.shortTl||'', story:a.storyTl||'', taste:a.tasteTl||'', origin:a.originTl||'', cooking:a.cookingTl||''},
-        de:{geschmack:a.geschmackDe||'', aroma:a.aromaDe||'', textur:a.texturDe||'', passtZu:a.passtZuDe||'', kochmethode:a.kochmethodeDe||'', slogan:a.sloganDe||'', short:a.shortDe||'', story:a.storyDe||'', taste:a.tasteDe||'', origin:a.originDe||'', cooking:a.cookingDe||''}
-      },
-      bild_sack_url: a.bildSackUrl||'',
-      bild_reis_url: a.bildReisUrl||'',
-      status:'Active'
-    };
-    const {error} = await sbClient.from('stammdaten').upsert(payload, {onConflict:'artikelnummer'});
-    if(error){ console.error('Migrate error', a.artikelnummer, error); fail++; showToast('Fehler '+a.artikelnummer+': '+error.message); }
-    else { ok++; }
-  }
-  document.getElementById('sb-status').textContent = '✅ Migration: ' + ok + ' ok, ' + fail + ' fail';
-  showToast('✅ Migration fertig: ' + ok + ' Artikel nach Supabase');
-  loadFromSupabase();
-}
-
-</script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   .font-display{font-family:"Fraunces",serif}
@@ -113,7 +35,7 @@ async function migrateLocalToSupabase(){
       <button onclick="openLink(1)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">🛒 <span id="nav-label-1">Shop</span></button>
       <button onclick="openLink(2)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">📦 <span id="nav-label-2">Katalog</span></button>
       <button onclick="openLink(3)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">🌐 <span id="nav-label-3">Website</span></button>
-      <button onclick="window.open('https://sakeun72-cloud.github.io/MaryGraceCalcutlator/facebook_product_studio.html','_blank')" class="bg-amber-100 border border-amber-300 px-4 py-2 rounded-full text-[13px] font-medium hover:bg-amber-200">📘 Facebook Studio</button>
+      <button onclick="window.open('https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Layout.html','_blank')" class="bg-zinc-900 text-white border-2 border-amber-300 px-4 py-2 rounded-full text-[13px] font-medium hover:bg-black">📘 Facebook Studio</button>
       <button onclick="toggleNavEdit()" class="ml-auto text-[11px] border px-3 py-1 rounded-full bg-white">⚙ Edit Links</button>
     </div>
     <div id="nav-edit" class="hidden mt-3 bg-zinc-50 p-3 rounded-xl grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -121,7 +43,6 @@ async function migrateLocalToSupabase(){
       <div class="flex gap-2"><input id="nav-name-1" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-1" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
       <div class="flex gap-2"><input id="nav-name-2" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-2" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
       <div class="flex gap-2"><input id="nav-name-3" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-3" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
-      <div class="flex gap-2"><input id="nav-name-4" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-4" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
       <button onclick="saveNavLinks()" class="bg-black text-white px-4 py-1.5 rounded-full text-xs w-fit">Save Links</button>
     </div>
   </div>
@@ -132,7 +53,7 @@ async function migrateLocalToSupabase(){
       <span id="sb-url-display" class="text-xs bg-white border px-3 py-1 rounded-full">https://crdtuptjybxbsezxtksp.supabase.co</span>
       <span class="text-xs bg-white border px-3 py-1 rounded-full">sb_publishable_GU6AAlF... fest eingebaut</span>
       <button onclick="testConnection()" class="bg-black text-white px-4 py-1.5 rounded-full text-xs">Test Connection</button>
-      <button onclick="migrateLocalToSupabase()" class="bg-amber-500 text-black px-4 py-1.5 rounded-full text-xs font-bold">⬆ MIGRATE 4 localStorage → Supabase</button>
+      <button onclick="migrateLocalToSupabase()" class="bg-amber-500 text-black px-4 py-1.5 rounded-full text-xs font-bold">⬆ MIGRATE localStorage → Supabase</button>
       <button onclick="loadFromSupabase()" class="bg-white border px-4 py-1.5 rounded-full text-xs">🔄 Reload Supabase</button>
       <span id="sb-status" class="text-[11px] text-zinc-600">⏳ Verbinde...</span>
     </div>
@@ -158,7 +79,7 @@ async function migrateLocalToSupabase(){
 const SUPABASE_URL = "https://crdtuptjybxbsezxtksp.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_GU6AAlF0zc3LB4hFlKK0fw_TNxo9z7q";
 
-let navLinks = JSON.parse(localStorage.getItem('navLinks') || '[{"name":"Preisliste","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Pricelist.html"},{"name":"Shop","url":""},{"name":"Katalog","url":""},{"name":"Website","url":""},{"name":"Supabase","url":"https://supabase.com"}]')
+let navLinks = JSON.parse(localStorage.getItem('navLinks') || '[{"name":"Preisliste","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Pricelist.html"},{"name":"Shop","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Shop.html"},{"name":"Katalog","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Layout.html"},{"name":"Website","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/"}]')
 let lang = localStorage.getItem('lang') || 'EN'
 let articles = JSON.parse(localStorage.getItem('kingfields_full_v3') || '[]')
 let current = null
@@ -166,10 +87,8 @@ let sbClient = null
 let bildSackFile=null, bildSackBase64=null, bildReisBase64=null
 let zoom=1, panX=0, panY=0, isRound=false
 
-// HARDCODED init
 try{
   sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-  console.log("Supabase client created with publishable key");
   document.getElementById('sb-status').textContent = "⏳ Lade aus Supabase...";
   setTimeout(()=>loadFromSupabase(), 500);
 }catch(e){
@@ -182,34 +101,15 @@ async function loadFromSupabase(){
   document.getElementById('sb-status').textContent = "⏳ Lade stammdaten...";
   const {data, error} = await sbClient.from('stammdaten').select('*').order('artikelnummer');
   if(error){
-    console.error(error);
-    document.getElementById('sb-status').innerHTML = "❌ " + error.message + " | Nutze localStorage";
+    document.getElementById('sb-status').innerHTML = "❌ " + error.message;
     document.getElementById('sb-status').className = "text-[11px] text-red-600 font-bold";
-    if(error.message.includes("RLS") || error.code==="42501"){
-      document.getElementById('sb-status').innerHTML += "<br>→ In Supabase: Table Editor > stammdaten > RLS ausschalten oder Policy erstellen";
-    }
-    renderList();
-    return;
+    renderList(); return;
   }
-  console.log("Supabase data loaded:", data.length);
   if(data && data.length>0){
-    // Convert Supabase to local format
     articles = data.map(d=>{
-      const m=d.marketing||{};
-      const en=m.en||{}, tl=m.tl||{}, de=m.de||{};
+      const m=d.marketing||{}; const en=m.en||{}, tl=m.tl||{}, de=m.de||{};
       return {
-        id: d.artikelnummer,
-        artikelnummer: d.artikelnummer,
-        nameKurz: d.name_kurz||'',
-        nameLang: d.name_lang||'',
-        marke: d.marke||'',
-        sorte: d.sorte||'',
-        qualitaet: d.qualitaet||'Premium',
-        herkunft: d.herkunft||'',
-        erntejahr: d.erntejahr||'',
-        gewicht: d.gewicht||'',
-        einheit: d.einheit||'kg',
-        distributor: 'Kingfields Trade',
+        id: d.artikelnummer, artikelnummer: d.artikelnummer, nameKurz: d.name_kurz||'', nameLang: d.name_lang||'', marke: d.marke||'', sorte: d.sorte||'', qualitaet: d.qualitaet||'Premium', herkunft: d.herkunft||'', erntejahr: d.erntejahr||'', gewicht: d.gewicht||'', einheit: d.einheit||'kg', distributor: 'Kingfields Trade',
         geschmackEn: en.geschmack||'', geschmackTl: tl.geschmack||'', geschmackDe: de.geschmack||'',
         aromaEn: en.aroma||'', aromaTl: tl.aroma||'', aromaDe: de.aroma||'',
         texturEn: en.textur||'', texturTl: tl.textur||'', texturDe: de.textur||'',
@@ -221,33 +121,49 @@ async function loadFromSupabase(){
         tasteEn: en.taste||'', tasteTl: tl.taste||'', tasteDe: de.taste||'',
         originEn: en.origin||'', originTl: tl.origin||'', originDe: de.origin||'',
         cookingEn: en.cooking||'', cookingTl: tl.cooking||'', cookingDe: de.cooking||'',
-        bildSackUrl: d.bild_sack_url||'',
-        bildReisUrl: d.bild_reis_url||'',
-        status: 'Active'
+        bildSackUrl: d.bild_sack_url||'', bildReisUrl: d.bild_reis_url||'', status: 'Active'
       }
     });
     localStorage.setItem('kingfields_full_v3', JSON.stringify(articles));
     document.getElementById('sb-status').textContent = "✅ " + articles.length + " Artikel aus Supabase geladen";
     document.getElementById('sb-status').className = "text-[11px] text-green-600 font-bold";
   } else {
-    document.getElementById('sb-status').textContent = "⚠️ Supabase leer (" + data.length + ") - nutze " + articles.length + " aus localStorage - speichere einen Artikel um zu Supabase zu übertragen";
-    document.getElementById('sb-status').className = "text-[11px] text-amber-600 font-bold";
+    document.getElementById('sb-status').textContent = "⚠ Supabase leer - nutze " + articles.length + " aus localStorage";
   }
   renderList();
 }
 
-function initSupabase(url,key){ try{ sbClient=supabase.createClient(url,key); document.getElementById('sb-status').innerHTML='✅ Connected'; return true }catch(e){ document.getElementById('sb-status').innerHTML='❌ '+e.message; return false } }
-async function testConnection(){ const {data, error} = await sbClient.from('stammdaten').select('artikelnummer').limit(1); if(error) showToast('Test failed: '+error.message); else showToast('✅ Connected! Table exists, ' + (data.length) + ' rows sample') }
+async function migrateLocalToSupabase(){
+  if(!sbClient){ showToast('❌ Kein Supabase'); return; }
+  const local = JSON.parse(localStorage.getItem('kingfields_full_v3')||'[]');
+  if(local.length===0){ showToast('Keine lokalen Artikel'); return; }
+  if(!confirm(local.length + ' Artikel nach Supabase?')) return;
+  document.getElementById('sb-status').textContent = '⏳ Migriere ' + local.length + ' Artikel...';
+  let ok=0, fail=0;
+  for(const a of local){
+    const payload={
+      artikelnummer:a.artikelnummer, name_kurz:a.nameKurz||'', name_lang:a.nameLang||'', marke:a.marke||'', sorte:a.sorte||'', qualitaet:a.qualitaet||'Premium', herkunft:a.herkunft||'Thailand', erntejahr:a.erntejahr||'2024', gewicht:a.gewicht||'5', einheit:a.einheit||'kg',
+      marketing:{ en:{geschmack:a.geschmackEn||'', aroma:a.aromaEn||'', textur:a.texturEn||'', passtZu:a.passtZuEn||'', kochmethode:a.kochmethodeEn||'', slogan:a.sloganEn||'', short:a.shortEn||'', story:a.storyEn||'', taste:a.tasteEn||'', origin:a.originEn||'', cooking:a.cookingEn||''}, tl:{geschmack:a.geschmackTl||'', aroma:a.aromaTl||'', textur:a.texturTl||'', passtZu:a.passtZuTl||'', kochmethode:a.kochmethodeTl||'', slogan:a.sloganTl||'', short:a.shortTl||'', story:a.storyTl||'', taste:a.tasteTl||'', origin:a.originTl||'', cooking:a.cookingTl||''}, de:{geschmack:a.geschmackDe||'', aroma:a.aromaDe||'', textur:a.texturDe||'', passtZu:a.passtZuDe||'', kochmethode:a.kochmethodeDe||'', slogan:a.sloganDe||'', short:a.shortDe||'', story:a.storyDe||'', taste:a.tasteDe||'', origin:a.originDe||'', cooking:a.cookingDe||''} },
+      bild_sack_url:a.bildSackUrl||'', bild_reis_url:a.bildReisUrl||'', status:'Active'
+    };
+    const {error}=await sbClient.from('stammdaten').upsert(payload,{onConflict:'artikelnummer'});
+    if(error){ fail++; showToast('Fehler '+a.artikelnummer+': '+error.message); } else ok++;
+  }
+  document.getElementById('sb-status').textContent = '✅ Migration: ' + ok + ' ok, ' + fail + ' fail';
+  showToast('✅ ' + ok + ' Artikel nach Supabase'); loadFromSupabase();
+}
+
+function testConnection(){ sbClient.from('stammdaten').select('artikelnummer').limit(1).then(({data,error})=>{ if(error) showToast('Fail: '+error.message); else showToast('✅ Connected, '+data.length+' sample') }) }
 function openLink(i){ const l=navLinks[i]; if(l&&l.url) window.open(l.url,'_blank'); else { showToast('Kein Link'); toggleNavEdit() } }
-function toggleNavEdit(){ const el=document.getElementById('nav-edit'); el.classList.toggle('hidden'); for(let i=0;i<5;i++){ document.getElementById('nav-name-'+i).value=navLinks[i]?.name||''; document.getElementById('nav-url-'+i).value=navLinks[i]?.url||'' } }
-function saveNavLinks(){ for(let i=0;i<5;i++){ navLinks[i]={name:document.getElementById('nav-name-'+i).value||('Button '+(i+1)), url:document.getElementById('nav-url-'+i).value||''}; const lbl=document.getElementById('nav-label-'+i); if(lbl) lbl.textContent=navLinks[i].name } localStorage.setItem('navLinks', JSON.stringify(navLinks)); document.getElementById('nav-edit').classList.add('hidden'); showToast('Links gespeichert') }
-function loadNavLabels(){ for(let i=0;i<5;i++){ const lbl=document.getElementById('nav-label-'+i); if(lbl&&navLinks[i]) lbl.textContent=navLinks[i].name } }
+function toggleNavEdit(){ const el=document.getElementById('nav-edit'); el.classList.toggle('hidden'); for(let i=0;i<4;i++){ document.getElementById('nav-name-'+i).value=navLinks[i]?.name||''; document.getElementById('nav-url-'+i).value=navLinks[i]?.url||'' } }
+function saveNavLinks(){ for(let i=0;i<4;i++){ navLinks[i]={name:document.getElementById('nav-name-'+i).value||('Button '+(i+1)), url:document.getElementById('nav-url-'+i).value||''}; const lbl=document.getElementById('nav-label-'+i); if(lbl) lbl.textContent=navLinks[i].name } localStorage.setItem('navLinks', JSON.stringify(navLinks)); document.getElementById('nav-edit').classList.add('hidden'); showToast('Links gespeichert') }
+function loadNavLabels(){ for(let i=0;i<4;i++){ const lbl=document.getElementById('nav-label-'+i); if(lbl&&navLinks[i]) lbl.textContent=navLinks[i].name } }
 function t(en,tl,de){ if(lang==='EN') return en; if(lang==='TL') return tl; return de }
-function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'),3500) }
+function showToast(msg){ const el=document.getElementById('toast'); el.textContent=msg; el.classList.remove('hidden'); setTimeout(()=>el.classList.add('hidden'),3500) }
 function getNextArtNr(){ let max=0; articles.forEach(a=>{ const n=parseInt((a.artikelnummer||'').replace(/\D/g,''))||0; if(n>max) max=n }); return String(max+1).padStart(3,'0') }
 function newArticle(){
   const nr=getNextArtNr()
-  current={ id:Date.now().toString(), artikelnummer:nr, nameKurz:'', nameLang:'', marke:'', sorte:'Hasmin', qualitaet:'Premium', herkunft:'Thailand', erntejahr:new Date().getFullYear(), gewicht:'5', einheit:'kg', distributor:'Kingfields Trade', geschmackEn:'Soft, fluffy, fragrant', geschmackTl:'Malambot, mabango', geschmackDe:'Weich, fluffig, duftend', aromaEn:'Natural jasmine aroma', aromaTl:'Natural na jasmine aroma', aromaDe:'Natürliches Jasmin Aroma', texturEn:'Soft & slightly sticky', texturTl:'Malambot at medyo malagkit', texturDe:'Weich & leicht klebrig', passtZuEn:'Curry, grilled meat, vegetables, adobo', passtZuTl:'Curry, inihaw na karne, gulay, adobo', passtZuDe:'Curry, Grillfleisch, Gemüse, Adobo', kochmethodeEn:'1 cup rice : 1.2 cup water, 15 min', kochmethodeTl:'1 tasa bigas : 1.2 tasa tubig, 15 min', kochmethodeDe:'1 Tasse Reis : 1,2 Tasse Wasser, 15 Min', sloganEn:'Thai Soft Rice - Premium Quality', sloganTl:'De Kalidad na Bigas', sloganDe:'Thai Duftreis - Premium Qualität', shortEn:'Sweet aroma, soft texture', shortTl:'Mabango at malambot', shortDe:'Süßes Aroma, weiche Textur', storyEn:'Premium Hasmin rice from Thailand', storyTl:'Premium na Hasmin bigas mula sa Thailand', storyDe:'Premium Hasmin Reis aus Thailand', tasteEn:'Soft & Fragrant', tasteTl:'Malambot at Mabango', tasteDe:'Weich & Duftend', originEn:'From fertile fields of Thailand', originTl:'Mula sa matabang bukirin ng Thailand', originDe:'Von fruchtbaren Feldern Thailands', cookingEn:'Rinse, 1:1.2 water, 15 min', cookingTl:'Hugasan, 1:1.2 tubig, 15 min', cookingDe:'Waschen, 1:1,2 Wasser, 15 Min', status:'Draft', bildSackUrl:'', bildReisUrl:'', bildSack:'', bildReis:'' }
+  current={ id:Date.now().toString(), artikelnummer:nr, nameKurz:'', nameLang:'', marke:'', sorte:'Hasmin', qualitaet:'Premium', herkunft:'Thailand', erntejahr:new Date().getFullYear(), gewicht:'5', einheit:'kg', distributor:'Kingfields Trade', geschmackEn:'', geschmackTl:'', geschmackDe:'', aromaEn:'', aromaTl:'', aromaDe:'', texturEn:'', texturTl:'', texturDe:'', passtZuEn:'', passtZuTl:'', passtZuDe:'', kochmethodeEn:'', kochmethodeTl:'', kochmethodeDe:'', sloganEn:'', sloganTl:'', sloganDe:'', shortEn:'', shortTl:'', shortDe:'', storyEn:'', storyTl:'', storyDe:'', tasteEn:'', tasteTl:'', tasteDe:'', originEn:'', originTl:'', originDe:'', cookingEn:'', cookingTl:'', cookingDe:'', status:'Draft', bildSackUrl:'', bildReisUrl:'', bildSack:'', bildReis:'' }
   bildSackBase64=null; bildReisBase64=null; bildSackFile=null; zoom=1; panX=0; panY=0; renderForm(); showToast('New article '+nr)
 }
 function renderList(){
@@ -276,24 +192,22 @@ async function uploadToSupabase(artNr){
   let sackUrl=current.bildSackUrl||null, reisUrl=current.bildReisUrl||null
   try{
     if(bildSackFile||bildSackBase64){
-      showToast('Uploading sack...')
       let blob=bildSackFile; if(!blob&&bildSackBase64) blob=base64ToBlob(bildSackBase64)
       const path=`${artNr}/sack.png`
       const {error}=await sbClient.storage.from('sack-bilder').upload(path, blob, {upsert:true, contentType:'image/png'}); if(error) throw error
       sackUrl=sbClient.storage.from('sack-bilder').getPublicUrl(path).data.publicUrl
     }
     if(bildReisBase64){
-      showToast('Uploading reis...')
       const cropped=await getCroppedBlob()
       if(cropped){ const path=`${artNr}/reis-detail.png`; const {error}=await sbClient.storage.from('reis-detail-bilder').upload(path,cropped,{upsert:true, contentType:'image/png'}); if(error) throw error; reisUrl=sbClient.storage.from('reis-detail-bilder').getPublicUrl(path).data.publicUrl }
     }
     return {sackUrl, reisUrl}
-  }catch(e){ showToast('Upload error: '+e.message); console.error(e); return {sackUrl, reisUrl} }
+  }catch(e){ showToast('Upload error: '+e.message); return {sackUrl, reisUrl} }
 }
 async function saveCurrent(){
   if(!current) return
   const artNr=document.getElementById('f-artnr').value.trim()
-  if(!artNr){ showToast('Artikelnummer 001 nötig'); return }
+  if(!artNr){ showToast('Artikelnummer nötig'); return }
   const fields=['nameKurz','nameLang','marke','sorte','qualitaet','herkunft','erntejahr','gewicht','einheit','distributor','geschmack','aroma','textur','passtZu','kochmethode','slogan','short','story','taste','origin','cooking']
   fields.forEach(f=>{
     const el=document.getElementById('f-'+f)
@@ -304,193 +218,52 @@ async function saveCurrent(){
       if(['nameKurz','marke','sorte','gewicht'].includes(f)) current[f]=el.value
     }
   })
-  current.artikelnummer=artNr
-  current.nameKurz=document.getElementById('f-nameKurz').value
-  current.nameLang=document.getElementById('f-nameLang').value
-  current.marke=document.getElementById('f-marke').value
-  current.sorte=document.getElementById('f-sorte').value
-  current.qualitaet=document.getElementById('f-qualitaet').value
-  current.herkunft=document.getElementById('f-herkunft').value
-  current.erntejahr=document.getElementById('f-erntejahr').value
-  current.gewicht=document.getElementById('f-gewicht').value
-  current.einheit=document.getElementById('f-einheit').value
-  current.status=artNr?'Active':'Draft'
-  current.bildSack=bildSackBase64
-  current.bildReis=bildReisBase64
-  current.bildReisZoom=zoom; current.bildReisPanX=panX; current.bildReisPanY=panY; current.bildReisRund=isRound
+  current.artikelnummer=artNr; current.nameKurz=document.getElementById('f-nameKurz').value; current.nameLang=document.getElementById('f-nameLang').value; current.marke=document.getElementById('f-marke').value; current.sorte=document.getElementById('f-sorte').value; current.qualitaet=document.getElementById('f-qualitaet').value; current.herkunft=document.getElementById('f-herkunft').value; current.erntejahr=document.getElementById('f-erntejahr').value; current.gewicht=document.getElementById('f-gewicht').value; current.einheit=document.getElementById('f-einheit').value; current.status=artNr?'Active':'Draft'
+  current.bildSack=bildSackBase64; current.bildReis=bildReisBase64; current.bildReisZoom=zoom; current.bildReisPanX=panX; current.bildReisPanY=panY; current.bildReisRund=isRound
   if(sbClient){
-    const urls=await uploadToSupabase(artNr)
-    if(urls.sackUrl) current.bildSackUrl=urls.sackUrl
-    if(urls.reisUrl) current.bildReisUrl=urls.reisUrl
-    showToast('Saving to DB...')
-    const payload={
-      artikelnummer:artNr,
-      name_kurz:current.nameKurz,
-      name_lang:current.nameLang,
-      marke:current.marke,
-      sorte:current.sorte,
-      qualitaet:current.qualitaet,
-      herkunft:current.herkunft,
-      erntejahr:current.erntejahr,
-      gewicht:current.gewicht,
-      einheit:current.einheit,
-      marketing:{
-        en:{geschmack:current.geschmackEn, aroma:current.aromaEn, textur:current.texturEn, passtZu:current.passtZuEn, kochmethode:current.kochmethodeEn, slogan:current.sloganEn, short:current.shortEn, story:current.storyEn, taste:current.tasteEn, origin:current.originEn, cooking:current.cookingEn},
-        tl:{geschmack:current.geschmackTl, aroma:current.aromaTl, textur:current.texturTl, passtZu:current.passtZuTl, kochmethode:current.kochmethodeTl, slogan:current.sloganTl, short:current.shortTl, story:current.storyTl, taste:current.tasteTl, origin:current.originTl, cooking:current.cookingTl},
-        de:{geschmack:current.geschmackDe, aroma:current.aromaDe, textur:current.texturDe, passtZu:current.passtZuDe, kochmethode:current.kochmethodeDe, slogan:current.sloganDe, short:current.shortDe, story:current.storyDe, taste:current.tasteDe, origin:current.originDe, cooking:current.cookingDe}
-      },
-      bild_sack_url:current.bildSackUrl,
-      bild_reis_url:current.bildReisUrl,
-      status:'Active'
-    }
+    const urls=await uploadToSupabase(artNr); if(urls.sackUrl) current.bildSackUrl=urls.sackUrl; if(urls.reisUrl) current.bildReisUrl=urls.reisUrl
+    const payload={ artikelnummer:artNr, name_kurz:current.nameKurz, name_lang:current.nameLang, marke:current.marke, sorte:current.sorte, qualitaet:current.qualitaet, herkunft:current.herkunft, erntejahr:current.erntejahr, gewicht:current.gewicht, einheit:current.einheit, marketing:{ en:{geschmack:current.geschmackEn, aroma:current.aromaEn, textur:current.texturEn, passtZu:current.passtZuEn, kochmethode:current.kochmethodeEn, slogan:current.sloganEn, short:current.shortEn, story:current.storyEn, taste:current.tasteEn, origin:current.originEn, cooking:current.cookingEn}, tl:{geschmack:current.geschmackTl, aroma:current.aromaTl, textur:current.texturTl, passtZu:current.passtZuTl, kochmethode:current.kochmethodeTl, slogan:current.sloganTl, short:current.shortTl, story:current.storyTl, taste:current.tasteTl, origin:current.originTl, cooking:current.cookingTl}, de:{geschmack:current.geschmackDe, aroma:current.aromaDe, textur:current.texturDe, passtZu:current.passtZuDe, kochmethode:current.kochmethodeDe, slogan:current.sloganDe, short:current.shortDe, story:current.storyDe, taste:current.tasteDe, origin:current.originDe, cooking:current.cookingDe} }, bild_sack_url:current.bildSackUrl, bild_reis_url:current.bildReisUrl, status:'Active' }
     const {error}=await sbClient.from('stammdaten').upsert(payload,{onConflict:'artikelnummer'})
-    if(error) showToast('DB error: '+error.message)
-    else showToast('✅ Gespeichert: '+artNr)
-  } else {
-    showToast('Lokal gespeichert')
+    if(error) showToast('DB error: '+error.message); else showToast('✅ Gespeichert: '+artNr)
   }
-  const idx=articles.findIndex(a=>a.id===current.id)
-  if(idx>=0) articles[idx]=current; else articles.push(current)
-  localStorage.setItem('kingfields_full_v3', JSON.stringify(articles))
-  renderList()
+  const idx=articles.findIndex(a=>a.id===current.id); if(idx>=0) articles[idx]=current; else articles.push(current)
+  localStorage.setItem('kingfields_full_v3', JSON.stringify(articles)); renderList()
 }
 function renderForm(){
-  if(!current){ document.getElementById('form').innerHTML=`<div class="text-center py-20 text-zinc-400"><div class="font-display text-xl mb-2">${t('Select article','Pumili ng article','Artikel wählen')}</div><p class="text-sm mb-4">${t('Or create new with 001','Or gumawa ng bago','Oder neu mit 001 erstellen')}</p><button onclick="newArticle()" class="bg-black text-white px-6 py-2 rounded-full text-sm">+ New ${getNextArtNr()}</button></div>`; return }
+  if(!current){ document.getElementById('form').innerHTML=`<div class="text-center py-20 text-zinc-400"><div class="font-display text-xl mb-2">${t('Select article','Pumili ng article','Artikel wählen')}</div><button onclick="newArticle()" class="bg-black text-white px-6 py-2 rounded-full text-sm">+ New ${getNextArtNr()}</button></div>`; return }
   const val = (fieldBase) => { if(lang==='EN') return current[fieldBase+'En']||''; if(lang==='TL') return current[fieldBase+'Tl']||''; return current[fieldBase+'De']||'' }
   document.getElementById('form').innerHTML=`
     <div class="space-y-6">
-      <div>
-        <h3 class="font-display font-semibold text-[16px] mb-3">${t('Technical Data','Teknikal na Data','Technische Daten')} • ${current.status} • ${lang}</h3>
+      <div><h3 class="font-display font-semibold text-[16px] mb-3">${t('Technical Data','Teknikal na Data','Technische Daten')} • ${current.status} • ${lang}</h3>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div><label class="text-[11px] font-medium text-zinc-500">${t('Article Nr * 001','Article Nr * 001','Artikel Nr * 001')}</label><input id="f-artnr" value="${current.artikelnummer||''}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-          <div><label class="text-[11px] text-zinc-500">${t('Brand','Brand','Marke')}</label><input id="f-marke" value="${current.marke||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div><label class="text-[11px] text-zinc-500">${t('Short Name','Maikling Pangalan','Kurz Name')}</label><input id="f-nameKurz" value="${current.nameKurz||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div><label class="text-[11px] text-zinc-500">${t('Long Name','Mahabang Pangalan','Lang Name')}</label><input id="f-nameLang" value="${current.nameLang||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div><label class="text-[11px] text-zinc-500">${t('Variety','Variety','Sorte')}</label><input id="f-sorte" value="${current.sorte||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div><label class="text-[11px] text-zinc-500">${t('Quality','Kalidad','Qualität')}</label><select id="f-qualitaet" class="w-full border rounded-full px-3 py-2 text-sm"><option>Premium</option><option>Standard</option><option>Organic</option><option>Bio</option></select></div>
-          <div><label class="text-[11px] text-zinc-500">${t('Origin','Pinagmulan','Herkunft')}</label><input id="f-herkunft" value="${current.herkunft||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div><label class="text-[11px] text-zinc-500">${t('Harvest Year','Taon ng Ani','Erntejahr')}</label><input id="f-erntejahr" value="${current.erntejahr||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div><label class="text-[11px] text-zinc-500">${t('Weight','Timbang','Gewicht')}</label><input id="f-gewicht" value="${current.gewicht||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div><label class="text-[11px] text-zinc-500">${t('Unit','Yunit','Einheit')}</label><input id="f-einheit" value="${current.einheit||'kg'}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
+          <div><label class="text-[11px] font-medium text-zinc-500">Article Nr * 001</label><input id="f-artnr" value="${current.artikelnummer||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
+          <div><label class="text-[11px] text-zinc-500">Brand</label><input id="f-marke" value="${current.marke||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
+          <div><label class="text-[11px] text-zinc-500">Kurz Name</label><input id="f-nameKurz" value="${current.nameKurz||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
+          <div><label class="text-[11px] text-zinc-500">Lang Name</label><input id="f-nameLang" value="${current.nameLang||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
+          <div><label class="text-[11px] text-zinc-500">Sorte</label><input id="f-sorte" value="${current.sorte||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
+          <div><label class="text-[11px] text-zinc-500">Qualität</label><select id="f-qualitaet" class="w-full border rounded-full px-3 py-2 text-sm"><option>Premium</option><option>Standard</option><option>Organic</option></select></div>
+          <div><label class="text-[11px] text-zinc-500">Herkunft</label><input id="f-herkunft" value="${current.herkunft||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
+          <div><label class="text-[11px] text-zinc-500">Erntejahr</label><input id="f-erntejahr" value="${current.erntejahr||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
+          <div><label class="text-[11px] text-zinc-500">Gewicht</label><input id="f-gewicht" value="${current.gewicht||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
+          <div><label class="text-[11px] text-zinc-500">Einheit</label><input id="f-einheit" value="${current.einheit||'kg'}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
           <div class="col-span-2"><label class="text-[11px] text-zinc-500">Distributor</label><input id="f-distributor" value="${current.distributor||'Kingfields Trade'}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
         </div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="text-xs font-bold">${t('1. Sack Image (transparent)','1. Sako Larawan','1. Sack Bild (transparent)')}</label>
-          <div id="drop-sack" class="chessboard border-2 border-dashed rounded-[16px] h-[320px] flex items-center justify-center relative overflow-hidden cursor-pointer mt-1" onclick="document.getElementById('file-sack').click()">
-            ${bildSackBase64?`<img src="${bildSackBase64}" class="max-w-full max-h-full object-contain">`:`<div class="bg-white px-3 py-1 rounded-full text-xs shadow">${t('Click / Drop sack image','I-click / I-drop sako','Klick / Drop Sack Bild')}</div>`}
-          </div>
-          <input id="file-sack" type="file" accept="image/*" class="hidden" onchange="handleSackFile(this)">
-          ${current.bildSackUrl?`<div class="text-[10px] text-green-600 mt-1 truncate">URL: ${current.bildSackUrl}</div>`:''}
-        </div>
-        <div>
-          <div class="flex justify-between items-center">
-            <label class="text-xs font-bold">${t('2. Loose Rice Detail (crop)','2. Detalyeng Bigas','2. Loser Reis Detail (Zuschneiden)')}</label>
-            <div class="flex gap-1">
-              <input type="range" min="0.5" max="3" step="0.1" value="${zoom}" oninput="zoom=parseFloat(this.value); updateReisPreview()" class="w-20">
-              <button onclick="isRound=!isRound; updateReisPreview()" class="text-[10px] border px-2 py-0.5 rounded-full bg-white">${isRound?'Round':'Square'}</button>
-              <button onclick="panX=0;panY=0;zoom=1;updateReisPreview()" class="text-[10px] border px-2 py-0.5 rounded-full bg-white">Reset</button>
-            </div>
-          </div>
-          <div id="drop-reis" class="border-2 border-dashed rounded-[16px] h-[320px] flex items-center justify-center relative overflow-hidden bg-zinc-100 cursor-pointer mt-1" onclick="document.getElementById('file-reis').click()" onmousedown="startDrag(event)">
-            ${bildReisBase64?`<img id="reis-img" src="${bildReisBase64}" style="transform: translate(${panX}px, ${panY}px) scale(${zoom}); ${isRound?'border-radius:50%':''}" class="max-w-full max-h-full object-contain pointer-events-none">`:`<div class="bg-white px-3 py-1 rounded-full text-xs shadow">${t('Click / Drop rice image','I-click bigas','Klick Reis Bild')}</div>`}
-          </div>
-          <input id="file-reis" type="file" accept="image/*" class="hidden" onchange="handleReisFile(this)">
-          ${current.bildReisUrl?`<div class="text-[10px] text-green-600 mt-1 truncate">URL: ${current.bildReisUrl}</div>`:''}
-        </div>
+        <div><label class="text-xs font-bold">1. Sack Bild (transparent)</label><div id="drop-sack" class="chessboard border-2 border-dashed rounded-[16px] h-[320px] flex items-center justify-center relative overflow-hidden cursor-pointer mt-1" onclick="document.getElementById('file-sack').click()">${bildSackBase64?`<img src="${bildSackBase64}" class="max-w-full max-h-full object-contain">`:`<div class="bg-white px-3 py-1 rounded-full text-xs shadow">Click / Drop sack image</div>`}</div><input id="file-sack" type="file" accept="image/*" class="hidden" onchange="handleSackFile(this)"></div>
+        <div><label class="text-xs font-bold">2. Loser Reis Detail (Zuschneiden)</label><div id="drop-reis" class="border-2 border-dashed rounded-[16px] h-[320px] flex items-center justify-center relative overflow-hidden bg-zinc-100 cursor-pointer mt-1" onclick="document.getElementById('file-reis').click()">${bildReisBase64?`<img id="reis-img" src="${bildReisBase64}" style="transform: translate(${panX}px, ${panY}px) scale(${zoom}); ${isRound?'border-radius:50%':''}" class="max-w-full max-h-full object-contain">`:`<div class="bg-white px-3 py-1 rounded-full text-xs shadow">Click Reis Bild</div>`}</div><input id="file-reis" type="file" accept="image/*" class="hidden" onchange="handleReisFile(this)"></div>
       </div>
-      <div class="bg-amber-50 border border-amber-200 rounded-[16px] p-4">
-        <h3 class="font-display font-semibold text-[14px] mb-3">🍚 ${t('Food Properties','Katangian ng Pagkain','Lebensmittel Eigenschaften')} • ${lang}</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div><label class="text-[11px] font-medium">${t('Taste / Flavor','Lasa','Geschmack')}</label><input id="f-geschmack" value="${val('geschmack')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-          <div><label class="text-[11px] font-medium">${t('Aroma','Aroma','Aroma')}</label><input id="f-aroma" value="${val('aroma')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-          <div><label class="text-[11px] font-medium">${t('Texture','Texture','Textur')}</label><input id="f-textur" value="${val('textur')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-          <div><label class="text-[11px] font-medium">${t('Cooking Method','Paraan ng Pagluluto','Kochmethode')}</label><input id="f-kochmethode" value="${val('kochmethode')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-          <div class="md:col-span-2"><label class="text-[11px] font-medium">${t('Pairs well with','Bagay sa','Passt gut zu')}</label><input id="f-passtZu" value="${val('passtZu')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-        </div>
-      </div>
-      <div class="bg-zinc-50 border rounded-[16px] p-4">
-        <h3 class="font-display font-semibold text-[14px] mb-3">📢 ${t('Marketing Texts','Mga Teksto sa Marketing','Marketing Texte')} • ${lang}</h3>
-        <div class="grid grid-cols-1 gap-3">
-          <div><label class="text-[11px]">Slogan (${lang})</label><input id="f-slogan" value="${val('slogan')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-          <div><label class="text-[11px]">Short Desc (${lang})</label><input id="f-short" value="${val('short')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-          <div><label class="text-[11px]">Long Story (${lang})</label><textarea id="f-story" class="w-full border rounded-[12px] px-3 py-2 text-sm bg-white h-20">${val('story')}</textarea></div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div><label class="text-[11px]">Taste Tag (${lang})</label><input id="f-taste" value="${val('taste')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-            <div><label class="text-[11px]">Origin Text (${lang})</label><input id="f-origin" value="${val('origin')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-            <div><label class="text-[11px]">Cooking Tip (${lang})</label><input id="f-cooking" value="${val('cooking')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-          </div>
-        </div>
-      </div>
-      <div class="flex gap-2">
-        <button onclick="saveCurrent()" class="flex-1 bg-black text-white py-3 rounded-full font-bold text-sm">💾 ${t('Save to Supabase','I-save sa Supabase','In Supabase speichern')} ${sbClient?'✅':'(local only)'}</button>
-        <button onclick="deleteCurrent()" class="bg-red-50 text-red-600 border border-red-200 px-6 py-3 rounded-full text-sm">Delete</button>
-      </div>
+      <div class="bg-amber-50 border border-amber-200 rounded-[16px] p-4"><h3 class="font-display font-semibold text-[14px] mb-3">🍚 Food Properties • ${lang}</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-3"><div><label class="text-[11px] font-medium">Geschmack</label><input id="f-geschmack" value="${val('geschmack')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div><div><label class="text-[11px] font-medium">Aroma</label><input id="f-aroma" value="${val('aroma')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div><div><label class="text-[11px] font-medium">Textur</label><input id="f-textur" value="${val('textur')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div><div><label class="text-[11px] font-medium">Kochmethode</label><input id="f-kochmethode" value="${val('kochmethode')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div><div class="md:col-span-2"><label class="text-[11px] font-medium">Passt gut zu</label><input id="f-passtZu" value="${val('passtZu')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div></div></div>
+      <div class="flex gap-2"><button onclick="saveCurrent()" class="flex-1 bg-black text-white py-3 rounded-full font-bold text-sm">💾 In Supabase speichern ✅</button><button onclick="deleteCurrent()" class="bg-red-50 text-red-600 border border-red-200 px-6 py-3 rounded-full text-sm">Delete</button></div>
     </div>
   `
   document.getElementById('f-qualitaet').value=current.qualitaet||'Premium'
 }
 function handleSackFile(input){ const file=input.files[0]; if(!file) return; bildSackFile=file; const r=new FileReader(); r.onload=e=>{ bildSackBase64=e.target.result; renderForm() }; r.readAsDataURL(file) }
 function handleReisFile(input){ const file=input.files[0]; if(!file) return; const r=new FileReader(); r.onload=e=>{ bildReisBase64=e.target.result; renderForm() }; r.readAsDataURL(file) }
-function updateReisPreview(){ const img=document.getElementById('reis-img'); if(img){ img.style.transform=`translate(${panX}px, ${panY}px) scale(${zoom})`; img.style.borderRadius=isRound?'50%':'' } }
-let dragging=false, startX, startY
-function startDrag(e){ dragging=true; startX=e.clientX-panX; startY=e.clientY-panY; window.addEventListener('mousemove', onDrag); window.addEventListener('mouseup', stopDrag) }
-function onDrag(e){ if(!dragging) return; panX=e.clientX-startX; panY=e.clientY-startY; updateReisPreview() }
-function stopDrag(){ dragging=false; window.removeEventListener('mousemove', onDrag); window.removeEventListener('mouseup', stopDrag) }
-function deleteCurrent(){ if(!confirm('Delete '+current.artikelnummer+'?')) return; articles=articles.filter(a=>a.id!==current.id); localStorage.setItem('kingfields_full_v3', JSON.stringify(articles)); current=null; renderList(); renderForm(); showToast('Deleted') }
-function setLang(l){
-  if(current){
-    const fields=['geschmack','aroma','textur','passtZu','kochmethode','slogan','short','story','taste','origin','cooking']
-    fields.forEach(f=>{ const el=document.getElementById('f-'+f); if(el){ if(lang==='EN') current[f+'En']=el.value; else if(lang==='TL') current[f+'Tl']=el.value; else current[f+'De']=el.value; } })
-  }
-  lang=l; localStorage.setItem('lang',l)
-  document.querySelectorAll('[id^=btn-]').forEach(b=>{ if(b.id.startsWith('btn-')){ b.className='px-4 py-1.5 rounded-full text-sm text-zinc-600' } })
-  document.getElementById('btn-'+l.toLowerCase()).className='px-4 py-1.5 rounded-full text-sm bg-black text-white font-medium'
-  if(current) renderForm()
-}
-setLang(lang)
-renderList()
-loadNavLabels()
-
-async function migrateLocalToSupabase(){
-  if(!sbClient){ showToast('❌ Kein Supabase Client'); return; }
-  const local = JSON.parse(localStorage.getItem('kingfields_full_v3')||'[]');
-  if(local.length===0){ showToast('Keine lokalen Artikel'); return; }
-  if(!confirm(local.length + ' Artikel aus localStorage nach Supabase pushen?')) return;
-  
-  document.getElementById('sb-status').textContent = '⏳ Migriere ' + local.length + ' Artikel...';
-  let ok=0, fail=0;
-  for(const a of local){
-    const payload={
-      artikelnummer: a.artikelnummer,
-      name_kurz: a.nameKurz||'',
-      name_lang: a.nameLang||'',
-      marke: a.marke||'',
-      sorte: a.sorte||'',
-      qualitaet: a.qualitaet||'Premium',
-      herkunft: a.herkunft||'Thailand',
-      erntejahr: a.erntejahr||'2024',
-      gewicht: a.gewicht||'5',
-      einheit: a.einheit||'kg',
-      marketing:{
-        en:{geschmack:a.geschmackEn||'', aroma:a.aromaEn||'', textur:a.texturEn||'', passtZu:a.passtZuEn||'', kochmethode:a.kochmethodeEn||'', slogan:a.sloganEn||'', short:a.shortEn||'', story:a.storyEn||'', taste:a.tasteEn||'', origin:a.originEn||'', cooking:a.cookingEn||''},
-        tl:{geschmack:a.geschmackTl||'', aroma:a.aromaTl||'', textur:a.texturTl||'', passtZu:a.passtZuTl||'', kochmethode:a.kochmethodeTl||'', slogan:a.sloganTl||'', short:a.shortTl||'', story:a.storyTl||'', taste:a.tasteTl||'', origin:a.originTl||'', cooking:a.cookingTl||''},
-        de:{geschmack:a.geschmackDe||'', aroma:a.aromaDe||'', textur:a.texturDe||'', passtZu:a.passtZuDe||'', kochmethode:a.kochmethodeDe||'', slogan:a.sloganDe||'', short:a.shortDe||'', story:a.storyDe||'', taste:a.tasteDe||'', origin:a.originDe||'', cooking:a.cookingDe||''}
-      },
-      bild_sack_url: a.bildSackUrl||'',
-      bild_reis_url: a.bildReisUrl||'',
-      status:'Active'
-    };
-    const {error} = await sbClient.from('stammdaten').upsert(payload, {onConflict:'artikelnummer'});
-    if(error){ console.error('Migrate error', a.artikelnummer, error); fail++; showToast('Fehler '+a.artikelnummer+': '+error.message); }
-    else { ok++; }
-  }
-  document.getElementById('sb-status').textContent = '✅ Migration: ' + ok + ' ok, ' + fail + ' fail';
-  showToast('✅ Migration fertig: ' + ok + ' Artikel nach Supabase');
-  loadFromSupabase();
-}
-
+function deleteCurrent(){ if(!confirm('Delete '+current.artikelnummer+'?')) return; articles=articles.filter(a=>a.id!==current.id); localStorage.setItem('kingfields_full_v3', JSON.stringify(articles)); current=null; renderList(); renderForm(); }
+function setLang(l){ if(current){ const fields=['geschmack','aroma','textur','passtZu','kochmethode','slogan','short','story','taste','origin','cooking']; fields.forEach(f=>{ const el=document.getElementById('f-'+f); if(el){ if(lang==='EN') current[f+'En']=el.value; else if(lang==='TL') current[f+'Tl']=el.value; else current[f+'De']=el.value; } }) } lang=l; localStorage.setItem('lang',l); document.querySelectorAll('[id^=btn-]').forEach(b=>{ b.className='px-4 py-1.5 rounded-full text-sm text-zinc-600' }); document.getElementById('btn-'+l.toLowerCase()).className='px-4 py-1.5 rounded-full text-sm bg-black text-white font-medium'; if(current) renderForm() }
+setLang(lang); renderList(); loadNavLabels();
 </script>
 </body>
 </html>
