@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kingfields Trade - Vollständige Stammdaten</title>
+<title>MG Rangas - Vollständige Stammdaten - FIXED</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   .font-display{font-family:"Fraunces",serif}
@@ -16,12 +16,11 @@
 <body class="bg-[#f6f5f2] font-body min-h-screen">
 <div class="max-w-[1600px] mx-auto p-3 md:p-6">
 
-  <!-- HEADER -->
   <div class="bg-white rounded-[20px] shadow-sm border p-4 mb-4">
     <div class="flex flex-wrap justify-between items-center gap-3 mb-3">
       <div>
-        <h1 class="font-display text-2xl font-semibold">Kingfields Trade - Product Master</h1>
-        <p class="text-xs text-zinc-500">Vollständige Stammdaten mit Supabase • 3-stellig 001</p>
+        <h1 class="font-display text-2xl font-semibold">Kingfields Trade - Product Master - FIXED</h1>
+        <p class="text-xs text-zinc-500">Mit festen Supabase Keys - https://crdtuptjybxbsezxtksp.supabase.co - publishable key aktiv</p>
       </div>
       <div class="flex gap-2 items-center">
         <div class="flex bg-zinc-100 rounded-full p-1">
@@ -31,14 +30,13 @@
         </div>
       </div>
     </div>
-    <!-- 5 NAV BUTTONS -->
     <div class="flex flex-wrap gap-2 border-t pt-3">
       <button onclick="openLink(0)" class="bg-zinc-900 text-white px-4 py-2 rounded-full text-[13px] font-medium hover:bg-black">📋 <span id="nav-label-0">Preisliste</span></button>
       <button onclick="openLink(1)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">🛒 <span id="nav-label-1">Shop</span></button>
       <button onclick="openLink(2)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">📦 <span id="nav-label-2">Katalog</span></button>
       <button onclick="openLink(3)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">🌐 <span id="nav-label-3">Website</span></button>
-      <button onclick="openLink(4)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">📊 <span id="nav-label-4">Supabase</span></button>
-      <button onclick="toggleNavEdit()" class="ml-auto text-[11px] border px-3 py-1 rounded-full bg-white">⚙️ Edit Links</button>
+      <button onclick="window.open('https://sakeun72-cloud.github.io/MaryGraceCalcutlator/facebook_product_studio.html','_blank')" class="bg-amber-100 border border-amber-300 px-4 py-2 rounded-full text-[13px] font-medium hover:bg-amber-200">📘 Facebook Studio</button>
+      <button onclick="toggleNavEdit()" class="ml-auto text-[11px] border px-3 py-1 rounded-full bg-white">⚙ Edit Links</button>
     </div>
     <div id="nav-edit" class="hidden mt-3 bg-zinc-50 p-3 rounded-xl grid grid-cols-1 md:grid-cols-2 gap-2">
       <div class="flex gap-2"><input id="nav-name-0" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-0" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
@@ -50,20 +48,17 @@
     </div>
   </div>
 
-  <!-- SUPABASE -->
-  <div class="bg-yellow-50 border border-yellow-200 rounded-[16px] p-3 mb-4">
+  <div class="bg-green-50 border border-green-300 rounded-[16px] p-3 mb-4">
     <div class="flex flex-wrap gap-2 items-center">
-      <span class="text-xs font-bold">⚙️ Supabase (1x einrichten):</span>
-      <input id="sb-url" placeholder="https://xyz.supabase.co" class="border p-1.5 rounded-full text-xs flex-1 min-w-[200px] bg-white px-3">
-      <input id="sb-key" placeholder="anon key eyJ..." class="border p-1.5 rounded-full text-xs flex-1 min-w-[200px] bg-white px-3" type="password">
-      <button onclick="saveSupabaseConfig()" class="bg-black text-white px-4 py-1.5 rounded-full text-xs">Save & Connect</button>
-      <button onclick="testConnection()" class="bg-white border px-4 py-1.5 rounded-full text-xs">Test</button>
-      <span id="sb-status" class="text-[11px] text-zinc-600">Not connected - localStorage only</span>
+      <span class="text-xs font-bold">✅ Supabase FIXED (hardcoded):</span>
+      <span id="sb-url-display" class="text-xs bg-white border px-3 py-1 rounded-full">https://crdtuptjybxbsezxtksp.supabase.co</span>
+      <span class="text-xs bg-white border px-3 py-1 rounded-full">sb_publishable_GU6AAlF... fest eingebaut</span>
+      <button onclick="testConnection()" class="bg-black text-white px-4 py-1.5 rounded-full text-xs">Test Connection</button>
+      <span id="sb-status" class="text-[11px] text-zinc-600">⏳ Verbinde...</span>
     </div>
   </div>
 
   <div class="grid grid-cols-12 gap-4">
-    <!-- LIST -->
     <div class="col-span-12 lg:col-span-3 bg-white rounded-[20px] shadow-sm border p-4 h-fit sticky top-4">
       <div class="flex justify-between items-center mb-3">
         <h3 class="font-display font-semibold" id="lbl-articles">Articles</h3>
@@ -72,17 +67,17 @@
       <input id="search" placeholder="Search..." class="w-full border rounded-full px-3 py-2 text-sm mb-3 bg-zinc-50" oninput="renderList()">
       <div id="list" class="space-y-2 max-h-[70vh] overflow-auto pr-1"></div>
     </div>
-
-    <!-- FORM -->
     <div class="col-span-12 lg:col-span-9 bg-white rounded-[20px] shadow-sm border p-5">
       <div id="form"></div>
     </div>
   </div>
-
   <div id="toast" class="fixed bottom-4 right-4 bg-zinc-900 text-white px-4 py-2 rounded-full text-sm hidden shadow-lg z-50"></div>
 </div>
 
 <script>
+const SUPABASE_URL = "https://crdtuptjybxbsezxtksp.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_GU6AAlF0zc3LB4hFlKK0fw_TNxo9z7q";
+
 let navLinks = JSON.parse(localStorage.getItem('navLinks') || '[{"name":"Preisliste","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Pricelist.html"},{"name":"Shop","url":""},{"name":"Katalog","url":""},{"name":"Website","url":""},{"name":"Supabase","url":"https://supabase.com"}]')
 let lang = localStorage.getItem('lang') || 'EN'
 let articles = JSON.parse(localStorage.getItem('kingfields_full_v3') || '[]')
@@ -91,56 +86,96 @@ let sbClient = null
 let bildSackFile=null, bildSackBase64=null, bildReisBase64=null
 let zoom=1, panX=0, panY=0, isRound=false
 
-const savedConf = JSON.parse(localStorage.getItem('supabase_config')||'{}')
-if(savedConf.url) document.getElementById('sb-url').value=savedConf.url
-if(savedConf.key) document.getElementById('sb-key').value=savedConf.key
-if(savedConf.url && savedConf.key) initSupabase(savedConf.url, savedConf.key)
-
-function initSupabase(url,key){
-  try{ sbClient=supabase.createClient(url,key); document.getElementById('sb-status').innerHTML='✅ Connected '+url.substring(0,25)+'... | Real URLs active'; document.getElementById('sb-status').className='text-[11px] text-green-700'; return true }catch(e){ document.getElementById('sb-status').innerHTML='❌ '+e.message; return false }
+// HARDCODED init
+try{
+  sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+  console.log("Supabase client created with publishable key");
+  document.getElementById('sb-status').textContent = "⏳ Lade aus Supabase...";
+  setTimeout(()=>loadFromSupabase(), 500);
+}catch(e){
+  console.error(e);
+  document.getElementById('sb-status').textContent = "❌ " + e.message;
 }
-function saveSupabaseConfig(){ const url=document.getElementById('sb-url').value.trim(), key=document.getElementById('sb-key').value.trim(); if(!url||!key) return showToast('URL + Key eingeben'); localStorage.setItem('supabase_config', JSON.stringify({url,key})); initSupabase(url,key); showToast('Saved & Connected') }
-async function testConnection(){ const url=document.getElementById('sb-url').value.trim(), key=document.getElementById('sb-key').value.trim(); if(!url||!key) return showToast('URL + Key first'); const c=supabase.createClient(url,key); const {error}=await c.from('stammdaten').select('id').limit(1); if(error) showToast('Test failed: '+error.message); else showToast('✅ Table exists') }
-function openLink(i){ const l=navLinks[i]; if(l&&l.url) window.open(l.url,'_blank'); else { showToast('Kein Link für '+l.name); toggleNavEdit() } }
+
+async function loadFromSupabase(){
+  if(!sbClient) return;
+  document.getElementById('sb-status').textContent = "⏳ Lade stammdaten...";
+  const {data, error} = await sbClient.from('stammdaten').select('*').order('artikelnummer');
+  if(error){
+    console.error(error);
+    document.getElementById('sb-status').innerHTML = "❌ " + error.message + " | Nutze localStorage";
+    document.getElementById('sb-status').className = "text-[11px] text-red-600 font-bold";
+    if(error.message.includes("RLS") || error.code==="42501"){
+      document.getElementById('sb-status').innerHTML += "<br>→ In Supabase: Table Editor > stammdaten > RLS ausschalten oder Policy erstellen";
+    }
+    renderList();
+    return;
+  }
+  console.log("Supabase data loaded:", data.length);
+  if(data && data.length>0){
+    // Convert Supabase to local format
+    articles = data.map(d=>{
+      const m=d.marketing||{};
+      const en=m.en||{}, tl=m.tl||{}, de=m.de||{};
+      return {
+        id: d.artikelnummer,
+        artikelnummer: d.artikelnummer,
+        nameKurz: d.name_kurz||'',
+        nameLang: d.name_lang||'',
+        marke: d.marke||'',
+        sorte: d.sorte||'',
+        qualitaet: d.qualitaet||'Premium',
+        herkunft: d.herkunft||'',
+        erntejahr: d.erntejahr||'',
+        gewicht: d.gewicht||'',
+        einheit: d.einheit||'kg',
+        distributor: 'Kingfields Trade',
+        geschmackEn: en.geschmack||'', geschmackTl: tl.geschmack||'', geschmackDe: de.geschmack||'',
+        aromaEn: en.aroma||'', aromaTl: tl.aroma||'', aromaDe: de.aroma||'',
+        texturEn: en.textur||'', texturTl: tl.textur||'', texturDe: de.textur||'',
+        passtZuEn: en.passtZu||'', passtZuTl: tl.passtZu||'', passtZuDe: de.passtZu||'',
+        kochmethodeEn: en.kochmethode||'', kochmethodeTl: tl.kochmethode||'', kochmethodeDe: de.kochmethode||'',
+        sloganEn: en.slogan||'', sloganTl: tl.slogan||'', sloganDe: de.slogan||'',
+        shortEn: en.short||'', shortTl: tl.short||'', shortDe: de.short||'',
+        storyEn: en.story||'', storyTl: tl.story||'', storyDe: de.story||'',
+        tasteEn: en.taste||'', tasteTl: tl.taste||'', tasteDe: de.taste||'',
+        originEn: en.origin||'', originTl: tl.origin||'', originDe: de.origin||'',
+        cookingEn: en.cooking||'', cookingTl: tl.cooking||'', cookingDe: de.cooking||'',
+        bildSackUrl: d.bild_sack_url||'',
+        bildReisUrl: d.bild_reis_url||'',
+        status: 'Active'
+      }
+    });
+    localStorage.setItem('kingfields_full_v3', JSON.stringify(articles));
+    document.getElementById('sb-status').textContent = "✅ " + articles.length + " Artikel aus Supabase geladen";
+    document.getElementById('sb-status').className = "text-[11px] text-green-600 font-bold";
+  } else {
+    document.getElementById('sb-status').textContent = "⚠️ Supabase leer (" + data.length + ") - nutze " + articles.length + " aus localStorage - speichere einen Artikel um zu Supabase zu übertragen";
+    document.getElementById('sb-status').className = "text-[11px] text-amber-600 font-bold";
+  }
+  renderList();
+}
+
+function initSupabase(url,key){ try{ sbClient=supabase.createClient(url,key); document.getElementById('sb-status').innerHTML='✅ Connected'; return true }catch(e){ document.getElementById('sb-status').innerHTML='❌ '+e.message; return false } }
+async function testConnection(){ const {data, error} = await sbClient.from('stammdaten').select('artikelnummer').limit(1); if(error) showToast('Test failed: '+error.message); else showToast('✅ Connected! Table exists, ' + (data.length) + ' rows sample') }
+function openLink(i){ const l=navLinks[i]; if(l&&l.url) window.open(l.url,'_blank'); else { showToast('Kein Link'); toggleNavEdit() } }
 function toggleNavEdit(){ const el=document.getElementById('nav-edit'); el.classList.toggle('hidden'); for(let i=0;i<5;i++){ document.getElementById('nav-name-'+i).value=navLinks[i]?.name||''; document.getElementById('nav-url-'+i).value=navLinks[i]?.url||'' } }
-function saveNavLinks(){ for(let i=0;i<5;i++){ navLinks[i]={name:document.getElementById('nav-name-'+i).value||('Button '+(i+1)), url:document.getElementById('nav-url-'+i).value||''}; document.getElementById('nav-label-'+i).textContent=navLinks[i].name } localStorage.setItem('navLinks', JSON.stringify(navLinks)); document.getElementById('nav-edit').classList.add('hidden'); showToast('Links gespeichert') }
+function saveNavLinks(){ for(let i=0;i<5;i++){ navLinks[i]={name:document.getElementById('nav-name-'+i).value||('Button '+(i+1)), url:document.getElementById('nav-url-'+i).value||''}; const lbl=document.getElementById('nav-label-'+i); if(lbl) lbl.textContent=navLinks[i].name } localStorage.setItem('navLinks', JSON.stringify(navLinks)); document.getElementById('nav-edit').classList.add('hidden'); showToast('Links gespeichert') }
 function loadNavLabels(){ for(let i=0;i<5;i++){ const lbl=document.getElementById('nav-label-'+i); if(lbl&&navLinks[i]) lbl.textContent=navLinks[i].name } }
-
 function t(en,tl,de){ if(lang==='EN') return en; if(lang==='TL') return tl; return de }
-
 function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'),3500) }
-
 function getNextArtNr(){ let max=0; articles.forEach(a=>{ const n=parseInt((a.artikelnummer||'').replace(/\D/g,''))||0; if(n>max) max=n }); return String(max+1).padStart(3,'0') }
-
 function newArticle(){
   const nr=getNextArtNr()
-  current={
-    id:Date.now().toString(),
-    artikelnummer:nr,
-    nameKurz:'', nameLang:'', marke:'', sorte:'Hasmin', qualitaet:'Premium', herkunft:'Thailand', erntejahr:new Date().getFullYear(), gewicht:'5', einheit:'kg', distributor:'Kingfields Trade',
-    // Essen Eigenschaften
-    geschmackEn:'Soft, fluffy, fragrant', geschmackTl:'Malambot, mabango', geschmackDe:'Weich, fluffig, duftend',
-    aromaEn:'Natural jasmine aroma', aromaTl:'Natural na jasmine aroma', aromaDe:'Natürliches Jasmin Aroma',
-    texturEn:'Soft & slightly sticky', texturTl:'Malambot at medyo malagkit', texturDe:'Weich & leicht klebrig',
-    passtZuEn:'Curry, grilled meat, vegetables, adobo', passtZuTl:'Curry, inihaw na karne, gulay, adobo', passtZuDe:'Curry, Grillfleisch, Gemüse, Adobo',
-    kochmethodeEn:'1 cup rice : 1.2 cup water, 15 min', kochmethodeTl:'1 tasa bigas : 1.2 tasa tubig, 15 min', kochmethodeDe:'1 Tasse Reis : 1,2 Tasse Wasser, 15 Min',
-    // Marketing
-    sloganEn:'Thai Soft Rice - Premium Quality', sloganTl:'De Kalidad na Bigas', sloganDe:'Thai Duftreis - Premium Qualität',
-    shortEn:'Sweet aroma, soft texture', shortTl:'Mabango at malambot', shortDe:'Süßes Aroma, weiche Textur',
-    storyEn:'Premium Hasmin rice from Thailand, carefully selected', storyTl:'Premium na Hasmin bigas mula sa Thailand', storyDe:'Premium Hasmin Reis aus Thailand, sorgfältig ausgewählt',
-    tasteEn:'Soft & Fragrant', tasteTl:'Malambot at Mabango', tasteDe:'Weich & Duftend',
-    originEn:'From the fertile fields of Thailand', originTl:'Mula sa matabang bukirin ng Thailand', originDe:'Von den fruchtbaren Feldern Thailands',
-    cookingEn:'Rinse, 1:1.2 water, simmer 15 min', cookingTl:'Hugasan, 1:1.2 tubig, 15 min', cookingDe:'Waschen, 1:1,2 Wasser, 15 Min köcheln',
-    status:'Draft', bildSackUrl:'', bildReisUrl:'', bildSack:'', bildReis:''
-  }
-  bildSackBase64=null; bildReisBase64=null; bildSackFile=null; zoom=1; panX=0; panY=0
-  renderForm(); showToast('New article '+nr)
+  current={ id:Date.now().toString(), artikelnummer:nr, nameKurz:'', nameLang:'', marke:'', sorte:'Hasmin', qualitaet:'Premium', herkunft:'Thailand', erntejahr:new Date().getFullYear(), gewicht:'5', einheit:'kg', distributor:'Kingfields Trade', geschmackEn:'Soft, fluffy, fragrant', geschmackTl:'Malambot, mabango', geschmackDe:'Weich, fluffig, duftend', aromaEn:'Natural jasmine aroma', aromaTl:'Natural na jasmine aroma', aromaDe:'Natürliches Jasmin Aroma', texturEn:'Soft & slightly sticky', texturTl:'Malambot at medyo malagkit', texturDe:'Weich & leicht klebrig', passtZuEn:'Curry, grilled meat, vegetables, adobo', passtZuTl:'Curry, inihaw na karne, gulay, adobo', passtZuDe:'Curry, Grillfleisch, Gemüse, Adobo', kochmethodeEn:'1 cup rice : 1.2 cup water, 15 min', kochmethodeTl:'1 tasa bigas : 1.2 tasa tubig, 15 min', kochmethodeDe:'1 Tasse Reis : 1,2 Tasse Wasser, 15 Min', sloganEn:'Thai Soft Rice - Premium Quality', sloganTl:'De Kalidad na Bigas', sloganDe:'Thai Duftreis - Premium Qualität', shortEn:'Sweet aroma, soft texture', shortTl:'Mabango at malambot', shortDe:'Süßes Aroma, weiche Textur', storyEn:'Premium Hasmin rice from Thailand', storyTl:'Premium na Hasmin bigas mula sa Thailand', storyDe:'Premium Hasmin Reis aus Thailand', tasteEn:'Soft & Fragrant', tasteTl:'Malambot at Mabango', tasteDe:'Weich & Duftend', originEn:'From fertile fields of Thailand', originTl:'Mula sa matabang bukirin ng Thailand', originDe:'Von fruchtbaren Feldern Thailands', cookingEn:'Rinse, 1:1.2 water, 15 min', cookingTl:'Hugasan, 1:1.2 tubig, 15 min', cookingDe:'Waschen, 1:1,2 Wasser, 15 Min', status:'Draft', bildSackUrl:'', bildReisUrl:'', bildSack:'', bildReis:'' }
+  bildSackBase64=null; bildReisBase64=null; bildSackFile=null; zoom=1; panX=0; panY=0; renderForm(); showToast('New article '+nr)
 }
-
 function renderList(){
   const q=document.getElementById('search').value.toLowerCase()
   const list=document.getElementById('list')
-  list.innerHTML=articles.filter(a=>(a.artikelnummer+' '+a.nameKurz+' '+a.marke).toLowerCase().includes(q)).map(a=>`
+  const filtered = articles.filter(a=>(a.artikelnummer+' '+a.nameKurz+' '+a.marke).toLowerCase().includes(q))
+  if(filtered.length===0){ list.innerHTML = '<div class="text-center text-xs text-zinc-400 py-10">Keine Artikel<br><button onclick="newArticle()" class="mt-2 bg-black text-white px-3 py-1 rounded-full">+ Ersten erstellen</button></div>'; return; }
+  list.innerHTML=filtered.map(a=>`
     <div onclick="openArticle('${a.id}')" class="border rounded-[12px] p-2 cursor-pointer hover:bg-zinc-50 ${current&&current.id===a.id?'bg-zinc-100 border-zinc-900':''}">
       <div class="flex gap-2">
         <div class="w-12 h-12 rounded-lg bg-zinc-100 overflow-hidden flex-shrink-0 chessboard">${a.bildSackUrl?`<img src="${a.bildSackUrl}" class="w-full h-full object-cover">`: (a.bildSack?`<img src="${a.bildSack}" class="w-full h-full object-cover">`:'')}</div>
@@ -153,16 +188,9 @@ function renderList(){
     </div>
   `).join('')
 }
-
-function openArticle(id){
-  current=articles.find(a=>a.id===id)
-  bildSackBase64=current.bildSack||null; bildReisBase64=current.bildReis||null; zoom=current.bildReisZoom||1; panX=current.bildReisPanX||0; panY=current.bildReisPanY||0; isRound=current.bildReisRund||false
-  renderForm()
-}
-
+function openArticle(id){ current=articles.find(a=>a.id===id); bildSackBase64=current.bildSack||null; bildReisBase64=current.bildReis||null; zoom=current.bildReisZoom||1; panX=current.bildReisPanX||0; panY=current.bildReisPanY||0; isRound=current.bildReisRund||false; renderForm() }
 function base64ToBlob(b64){ const arr=b64.split(','), mime=arr[0].match(/:(.*?);/)[1], bstr=atob(arr[1]); let n=bstr.length; const u8=new Uint8Array(n); while(n--) u8[n]=bstr.charCodeAt(n); return new Blob([u8],{type:mime}) }
 function getCroppedBlob(){ return new Promise(res=>{ if(!bildReisBase64) return res(null); const c=document.createElement('canvas'); c.width=800; c.height=800; const ctx=c.getContext('2d'); if(isRound){ ctx.beginPath(); ctx.arc(400,400,400,0,Math.PI*2); ctx.clip() } const img=new Image(); img.onload=()=>{ const w=img.width*zoom, h=img.height*zoom, x=(800-w)/2+panX, y=(800-h)/2+panY; ctx.drawImage(img,x,y,w,h); c.toBlob(b=>res(b),'image/png',0.9) }; img.src=bildReisBase64 }) }
-
 async function uploadToSupabase(artNr){
   if(!sbClient) return {sackUrl: current.bildSackUrl||null, reisUrl: current.bildReisUrl||null}
   let sackUrl=current.bildSackUrl||null, reisUrl=current.bildReisUrl||null
@@ -175,20 +203,17 @@ async function uploadToSupabase(artNr){
       sackUrl=sbClient.storage.from('sack-bilder').getPublicUrl(path).data.publicUrl
     }
     if(bildReisBase64){
-      showToast('Uploading reis detail...')
+      showToast('Uploading reis...')
       const cropped=await getCroppedBlob()
       if(cropped){ const path=`${artNr}/reis-detail.png`; const {error}=await sbClient.storage.from('reis-detail-bilder').upload(path,cropped,{upsert:true, contentType:'image/png'}); if(error) throw error; reisUrl=sbClient.storage.from('reis-detail-bilder').getPublicUrl(path).data.publicUrl }
     }
     return {sackUrl, reisUrl}
   }catch(e){ showToast('Upload error: '+e.message); console.error(e); return {sackUrl, reisUrl} }
 }
-
 async function saveCurrent(){
   if(!current) return
   const artNr=document.getElementById('f-artnr').value.trim()
   if(!artNr){ showToast('Artikelnummer 001 nötig'); return }
-
-  // Collect all fields
   const fields=['nameKurz','nameLang','marke','sorte','qualitaet','herkunft','erntejahr','gewicht','einheit','distributor','geschmack','aroma','textur','passtZu','kochmethode','slogan','short','story','taste','origin','cooking']
   fields.forEach(f=>{
     const el=document.getElementById('f-'+f)
@@ -196,11 +221,9 @@ async function saveCurrent(){
       if(lang==='EN') current[f+'En']=el.value
       else if(lang==='TL') current[f+'Tl']=el.value
       else current[f+'De']=el.value
-      // Also keep generic for backward
       if(['nameKurz','marke','sorte','gewicht'].includes(f)) current[f]=el.value
     }
   })
-  // Non-lang fields
   current.artikelnummer=artNr
   current.nameKurz=document.getElementById('f-nameKurz').value
   current.nameLang=document.getElementById('f-nameLang').value
@@ -215,7 +238,6 @@ async function saveCurrent(){
   current.bildSack=bildSackBase64
   current.bildReis=bildReisBase64
   current.bildReisZoom=zoom; current.bildReisPanX=panX; current.bildReisPanY=panY; current.bildReisRund=isRound
-
   if(sbClient){
     const urls=await uploadToSupabase(artNr)
     if(urls.sackUrl) current.bildSackUrl=urls.sackUrl
@@ -243,29 +265,20 @@ async function saveCurrent(){
     }
     const {error}=await sbClient.from('stammdaten').upsert(payload,{onConflict:'artikelnummer'})
     if(error) showToast('DB error: '+error.message)
-    else showToast('✅ Gespeichert: '+artNr+' mit echten URLs')
+    else showToast('✅ Gespeichert: '+artNr)
   } else {
-    showToast('Lokal gespeichert (Supabase verbinden für echte URLs)')
+    showToast('Lokal gespeichert')
   }
-
   const idx=articles.findIndex(a=>a.id===current.id)
   if(idx>=0) articles[idx]=current; else articles.push(current)
   localStorage.setItem('kingfields_full_v3', JSON.stringify(articles))
   renderList()
 }
-
 function renderForm(){
   if(!current){ document.getElementById('form').innerHTML=`<div class="text-center py-20 text-zinc-400"><div class="font-display text-xl mb-2">${t('Select article','Pumili ng article','Artikel wählen')}</div><p class="text-sm mb-4">${t('Or create new with 001','Or gumawa ng bago','Oder neu mit 001 erstellen')}</p><button onclick="newArticle()" class="bg-black text-white px-6 py-2 rounded-full text-sm">+ New ${getNextArtNr()}</button></div>`; return }
-
-  const val = (fieldBase) => {
-    if(lang==='EN') return current[fieldBase+'En']||''
-    if(lang==='TL') return current[fieldBase+'Tl']||''
-    return current[fieldBase+'De']||''
-  }
-
+  const val = (fieldBase) => { if(lang==='EN') return current[fieldBase+'En']||''; if(lang==='TL') return current[fieldBase+'Tl']||''; return current[fieldBase+'De']||'' }
   document.getElementById('form').innerHTML=`
     <div class="space-y-6">
-      <!-- Technical -->
       <div>
         <h3 class="font-display font-semibold text-[16px] mb-3">${t('Technical Data','Teknikal na Data','Technische Daten')} • ${current.status} • ${lang}</h3>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -282,8 +295,6 @@ function renderForm(){
           <div class="col-span-2"><label class="text-[11px] text-zinc-500">Distributor</label><input id="f-distributor" value="${current.distributor||'Kingfields Trade'}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
         </div>
       </div>
-
-      <!-- Images -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="text-xs font-bold">${t('1. Sack Image (transparent)','1. Sako Larawan','1. Sack Bild (transparent)')}</label>
@@ -309,22 +320,18 @@ function renderForm(){
           ${current.bildReisUrl?`<div class="text-[10px] text-green-600 mt-1 truncate">URL: ${current.bildReisUrl}</div>`:''}
         </div>
       </div>
-
-      <!-- Food Properties - ESSEN -->
       <div class="bg-amber-50 border border-amber-200 rounded-[16px] p-4">
-        <h3 class="font-display font-semibold text-[14px] mb-3">🍚 ${t('Food Properties - What it goes well with','Katangian ng Pagkain - Bagay sa','Lebensmittel Eigenschaften - Passt zu')} • ${lang}</h3>
+        <h3 class="font-display font-semibold text-[14px] mb-3">🍚 ${t('Food Properties','Katangian ng Pagkain','Lebensmittel Eigenschaften')} • ${lang}</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div><label class="text-[11px] font-medium">${t('Taste / Flavor','Lasa','Geschmack')}</label><input id="f-geschmack" value="${val('geschmack')}" placeholder="${t('Soft, fluffy, fragrant','Malambot, mabango','Weich, fluffig, duftend')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-          <div><label class="text-[11px] font-medium">${t('Aroma','Aroma','Aroma')}</label><input id="f-aroma" value="${val('aroma')}" placeholder="${t('Natural jasmine','Natural jasmine','Natürliches Jasmin')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-          <div><label class="text-[11px] font-medium">${t('Texture','Texture','Textur')}</label><input id="f-textur" value="${val('textur')}" placeholder="${t('Soft & slightly sticky','Malambot at medyo malagkit','Weich & leicht klebrig')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-          <div><label class="text-[11px] font-medium">${t('Cooking Method','Paraan ng Pagluluto','Kochmethode')}</label><input id="f-kochmethode" value="${val('kochmethode')}" placeholder="${t('1:1.2 water 15min','1:1.2 tubig 15min','1:1,2 Wasser 15Min')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-          <div class="md:col-span-2"><label class="text-[11px] font-medium">${t('Pairs well with / Passt zu','Bagay sa / Passt zu','Passt gut zu / Pairs with')}</label><input id="f-passtZu" value="${val('passtZu')}" placeholder="${t('Curry, grilled meat, vegetables, adobo, fish','Curry, inihaw, gulay, adobo','Curry, Grillfleisch, Gemüse, Adobo, Fisch')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
+          <div><label class="text-[11px] font-medium">${t('Taste / Flavor','Lasa','Geschmack')}</label><input id="f-geschmack" value="${val('geschmack')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
+          <div><label class="text-[11px] font-medium">${t('Aroma','Aroma','Aroma')}</label><input id="f-aroma" value="${val('aroma')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
+          <div><label class="text-[11px] font-medium">${t('Texture','Texture','Textur')}</label><input id="f-textur" value="${val('textur')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
+          <div><label class="text-[11px] font-medium">${t('Cooking Method','Paraan ng Pagluluto','Kochmethode')}</label><input id="f-kochmethode" value="${val('kochmethode')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
+          <div class="md:col-span-2"><label class="text-[11px] font-medium">${t('Pairs well with','Bagay sa','Passt gut zu')}</label><input id="f-passtZu" value="${val('passtZu')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
         </div>
       </div>
-
-      <!-- Marketing per Language -->
       <div class="bg-zinc-50 border rounded-[16px] p-4">
-        <h3 class="font-display font-semibold text-[14px] mb-3">📢 ${t('Marketing Texts','Mga Teksto sa Marketing','Marketing Texte')} • ${lang} (${t('English','Tagalog','German')})</h3>
+        <h3 class="font-display font-semibold text-[14px] mb-3">📢 ${t('Marketing Texts','Mga Teksto sa Marketing','Marketing Texte')} • ${lang}</h3>
         <div class="grid grid-cols-1 gap-3">
           <div><label class="text-[11px]">Slogan (${lang})</label><input id="f-slogan" value="${val('slogan')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
           <div><label class="text-[11px]">Short Desc (${lang})</label><input id="f-short" value="${val('short')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
@@ -335,19 +342,15 @@ function renderForm(){
             <div><label class="text-[11px]">Cooking Tip (${lang})</label><input id="f-cooking" value="${val('cooking')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
           </div>
         </div>
-        <p class="text-[10px] text-zinc-500 mt-2">${t('Switch EN/TL/DE on top to edit each language. All 3 languages are saved.','Magpalit ng EN/TL/DE sa itaas. Lahat ng wika ay sine-save.','Oben EN/TL/DE umschalten um jede Sprache zu bearbeiten. Alle 3 Sprachen werden gespeichert.')}</p>
       </div>
-
       <div class="flex gap-2">
-        <button onclick="saveCurrent()" class="flex-1 bg-black text-white py-3 rounded-full font-bold text-sm">💾 ${t('Save to Supabase (real URLs)','I-save sa Supabase','In Supabase speichern (echte URLs)')} ${sbClient?'':'(local only)'}</button>
+        <button onclick="saveCurrent()" class="flex-1 bg-black text-white py-3 rounded-full font-bold text-sm">💾 ${t('Save to Supabase','I-save sa Supabase','In Supabase speichern')} ${sbClient?'✅':'(local only)'}</button>
         <button onclick="deleteCurrent()" class="bg-red-50 text-red-600 border border-red-200 px-6 py-3 rounded-full text-sm">Delete</button>
       </div>
-      <div class="text-[10px] text-zinc-400 text-center">${t('Article number 001 makes it Active. With Supabase connected, images upload directly and you get real https://... URLs.','Ang article number 001 ay nagiging Active. Sa Supabase, direkt upload.','Artikelnummer 001 macht Active. Mit Supabase verbunden werden Bilder direkt hochgeladen mit echten https://... URLs.')}</div>
     </div>
   `
   document.getElementById('f-qualitaet').value=current.qualitaet||'Premium'
 }
-
 function handleSackFile(input){ const file=input.files[0]; if(!file) return; bildSackFile=file; const r=new FileReader(); r.onload=e=>{ bildSackBase64=e.target.result; renderForm() }; r.readAsDataURL(file) }
 function handleReisFile(input){ const file=input.files[0]; if(!file) return; const r=new FileReader(); r.onload=e=>{ bildReisBase64=e.target.result; renderForm() }; r.readAsDataURL(file) }
 function updateReisPreview(){ const img=document.getElementById('reis-img'); if(img){ img.style.transform=`translate(${panX}px, ${panY}px) scale(${zoom})`; img.style.borderRadius=isRound?'50%':'' } }
@@ -356,30 +359,16 @@ function startDrag(e){ dragging=true; startX=e.clientX-panX; startY=e.clientY-pa
 function onDrag(e){ if(!dragging) return; panX=e.clientX-startX; panY=e.clientY-startY; updateReisPreview() }
 function stopDrag(){ dragging=false; window.removeEventListener('mousemove', onDrag); window.removeEventListener('mouseup', stopDrag) }
 function deleteCurrent(){ if(!confirm('Delete '+current.artikelnummer+'?')) return; articles=articles.filter(a=>a.id!==current.id); localStorage.setItem('kingfields_full_v3', JSON.stringify(articles)); current=null; renderList(); renderForm(); showToast('Deleted') }
-
 function setLang(l){
-  // Before switching, save current lang fields
   if(current){
     const fields=['geschmack','aroma','textur','passtZu','kochmethode','slogan','short','story','taste','origin','cooking']
-    fields.forEach(f=>{
-      const el=document.getElementById('f-'+f)
-      if(el){
-        if(lang==='EN') current[f+'En']=el.value
-        else if(lang==='TL') current[f+'Tl']=el.value
-        else current[f+'De']=el.value
-      }
-    })
+    fields.forEach(f=>{ const el=document.getElementById('f-'+f); if(el){ if(lang==='EN') current[f+'En']=el.value; else if(lang==='TL') current[f+'Tl']=el.value; else current[f+'De']=el.value; } })
   }
   lang=l; localStorage.setItem('lang',l)
   document.querySelectorAll('[id^=btn-]').forEach(b=>{ if(b.id.startsWith('btn-')){ b.className='px-4 py-1.5 rounded-full text-sm text-zinc-600' } })
   document.getElementById('btn-'+l.toLowerCase()).className='px-4 py-1.5 rounded-full text-sm bg-black text-white font-medium'
-  const lbl={EN:'Articles', TL:'Mga Artikulo', DE:'Artikel'}; const btnNew={EN:'+ New ', TL:'+ Bago ', DE:'+ Neu '}
-  document.getElementById('lbl-articles').textContent=lbl[l]||'Articles'
-  document.getElementById('btn-new').textContent=btnNew[l]+getNextArtNr()
   if(current) renderForm()
 }
-
-// Init
 setLang(lang)
 renderList()
 loadNavLabels()
