@@ -70,11 +70,18 @@ footer{background:#0d5cb6;color:#fff;text-align:center;padding:14px;margin-top:2
 <input id="qaPrice" type="number" data-i18n-ph="pricePh" placeholder="Preis 1450">
 </div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
-<select id="qaKg"><option value="5">5 KG</option><option value="10">10 KG</option><option value="25" selected>25 KG</option></select>
+<select id="qaKg"><option value="1">1 KG</option><option value="5">5 KG</option><option value="10">10 KG</option><option value="25" selected>25 KG</option></select>
 <input id="qaBadge" data-i18n-ph="badgePh" placeholder="Badge z.B. PREMIUM">
 </div>
 <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="quickAdd()" data-i18n="addBtn">+ HINZUFÜGEN</button>
 <div id="status" style="font-weight:900;font-size:11px;margin-top:8px"></div>
+</div>
+<div style="margin-top:10px;display:flex;align-items:center;gap:10px;background:#e8f5e9;border:2px solid #2e7d32;border-radius:10px;padding:10px">
+ <label style="display:flex;align-items:center;gap:8px;font-weight:900;font-size:13px;cursor:pointer">
+  <input type="checkbox" id="grundToggle" checked onchange="toggleGrund(this.checked)" style="width:20px;height:20px">
+  <span data-i18n="grundToggle">Grundpreis anzeigen (an Sprache gekoppelt: DE=an, EN/TL=aus)</span>
+ </label>
+ <span style="font-size:10px;color:#555">DE=an, EN/TL=aus - manuell änderbar</span>
 </div>
 <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
 <button class="btn btn-black" onclick="saveToSupabase()" data-i18n="save">💾 IN SUPABASE SPEICHERN</button>
@@ -90,79 +97,97 @@ footer{background:#0d5cb6;color:#fff;text-align:center;padding:14px;margin-top:2
 
 <script>
 
+
 const TRANSLATIONS = {
  de: {
    title: "MARY GRACE RICE SUPPLY",
-   priceTitle: "MURANG BIGAS - PREIS (25KG SAKTO)",
+   priceTitle: "MURANG BIGAS - PREISLISTE",
    warnLeft: "⚠️ NICHT 20KG, NICHT 10KG - 25KG SAKTO!",
    warnRight: "SACK",
    editOff: "✏️ ALLES EDITIEREN - OFF",
-   editOn: "✏️ EDIT AN - KG ändern möglich!",
+   editOn: "✏️ EDIT AN - KG + Grundpreis!",
    fbTitle: "📋 FÜR FACEBOOK KOPIEREN",
    copy: "Kopieren",
-   addTitle: "Produktanlage - KG editierbar (5/10/25)",
+   addTitle: "Produktanlage - KG editierbar (1/5/10/25)",
    addNew: "➕ NEUEN ARTIKEL EINSTELLEN",
    addBtn: "+ HINZUFÜGEN",
-   save: "💾 IN SUPABASE SPEICHERN",
+   save: "💾 SPEICHERN",
    load: "LADEN",
-   reset: "Reset auf Standard",
+   reset: "Reset",
    namePh: "Name z.B. DENORADO",
    pricePh: "Preis 1450",
    badgePh: "Badge z.B. PREMIUM",
    copied: "Kopiert!",
    sakto: "SAKTO",
-   footWarn: "⚠️ HINDI 20KG, HINDI 10KG - 25KG SAKTO PO! LAHAT NG SAKO 25KG!",
-   gcash: "GCash ONLY (walang COD) | FREE DELIVERY Wood Town"
+   footWarn: "⚠️ ALLE SÄCKE SAKTO GEWOGEN!",
+   gcash: "GCash ONLY | FREE DELIVERY",
+   grundLabel: "Grundpreis",
+   grundTooltip: "Preis pro 1kg zum Vergleich",
+   grundToggle: "Grundpreis anzeigen (DE=an, EN/TL=aus)"
  },
  en: {
    title: "MARY GRACE RICE SUPPLY",
-   priceTitle: "CHEAP RICE - PRICE LIST (25KG EXACT)",
+   priceTitle: "CHEAP RICE - PRICE LIST",
    warnLeft: "⚠️ NOT 20KG, NOT 10KG - 25KG EXACT!",
    warnRight: "SACK",
    editOff: "✏️ EDIT ALL - OFF",
-   editOn: "✏️ EDIT ON - Change KG!",
+   editOn: "✏️ EDIT ON - KG + Unit Price!",
    fbTitle: "📋 COPY FOR FACEBOOK",
    copy: "Copy",
-   addTitle: "Product Setup - KG editable (5/10/25)",
+   addTitle: "Product Setup - KG (1/5/10/25)",
    addNew: "➕ ADD NEW PRODUCT",
    addBtn: "+ ADD",
-   save: "💾 SAVE TO SUPABASE",
+   save: "💾 SAVE",
    load: "LOAD",
-   reset: "Reset to Default",
+   reset: "Reset",
    namePh: "Name e.g. DENORADO",
    pricePh: "Price 1450",
    badgePh: "Badge e.g. PREMIUM",
    copied: "Copied!",
    sakto: "EXACT",
-   footWarn: "⚠️ NOT 20KG, NOT 10KG - 25KG EXACT! ALL SACKS 25KG!",
-   gcash: "GCash ONLY (no COD) | FREE DELIVERY Wood Town"
+   footWarn: "⚠️ ALL SACKS EXACT WEIGHT!",
+   gcash: "GCash ONLY | FREE DELIVERY",
+   grundLabel: "Unit price",
+   grundTooltip: "Price per 1kg for comparison",
+   grundToggle: "Show unit price (DE=on, EN/TL=off)"
  },
  tl: {
    title: "MARY GRACE RICE SUPPLY",
-   priceTitle: "MURANG BIGAS - PRESYO (25KG SAKTO)",
+   priceTitle: "MURANG BIGAS - PRESYO",
    warnLeft: "⚠️ HINDI 20KG, HINDI 10KG - 25KG SAKTO PO!",
    warnRight: "SAKO",
    editOff: "✏️ I-EDIT LAHAT - OFF",
-   editOn: "✏️ EDIT ON - Palitan ang KG!",
+   editOn: "✏️ EDIT ON - KG + Grundpreis!",
    fbTitle: "📋 KOPYAHIN PARA SA FACEBOOK",
    copy: "Kopyahin",
-   addTitle: "Magdagdag ng Produkto - KG (5/10/25)",
-   addNew: "➕ MAGDAGDAG NG BAGONG PRODUKTO",
+   addTitle: "Magdagdag ng Produkto - KG (1/5/10/25)",
+   addNew: "➕ MAGDAGDAG NG PRODUKTO",
    addBtn: "+ IDAGDAG",
-   save: "💾 I-SAVE SA SUPABASE",
+   save: "💾 I-SAVE",
    load: "I-LOAD",
-   reset: "I-reset sa Default",
+   reset: "I-reset",
    namePh: "Pangalan hal. DENORADO",
    pricePh: "Presyo 1450",
    badgePh: "Badge hal. PREMIUM",
    copied: "Nakopya na!",
    sakto: "SAKTO",
-   footWarn: "⚠️ HINDI 20KG, HINDI 10KG - 25KG SAKTO PO! LAHAT NG SAKO 25KG!",
-   gcash: "GCash ONLY (walang COD) | FREE DELIVERY Wood Town"
+   footWarn: "⚠️ LAHAT NG SAKO SAKTO PO!",
+   gcash: "GCash ONLY | FREE DELIVERY",
+   grundLabel: "Presyo per kg",
+   grundTooltip: "Presyo sa bawat 1kg",
+   grundToggle: "Ipakita ang presyo per kg (DE=on, EN/TL=off)"
  }
 };
+
 let currentLang = 'de';
 function setLang(lang){
+  // Auto Grundpreis an Sprache koppeln, wenn nicht manuell übersteuert
+  if(!manualGrundToggle){
+    showGrundpreis = (lang === 'de');
+    const chk = document.getElementById('grundToggle');
+    if(chk) chk.checked = showGrundpreis;
+  }
+
  currentLang = lang;
  localStorage.setItem('mg_lang', lang);
  const t = TRANSLATIONS[lang];
@@ -199,7 +224,7 @@ let items=[
 {id:"aroma",name:"MASTER AROMA",price:1340,variant:"normal",kg:25},
 {id:"fuji",name:"FUJI",badge:"PREMIUM",price:1400,variant:"fuji",kg:25},
 ];
-let edit=false; let supa=null;
+let edit=false; let supa=null; let showGrundpreis=true; let manualGrundToggle=false;
 function getClient(){
  let url=SUPABASE_URL;
  let key=SUPABASE_KEY;
@@ -209,6 +234,15 @@ function getClient(){
  return supa;
 }
 function fmt(it){return `₱${Number(it.price).toLocaleString('en-PH')} / ${it.kg}kg`;}
+function grundpreis(it){ const perKg = it.price / it.kg; return perKg.toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+function fmtWithGrund(it, lang){
+  const main = fmt(it);
+  if(it.kg==1) return main; // bei 1kg kein Grundpreis nötig
+  const gp = grundpreis(it);
+  const label = TRANSLATIONS[lang||currentLang].grundLabel;
+  return {main, sub: `(≈ ₱${gp} / 1kg)`, label};
+}
+
 function render(){
  document.getElementById('badges').innerHTML=badges.map(b=>`<div class="badge" style="background:${b.color}">${b.label}</div>`).join('');
  document.getElementById('cards').innerHTML=items.map(it=>`
@@ -217,11 +251,11 @@ function render(){
     <div class="sack"><b>${it.kg}KG</b><span>${TRANSLATIONS[currentLang].sakto}</span></div>
     <div style="font-weight:900;color:#0a1a5e">${it.name} ${it.badge?`<span style="font-size:9px;background:#ffe4c4;padding:3px 7px;border-radius:999px">${it.badge}</span>`:''}</div>
    </div>
-   <div class="price">
+   <div class="price" style="text-align:right">
     ${edit?`<input type="number" value="${it.price}" style="width:80px;border:2px solid #000;border-radius:6px;padding:4px;font-weight:900" onchange="editPrice('${it.id}',this.value)"> 
-    <select onchange="editKg('${it.id}',this.value)" style="border:2px solid #000;border-radius:6px;padding:4px;font-weight:900"><option value="5" ${it.kg==5?'selected':''}>5kg</option><option value="10" ${it.kg==10?'selected':''}>10kg</option><option value="25" ${it.kg==25?'selected':''}>25kg</option></select>
+    <select onchange="editKg('${it.id}',this.value)" style="border:2px solid #000;border-radius:6px;padding:4px;font-weight:900"><option value="1" ${it.kg==1?'selected':''}>1kg</option><option value="5" ${it.kg==5?'selected':''}>5kg</option><option value="10" ${it.kg==10?'selected':''}>10kg</option><option value="25" ${it.kg==25?'selected':''}>25kg</option></select>
     <button onclick="delItem('${it.id}')" style="background:red;color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-weight:900;cursor:pointer">×</button>`
-    :`${fmt(it)}`}
+    :`<div style="font-size:15px">${fmt(it)}</div>${showGrundpreis && it.kg!=1?`<div style="font-size:10px;color:#666;font-weight:800;margin-top:2px" title="${TRANSLATIONS[currentLang].grundTooltip}">${TRANSLATIONS[currentLang].grundLabel}: ₱${grundpreis(it)} / kg</div>`:''}`}
    </div>
   </div>`).join('');
  buildFB();
@@ -229,12 +263,12 @@ function render(){
 function buildFB(){
  let t=`MARY GRACE RICE SUPPLY\n📍 Wood Town Block 7 Lot 3 Phase 3\n\n`;
  t+=`${badges.map(b=>b.label).join(' | ')}\n\nMURANG BIGAS - PRESYO\n\n`;
- const groups={5:[],10:[],25:[]};
+ const groups={1:[],5:[],10:[],25:[]};
  items.forEach(it=>{if(!groups[it.kg]) groups[it.kg]=[]; groups[it.kg].push(it);});
- [5,10,25].forEach(kg=>{
+ [1,5,10,25].forEach(kg=>{
   if(groups[kg].length>0){
    t+=`--- ${kg}KG ---\n`;
-   groups[kg].forEach(it=>{t+=`${it.name}${it.badge?' '+it.badge:''} - ${fmt(it)}\n`;});
+   groups[kg].forEach(it=>{ if(showGrundpreis && it.kg!=1){t+=`${it.name}${it.badge?' '+it.badge:''} - ${fmt(it)} (${TRANSLATIONS[currentLang].grundLabel} ₱${grundpreis(it)}/kg)\n`;} else {t+=`${it.name}${it.badge?' '+it.badge:''} - ${fmt(it)}\n`;}});
    t+=`\n`;
   }
  });
@@ -253,6 +287,13 @@ window.quickAdd=()=>{
  document.getElementById('qaName').value='';document.getElementById('qaPrice').value='';document.getElementById('qaBadge').value='';
  render();
  document.getElementById('status').textContent='✅ '+n+' ('+kg+'KG) hinzugefügt - jetzt auf SPEICHERN klicken!';
+}
+window.toggleGrund=(val)=>{
+  showGrundpreis = val;
+  manualGrundToggle = true;
+  localStorage.setItem('mg_grund', val ? '1':'0');
+  localStorage.setItem('mg_grund_manual', '1');
+  render();
 }
 window.copyFB=async()=>{await navigator.clipboard.writeText(document.getElementById('fbText').value);alert('Kopiert!')}
 window.resetToDefault=()=>{
@@ -307,7 +348,20 @@ document.getElementById('toggle').addEventListener('click',()=>{
  document.getElementById('admin').className=edit?'admin open':'admin';
  render();
 });
-const savedLang=localStorage.getItem('mg_lang')||'de'; setLang(savedLang);
+const savedLang=localStorage.getItem('mg_lang')||'de'; 
+const savedGrund=localStorage.getItem('mg_grund');
+const savedManual=localStorage.getItem('mg_grund_manual');
+if(savedManual){
+  manualGrundToggle=true;
+  showGrundpreis = savedGrund==='1';
+}
+setLang(savedLang);
+if(savedManual){
+  showGrundpreis = savedGrund==='1';
+  const chk=document.getElementById('grundToggle');
+  if(chk) chk.checked = showGrundpreis;
+}
+
 render();
 setTimeout(loadFromSupabase,800);
 </script>
