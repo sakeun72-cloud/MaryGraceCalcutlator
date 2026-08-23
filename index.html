@@ -3,273 +3,323 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kingfields Trade - Vollständige Stammdaten - FIXED</title>
+<title>Kingfields Stammdaten FIXED</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  .font-display{font-family:"Fraunces",serif}
-  .font-body{font-family:"Plus Jakarta Sans",sans-serif}
-  .chessboard{background-image:linear-gradient(45deg,#e5e7eb 25%,transparent 25%),linear-gradient(-45deg,#e5e7eb 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#e5e7eb 75%),linear-gradient(-45deg,transparent 75%,#e5e7eb 75%);background-size:20px 20px;background-position:0 0,0 10px,10px -10px,-10px 0px}
-</style>
+<style>body{font-family:sans-serif}</style>
 </head>
-<body class="bg-[#f6f5f2] font-body min-h-screen">
-<div class="max-w-[1600px] mx-auto p-3 md:p-6">
+<body class="bg-[#fafaf7] p-4">
+<div class="max-w-[1400px] mx-auto">
 
-  <div class="bg-white rounded-[20px] shadow-sm border p-4 mb-4">
-    <div class="flex flex-wrap justify-between items-center gap-3 mb-3">
+<div class="bg-white rounded-xl border p-3 mb-3 flex flex-wrap gap-2 items-center">
+  <b>Supabase:</b> <span id="status" class="text-xs">⏳ Lade...</span>
+  <button onclick="loadSupabase()" class="ml-auto border px-3 py-1 rounded-full text-xs">🔄 Reload Supabase</button>
+  <button onclick="migrate()" class="bg-orange-400 text-white px-3 py-1 rounded-full text-xs">⬆ MIGRATE</button>
+  <button onclick="window.open('Layout_1_BULLETS_NEBEN_BILD.html','_blank')" class="bg-black text-white px-3 py-1 rounded-full text-xs">Layout</button>
+</div>
+
+<div class="grid grid-cols-12 gap-4">
+<div class="col-span-3 bg-white rounded-xl border p-3">
+  <div class="flex justify-between"><b>Articles</b><button onclick="newArticle()" class="text-xs">+ New</button></div>
+  <input id="search" placeholder="Search..." class="w-full border rounded-full px-3 py-1 text-xs mt-2" oninput="renderList()">
+  <div id="list" class="mt-3 flex flex-col gap-2 max-h-[80vh] overflow-auto"></div>
+</div>
+
+<div class="col-span-9 bg-white rounded-xl border p-4">
+  <div id="editor" class="hidden">
+    <div class="flex gap-2 mb-3 flex-wrap">
+      <input id="artNr" placeholder="ArtNr" class="border px-2 py-1 rounded text-xs w-20">
+      <input id="nameKurz" placeholder="Kurz Name" class="border px-2 py-1 rounded text-xs flex-1">
+      <select id="lang" onchange="renderEditor()" class="border px-2 py-1 rounded text-xs"><option value="EN">EN</option><option value="TL">TL</option><option value="DE">DE</option></select>
+      <button onclick="saveCurrent()" class="bg-black text-white px-4 py-1 rounded-full text-xs">💾 Speichern</button>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-4">
       <div>
-        <h1 class="font-display text-2xl font-semibold">Kingfields Trade - Product Master - FIXED</h1>
-        <p class="text-xs text-zinc-500">Mit festen Supabase Keys - https://crdtuptjybxbsezxtksp.supabase.co - publishable key aktiv</p>
-      </div>
-      <div class="flex gap-2 items-center">
-        <div class="flex bg-zinc-100 rounded-full p-1">
-          <button onclick="setLang('EN')" id="btn-en" class="px-4 py-1.5 rounded-full text-sm bg-black text-white font-medium">EN</button>
-          <button onclick="setLang('TL')" id="btn-tl" class="px-4 py-1.5 rounded-full text-sm text-zinc-600">TL</button>
-          <button onclick="setLang('DE')" id="btn-de" class="px-4 py-1.5 rounded-full text-sm text-zinc-600">DE</button>
+        <label class="text-[11px] font-bold">1. Sack Bild (transparent) - MIT ZOOM & CROP</label>
+        <div class="border-2 border-dashed rounded-xl h-[260px] flex flex-col items-center justify-center relative overflow-hidden bg-zinc-50" id="dropSack">
+          <img id="previewSack" class="max-h-full max-w-full object-contain hidden">
+          <div id="placeholderSack" class="text-xs text-zinc-400">Click / Drop sack image</div>
+          <input type="file" id="fileSack" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleFile(event,'sack')">
         </div>
+        <div class="flex gap-2 mt-2">
+          <input id="zoomSack" type="range" min="0.2" max="3" step="0.1" value="1" oninput="applyZoom('sack')" class="flex-1"><span id="zoomSackLabel" class="text-[10px] w-10">100%</span>
+          <button onclick="resetZoom('sack')" class="border px-2 py-1 rounded text-[10px]">Reset</button>
+        </div>
+        <p class="text-[10px] text-zinc-500 mt-1">Ziehe Bild mit Maus zum Verschieben, Slider zum Zoomen. Beim Speichern wird Ausschnitt gespeichert.</p>
+      </div>
+      <div>
+        <label class="text-[11px] font-bold">2. Loser Reis Detail (Zuschneiden) - MIT ZOOM & CROP</label>
+        <div class="border-2 border-dashed rounded-xl h-[260px] flex flex-col items-center justify-center relative overflow-hidden bg-zinc-50" id="dropReis">
+          <img id="previewReis" class="max-h-full max-w-full object-cover hidden">
+          <div id="placeholderReis" class="text-xs text-zinc-400">Click / Drop Reis Bild</div>
+          <input type="file" id="fileReis" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleFile(event,'reis')">
+        </div>
+        <div class="flex gap-2 mt-2">
+          <input id="zoomReis" type="range" min="0.2" max="3" step="0.1" value="1" oninput="applyZoom('reis')" class="flex-1"><span id="zoomReisLabel" class="text-[10px] w-10">100%</span>
+          <button onclick="resetZoom('reis')" class="border px-2 py-1 rounded text-[10px]">Reset</button>
+        </div>
+        <p class="text-[10px] text-zinc-500 mt-1">Zweites Bild - auch mit Zoom + Drag + Crop!</p>
       </div>
     </div>
-    <div class="flex flex-wrap gap-2 border-t pt-3">
-      <button onclick="openLink(0)" class="bg-zinc-900 text-white px-4 py-2 rounded-full text-[13px] font-medium hover:bg-black">📋 <span id="nav-label-0">Preisliste</span></button>
-      <button onclick="openLink(1)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">🛒 <span id="nav-label-1">Shop</span></button>
-      <button onclick="openLink(2)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">📦 <span id="nav-label-2">Katalog</span></button>
-      <button onclick="openLink(3)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">🌐 <span id="nav-label-3">Website</span></button>
-      <button onclick="window.open('https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Layout.html','_blank')" class="bg-zinc-900 text-white border-2 border-amber-300 px-4 py-2 rounded-full text-[13px] font-medium hover:bg-black">📘 Facebook Studio</button>
-      <button onclick="toggleNavEdit()" class="ml-auto text-[11px] border px-3 py-1 rounded-full bg-white">⚙ Edit Links</button>
-    </div>
-    <div id="nav-edit" class="hidden mt-3 bg-zinc-50 p-3 rounded-xl grid grid-cols-1 md:grid-cols-2 gap-2">
-      <div class="flex gap-2"><input id="nav-name-0" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-0" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
-      <div class="flex gap-2"><input id="nav-name-1" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-1" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
-      <div class="flex gap-2"><input id="nav-name-2" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-2" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
-      <div class="flex gap-2"><input id="nav-name-3" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-3" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
-      <button onclick="saveNavLinks()" class="bg-black text-white px-4 py-1.5 rounded-full text-xs w-fit">Save Links</button>
-    </div>
-  </div>
 
-  <div class="bg-green-50 border border-green-300 rounded-[16px] p-3 mb-4">
-    <div class="flex flex-wrap gap-2 items-center">
-      <span class="text-xs font-bold">✅ Supabase FIXED (hardcoded):</span>
-      <span id="sb-url-display" class="text-xs bg-white border px-3 py-1 rounded-full">https://crdtuptjybxbsezxtksp.supabase.co</span>
-      <span class="text-xs bg-white border px-3 py-1 rounded-full">sb_publishable_GU6AAlF... fest eingebaut</span>
-      <button onclick="testConnection()" class="bg-black text-white px-4 py-1.5 rounded-full text-xs">Test Connection</button>
-      <button onclick="migrateLocalToSupabase()" class="bg-amber-500 text-black px-4 py-1.5 rounded-full text-xs font-bold">⬆ MIGRATE localStorage → Supabase</button>
-      <button onclick="loadFromSupabase()" class="bg-white border px-4 py-1.5 rounded-full text-xs">🔄 Reload Supabase</button>
-      <span id="sb-status" class="text-[11px] text-zinc-600">⏳ Verbinde...</span>
+    <div class="bg-green-50 border-2 border-green-300 rounded-xl p-3 mb-3">
+      <div class="text-xs font-bold mb-2">⭐ Verkaufsargumente / Bullet Points - An oberster Stelle! • TL</div>
+      <div id="bullets" class="flex flex-col gap-2"></div>
     </div>
-  </div>
 
-  <div class="grid grid-cols-12 gap-4">
-    <div class="col-span-12 lg:col-span-3 bg-white rounded-[20px] shadow-sm border p-4 h-fit sticky top-4">
-      <div class="flex justify-between items-center mb-3">
-        <h3 class="font-display font-semibold" id="lbl-articles">Articles</h3>
-        <button onclick="newArticle()" class="bg-black text-white px-3 py-1.5 rounded-full text-xs" id="btn-new">+ New 001</button>
+    <div class="bg-amber-50 border rounded-xl p-3 mb-3">
+      <div class="text-xs font-bold mb-2">🍚 Food Properties</div>
+      <div class="grid grid-cols-2 gap-2">
+        <div><label class="text-[10px]">Geschmack</label><input id="geschmack" class="w-full border rounded px-2 py-1 text-xs"></div>
+        <div><label class="text-[10px]">Aroma</label><input id="aroma" class="w-full border rounded px-2 py-1 text-xs"></div>
+        <div><label class="text-[10px]">Textur</label><input id="textur" class="w-full border rounded px-2 py-1 text-xs"></div>
+        <div><label class="text-[10px]">Passt zu (Komma getrennt, wird mit • angezeigt)</label><input id="passtZu" class="w-full border rounded px-2 py-1 text-xs"></div>
+        <div class="col-span-2"><label class="text-[10px]">Kochmethode</label><input id="kochmethode" class="w-full border rounded px-2 py-1 text-xs"></div>
+        <div class="col-span-2"><label class="text-[10px]">Slogan</label><input id="slogan" class="w-full border rounded px-2 py-1 text-xs"></div>
+        <div class="col-span-2"><label class="text-[10px]">Short</label><input id="short" class="w-full border rounded px-2 py-1 text-xs"></div>
       </div>
-      <input id="search" placeholder="Search..." class="w-full border rounded-full px-3 py-2 text-sm mb-3 bg-zinc-50" oninput="renderList()">
-      <div id="list" class="space-y-2 max-h-[70vh] overflow-auto pr-1"></div>
     </div>
-    <div class="col-span-12 lg:col-span-9 bg-white rounded-[20px] shadow-sm border p-5">
-      <div id="form"></div>
-    </div>
+
   </div>
-  <div id="toast" class="fixed bottom-4 right-4 bg-zinc-900 text-white px-4 py-2 rounded-full text-sm hidden shadow-lg z-50"></div>
+  <div id="noSel" class="p-20 text-center text-zinc-400">Wähle Artikel links</div>
+</div>
+</div>
 </div>
 
 <script>
-const SUPABASE_URL = "https://crdtuptjybxbsezxtksp.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_GU6AAlF0zc3LB4hFlKK0fw_TNxo9z7q";
+const SUPABASE_URL="https://crdtuptjybxbsezxtksp.supabase.co";
+const SUPABASE_KEY="sb_publishable_GU6AAlF0zc3LB4hFlKK0fw_TNxo9z7q";
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let articles=[];
+let current=null;
+let lang='TL';
+let dragData={sack:{x:0,y:0,scale:1,isDrag:false,startX:0,startY:0,initX:0,initY:0},reis:{x:0,y:0,scale:1,isDrag:false,startX:0,startY:0,initX:0,initY:0}};
 
-let navLinks = JSON.parse(localStorage.getItem('navLinks') || '[{"name":"Preisliste","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Pricelist.html"},{"name":"Shop","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Shop.html"},{"name":"Katalog","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Layout.html"},{"name":"Website","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/"}]')
-let lang = localStorage.getItem('lang') || 'EN'
-let articles = JSON.parse(localStorage.getItem('kingfields_full_v3') || '[]')
-let current = null
-let sbClient = null
-let bildSackFile=null, bildSackBase64=null, bildReisBase64=null
-let zoom=1, panX=0, panY=0, isRound=false
+function newArticle(){ const nr=String(articles.length+1).padStart(3,'0'); const a={artikelnummer:nr,id:nr,nameKurz:'Neuer Artikel '+nr,sorte:'Fuji',qualitaet:'Premium',herkunft:'Thailand',gewicht:'25',einheit:'kg',marketing:{en:{},tl:{},de:{}}}; articles.push(a); renderList(); selectArticle(nr); }
 
-try{
-  sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-  document.getElementById('sb-status').textContent = "⏳ Lade aus Supabase...";
-  setTimeout(()=>loadFromSupabase(), 500);
-}catch(e){
-  console.error(e);
-  document.getElementById('sb-status').textContent = "❌ " + e.message;
-}
-
-async function loadFromSupabase(){
-  if(!sbClient) return;
-  document.getElementById('sb-status').textContent = "⏳ Lade stammdaten...";
-  const {data, error} = await sbClient.from('stammdaten').select('*').order('artikelnummer');
-  if(error){
-    document.getElementById('sb-status').innerHTML = "❌ " + error.message;
-    document.getElementById('sb-status').className = "text-[11px] text-red-600 font-bold";
-    renderList(); return;
-  }
-  if(data && data.length>0){
-    articles = data.map(d=>{
-      const m=d.marketing||{}; const en=m.en||{}, tl=m.tl||{}, de=m.de||{};
-      return {
-        id: d.artikelnummer, artikelnummer: d.artikelnummer, nameKurz: d.name_kurz||'', nameLang: d.name_lang||'', marke: d.marke||'', sorte: d.sorte||'', qualitaet: d.qualitaet||'Premium', herkunft: d.herkunft||'', erntejahr: d.erntejahr||'', gewicht: d.gewicht||'', einheit: d.einheit||'kg', distributor: 'Kingfields Trade',
-        bullet1En: en.bullet1||'', bullet1Tl: tl.bullet1||'', bullet1De: de.bullet1||'',
-        bullet2En: en.bullet2||'', bullet2Tl: tl.bullet2||'', bullet2De: de.bullet2||'',
-        bullet3En: en.bullet3||'', bullet3Tl: tl.bullet3||'', bullet3De: de.bullet3||'',
-        bullet4En: en.bullet4||'', bullet4Tl: tl.bullet4||'', bullet4De: de.bullet4||'',
-        bullet5En: en.bullet5||'', bullet5Tl: tl.bullet5||'', bullet5De: de.bullet5||'',
-        geschmackEn: en.geschmack||'', geschmackTl: tl.geschmack||'', geschmackDe: de.geschmack||'',
-        aromaEn: en.aroma||'', aromaTl: tl.aroma||'', aromaDe: de.aroma||'',
-        texturEn: en.textur||'', texturTl: tl.textur||'', texturDe: de.textur||'',
-        passtZuEn: en.passtZu||'', passtZuTl: tl.passtZu||'', passtZuDe: de.passtZu||'',
-        kochmethodeEn: en.kochmethode||'', kochmethodeTl: tl.kochmethode||'', kochmethodeDe: de.kochmethode||'',
-        sloganEn: en.slogan||'', sloganTl: tl.slogan||'', sloganDe: de.slogan||'',
-        shortEn: en.short||'', shortTl: tl.short||'', shortDe: de.short||'',
-        storyEn: en.story||'', storyTl: tl.story||'', storyDe: de.story||'',
-        tasteEn: en.taste||'', tasteTl: tl.taste||'', tasteDe: de.taste||'',
-        originEn: en.origin||'', originTl: tl.origin||'', originDe: de.origin||'',
-        cookingEn: en.cooking||'', cookingTl: tl.cooking||'', cookingDe: de.cooking||'',
-        bildSackUrl: d.bild_sack_url||'', bildReisUrl: d.bild_reis_url||'', status: 'Active'
-      }
-    });
-    localStorage.setItem('kingfields_full_v3', JSON.stringify(articles));
-    document.getElementById('sb-status').textContent = "✅ " + articles.length + " Artikel aus Supabase geladen";
-    document.getElementById('sb-status').className = "text-[11px] text-green-600 font-bold";
-  } else {
-    document.getElementById('sb-status').textContent = "⚠ Supabase leer - nutze " + articles.length + " aus localStorage";
-  }
-  renderList();
-}
-
-async function migrateLocalToSupabase(){
-  if(!sbClient){ showToast('❌ Kein Supabase'); return; }
-  const local = JSON.parse(localStorage.getItem('kingfields_full_v3')||'[]');
-  if(local.length===0){ showToast('Keine lokalen Artikel'); return; }
-  if(!confirm(local.length + ' Artikel nach Supabase?')) return;
-  document.getElementById('sb-status').textContent = '⏳ Migriere ' + local.length + ' Artikel...';
-  let ok=0, fail=0;
-  for(const a of local){
-    const payload={
-      artikelnummer:a.artikelnummer, name_kurz:a.nameKurz||'', name_lang:a.nameLang||'', marke:a.marke||'', sorte:a.sorte||'', qualitaet:a.qualitaet||'Premium', herkunft:a.herkunft||'Thailand', erntejahr:a.erntejahr||'2024', gewicht:a.gewicht||'5', einheit:a.einheit||'kg',
-      marketing:{ en:{bullet1:a.bullet1En||'', bullet2:a.bullet2En||'', bullet3:a.bullet3En||'', bullet4:a.bullet4En||'', bullet5:a.bullet5En||'', geschmack:a.geschmackEn||'', aroma:a.aromaEn||'', textur:a.texturEn||'', passtZu:a.passtZuEn||'', kochmethode:a.kochmethodeEn||'', slogan:a.sloganEn||'', short:a.shortEn||'', story:a.storyEn||'', taste:a.tasteEn||'', origin:a.originEn||'', cooking:a.cookingEn||''}, tl:{bullet1:a.bullet1Tl||'', bullet2:a.bullet2Tl||'', bullet3:a.bullet3Tl||'', bullet4:a.bullet4Tl||'', bullet5:a.bullet5Tl||'', geschmack:a.geschmackTl||'', aroma:a.aromaTl||'', textur:a.texturTl||'', passtZu:a.passtZuTl||'', kochmethode:a.kochmethodeTl||'', slogan:a.sloganTl||'', short:a.shortTl||'', story:a.storyTl||'', taste:a.tasteTl||'', origin:a.originTl||'', cooking:a.cookingTl||''}, de:{bullet1:a.bullet1De||'', bullet2:a.bullet2De||'', bullet3:a.bullet3De||'', bullet4:a.bullet4De||'', bullet5:a.bullet5De||'', geschmack:a.geschmackDe||'', aroma:a.aromaDe||'', textur:a.texturDe||'', passtZu:a.passtZuDe||'', kochmethode:a.kochmethodeDe||'', slogan:a.sloganDe||'', short:a.shortDe||'', story:a.storyDe||'', taste:a.tasteDe||'', origin:a.originDe||'', cooking:a.cookingDe||''} },
-      bild_sack_url:a.bildSackUrl||'', bild_reis_url:a.bildReisUrl||'', status:'Active'
-    };
-    const {error}=await sbClient.from('stammdaten').upsert(payload,{onConflict:'artikelnummer'});
-    if(error){ fail++; showToast('Fehler '+a.artikelnummer+': '+error.message); } else ok++;
-  }
-  document.getElementById('sb-status').textContent = '✅ Migration: ' + ok + ' ok, ' + fail + ' fail';
-  showToast('✅ ' + ok + ' Artikel nach Supabase'); loadFromSupabase();
-}
-
-function testConnection(){ sbClient.from('stammdaten').select('artikelnummer').limit(1).then(({data,error})=>{ if(error) showToast('Fail: '+error.message); else showToast('✅ Connected, '+data.length+' sample') }) }
-function openLink(i){ const l=navLinks[i]; if(l&&l.url) window.open(l.url,'_blank'); else { showToast('Kein Link'); toggleNavEdit() } }
-function toggleNavEdit(){ const el=document.getElementById('nav-edit'); el.classList.toggle('hidden'); for(let i=0;i<4;i++){ document.getElementById('nav-name-'+i).value=navLinks[i]?.name||''; document.getElementById('nav-url-'+i).value=navLinks[i]?.url||'' } }
-function saveNavLinks(){ for(let i=0;i<4;i++){ navLinks[i]={name:document.getElementById('nav-name-'+i).value||('Button '+(i+1)), url:document.getElementById('nav-url-'+i).value||''}; const lbl=document.getElementById('nav-label-'+i); if(lbl) lbl.textContent=navLinks[i].name } localStorage.setItem('navLinks', JSON.stringify(navLinks)); document.getElementById('nav-edit').classList.add('hidden'); showToast('Links gespeichert') }
-function loadNavLabels(){ for(let i=0;i<4;i++){ const lbl=document.getElementById('nav-label-'+i); if(lbl&&navLinks[i]) lbl.textContent=navLinks[i].name } }
-function t(en,tl,de){ if(lang==='EN') return en; if(lang==='TL') return tl; return de }
-function showToast(msg){ const el=document.getElementById('toast'); el.textContent=msg; el.classList.remove('hidden'); setTimeout(()=>el.classList.add('hidden'),3500) }
-function getNextArtNr(){ let max=0; articles.forEach(a=>{ const n=parseInt((a.artikelnummer||'').replace(/\D/g,''))||0; if(n>max) max=n }); return String(max+1).padStart(3,'0') }
-function newArticle(){
-  const nr=getNextArtNr()
-  current={ id:Date.now().toString(), artikelnummer:nr, nameKurz:'', nameLang:'', marke:'', sorte:'Hasmin', qualitaet:'Premium', herkunft:'Thailand', erntejahr:new Date().getFullYear(), gewicht:'5', einheit:'kg', distributor:'Kingfields Trade', bullet1En:'', bullet1Tl:'', bullet1De:'', bullet2En:'', bullet2Tl:'', bullet2De:'', bullet3En:'', bullet3Tl:'', bullet3De:'', bullet4En:'', bullet4Tl:'', bullet4De:'', bullet5En:'', bullet5Tl:'', bullet5De:'', geschmackEn:'', geschmackTl:'', geschmackDe:'', aromaEn:'', aromaTl:'', aromaDe:'', texturEn:'', texturTl:'', texturDe:'', passtZuEn:'', passtZuTl:'', passtZuDe:'', kochmethodeEn:'', kochmethodeTl:'', kochmethodeDe:'', sloganEn:'', sloganTl:'', sloganDe:'', shortEn:'', shortTl:'', shortDe:'', storyEn:'', storyTl:'', storyDe:'', tasteEn:'', tasteTl:'', tasteDe:'', originEn:'', originTl:'', originDe:'', cookingEn:'', cookingTl:'', cookingDe:'', status:'Draft', bildSackUrl:'', bildReisUrl:'', bildSack:'', bildReis:'' }
-  bildSackBase64=null; bildReisBase64=null; bildSackFile=null; zoom=1; panX=0; panY=0; renderForm(); showToast('New article '+nr)
-}
-function renderList(){
-  const q=document.getElementById('search').value.toLowerCase()
-  const list=document.getElementById('list')
-  const filtered = articles.filter(a=>(a.artikelnummer+' '+a.nameKurz+' '+a.marke).toLowerCase().includes(q))
-  if(filtered.length===0){ list.innerHTML = '<div class="text-center text-xs text-zinc-400 py-10">Keine Artikel<br><button onclick="newArticle()" class="mt-2 bg-black text-white px-3 py-1 rounded-full">+ Ersten erstellen</button></div>'; return; }
-  list.innerHTML=filtered.map(a=>`
-    <div onclick="openArticle('${a.id}')" class="border rounded-[12px] p-2 cursor-pointer hover:bg-zinc-50 ${current&&current.id===a.id?'bg-zinc-100 border-zinc-900':''}">
-      <div class="flex gap-2">
-        <div class="w-12 h-12 rounded-lg bg-zinc-100 overflow-hidden flex-shrink-0 chessboard">${a.bildSackUrl?`<img src="${a.bildSackUrl}" class="w-full h-full object-cover">`: (a.bildSack?`<img src="${a.bildSack}" class="w-full h-full object-cover">`:'')}</div>
-        <div class="flex-1 min-w-0">
-          <div class="font-bold text-[13px] truncate">${a.artikelnummer||'???'} ${a.status==='Active'?'<span class="bg-green-100 text-green-700 text-[10px] px-1.5 py-0.5 rounded-full">Active</span>':'<span class="bg-zinc-200 text-[10px] px-1.5 py-0.5 rounded-full">Draft</span>'}</div>
-          <div class="text-[11px] truncate">${a.nameKurz||a.sorte||''} • ${a.marke||''}</div>
-          ${a.bildSackUrl?'<div class="text-[9px] text-green-600">✓ Supabase</div>':''}
-        </div>
-      </div>
-    </div>
-  `).join('')
-}
-function openArticle(id){ current=articles.find(a=>a.id===id); bildSackBase64=current.bildSack||null; bildReisBase64=current.bildReis||null; zoom=current.bildReisZoom||1; panX=current.bildReisPanX||0; panY=current.bildReisPanY||0; isRound=current.bildReisRund||false; renderForm() }
-function base64ToBlob(b64){ const arr=b64.split(','), mime=arr[0].match(/:(.*?);/)[1], bstr=atob(arr[1]); let n=bstr.length; const u8=new Uint8Array(n); while(n--) u8[n]=bstr.charCodeAt(n); return new Blob([u8],{type:mime}) }
-function getCroppedBlob(){ return new Promise(res=>{ if(!bildReisBase64) return res(null); const c=document.createElement('canvas'); c.width=800; c.height=800; const ctx=c.getContext('2d'); if(isRound){ ctx.beginPath(); ctx.arc(400,400,400,0,Math.PI*2); ctx.clip() } const img=new Image(); img.onload=()=>{ const w=img.width*zoom, h=img.height*zoom, x=(800-w)/2+panX, y=(800-h)/2+panY; ctx.drawImage(img,x,y,w,h); c.toBlob(b=>res(b),'image/png',0.9) }; img.src=bildReisBase64 }) }
-async function uploadToSupabase(artNr){
-  if(!sbClient) return {sackUrl: current.bildSackUrl||null, reisUrl: current.bildReisUrl||null}
-  let sackUrl=current.bildSackUrl||null, reisUrl=current.bildReisUrl||null
+async function loadSupabase(){
+  document.getElementById('status').textContent='⏳ Lade...';
   try{
-    if(bildSackFile||bildSackBase64){
-      let blob=bildSackFile; if(!blob&&bildSackBase64) blob=base64ToBlob(bildSackBase64)
-      const path=`${artNr}/sack.png`
-      const {error}=await sbClient.storage.from('sack-bilder').upload(path, blob, {upsert:true, contentType:'image/png'}); if(error) throw error
-      sackUrl=sbClient.storage.from('sack-bilder').getPublicUrl(path).data.publicUrl
-    }
-    if(bildReisBase64){
-      const cropped=await getCroppedBlob()
-      if(cropped){ const path=`${artNr}/reis-detail.png`; const {error}=await sbClient.storage.from('reis-detail-bilder').upload(path,cropped,{upsert:true, contentType:'image/png'}); if(error) throw error; reisUrl=sbClient.storage.from('reis-detail-bilder').getPublicUrl(path).data.publicUrl }
-    }
-    return {sackUrl, reisUrl}
-  }catch(e){ showToast('Upload error: '+e.message); return {sackUrl, reisUrl} }
+    const {data,error}=await sb.from('stammdaten').select('*').order('artikelnummer');
+    if(error) throw error;
+    if(!data||data.length===0){ loadLocal(); return; }
+    articles=data.map(d=>{ const m=d.marketing||{}; return {artikelnummer:d.artikelnummer,id:d.artikelnummer,nameKurz:d.name_kurz||'',marke:d.marke||'',sorte:d.sorte||'',qualitaet:d.qualitaet||'',herkunft:d.herkunft||'',erntejahr:d.erntejahr||'',gewicht:d.gewicht||'',einheit:d.einheit||'kg',bildSackUrl:d.bild_sack_url||'',bildReisUrl:d.bild_reis_url||'',marketing:m, _full:d}; });
+    document.getElementById('status').textContent='✅ '+articles.length+' aus Supabase';
+    renderList(); if(articles.length>0) selectArticle(articles[0].id);
+  }catch(e){ document.getElementById('status').textContent='❌ '+e.message+' - Browser Fallback'; loadLocal(); }
 }
-async function saveCurrent(){
-  if(!current) return
-  const artNr=document.getElementById('f-artnr').value.trim()
-  if(!artNr){ showToast('Artikelnummer nötig'); return }
-  const fields=['nameKurz','nameLang','marke','sorte','qualitaet','herkunft','erntejahr','gewicht','einheit','distributor','bullet1','bullet2','bullet3','bullet4','bullet5','geschmack','aroma','textur','passtZu','kochmethode','slogan','short','story','taste','origin','cooking']
-  fields.forEach(f=>{
-    const el=document.getElementById('f-'+f)
-    if(el){
-      if(lang==='EN') current[f+'En']=el.value
-      else if(lang==='TL') current[f+'Tl']=el.value
-      else current[f+'De']=el.value
-      if(['nameKurz','marke','sorte','gewicht'].includes(f)) current[f]=el.value
-    }
-  })
-  current.artikelnummer=artNr; current.nameKurz=document.getElementById('f-nameKurz').value; current.nameLang=document.getElementById('f-nameLang').value; current.marke=document.getElementById('f-marke').value; current.sorte=document.getElementById('f-sorte').value; current.qualitaet=document.getElementById('f-qualitaet').value; current.herkunft=document.getElementById('f-herkunft').value; current.erntejahr=document.getElementById('f-erntejahr').value; current.gewicht=document.getElementById('f-gewicht').value; current.einheit=document.getElementById('f-einheit').value; current.status=artNr?'Active':'Draft'
-  current.bildSack=bildSackBase64; current.bildReis=bildReisBase64; current.bildReisZoom=zoom; current.bildReisPanX=panX; current.bildReisPanY=panY; current.bildReisRund=isRound
-  if(sbClient){
-    const urls=await uploadToSupabase(artNr); if(urls.sackUrl) current.bildSackUrl=urls.sackUrl; if(urls.reisUrl) current.bildReisUrl=urls.reisUrl
-    const payload={ artikelnummer:artNr, name_kurz:current.nameKurz, name_lang:current.nameLang, marke:current.marke, sorte:current.sorte, qualitaet:current.qualitaet, herkunft:current.herkunft, erntejahr:current.erntejahr, gewicht:current.gewicht, einheit:current.einheit, marketing:{ en:{bullet1:current.bullet1En, bullet2:current.bullet2En, bullet3:current.bullet3En, bullet4:current.bullet4En, bullet5:current.bullet5En, geschmack:current.geschmackEn, aroma:current.aromaEn, textur:current.texturEn, passtZu:current.passtZuEn, kochmethode:current.kochmethodeEn, slogan:current.sloganEn, short:current.shortEn, story:current.storyEn, taste:current.tasteEn, origin:current.originEn, cooking:current.cookingEn}, tl:{bullet1:current.bullet1Tl, bullet2:current.bullet2Tl, bullet3:current.bullet3Tl, bullet4:current.bullet4Tl, bullet5:current.bullet5Tl, geschmack:current.geschmackTl, aroma:current.aromaTl, textur:current.texturTl, passtZu:current.passtZuTl, kochmethode:current.kochmethodeTl, slogan:current.sloganTl, short:current.shortTl, story:current.storyTl, taste:current.tasteTl, origin:current.originTl, cooking:current.cookingTl}, de:{bullet1:current.bullet1De, bullet2:current.bullet2De, bullet3:current.bullet3De, bullet4:current.bullet4De, bullet5:current.bullet5De, geschmack:current.geschmackDe, aroma:current.aromaDe, textur:current.texturDe, passtZu:current.passtZuDe, kochmethode:current.kochmethodeDe, slogan:current.sloganDe, short:current.shortDe, story:current.storyDe, taste:current.tasteDe, origin:current.originDe, cooking:current.cookingDe} }, bild_sack_url:current.bildSackUrl, bild_reis_url:current.bildReisUrl, status:'Active' }
-    const {error}=await sbClient.from('stammdaten').upsert(payload,{onConflict:'artikelnummer'})
-    if(error) showToast('DB error: '+error.message); else showToast('✅ Gespeichert: '+artNr)
+
+function loadLocal(){
+  const local=JSON.parse(localStorage.getItem('kingfields_full_v3')||'[]');
+  if(local.length===0){
+    articles=[
+      {artikelnummer:'001',id:'001',nameKurz:'Fuji 25kg',sorte:'Fuji',qualitaet:'Premium',herkunft:'Thailand',gewicht:'25',einheit:'kg',bildSackUrl:'',bildReisUrl:'',marketing:{tl:{bullet1:'Isang Sako, Isang Buwan! Mas mura kaysa tingi-tingi sa palengke!',bullet2:'Kahit Tuyo at Itlog lang, Solve na! Hindi tumitigas, kahit malamig!',bullet3:'Malinis, Walang Bato - Safe para sa mga bata!',geschmack:'Malambot, mabango',aroma:'Natural na jasmine aroma',textur:'Soft & slightly sticky',passtZu:'Curry, grilled meat, vegetables, adobo',kochmethode:'1 cup rice : 1.2 cup water, 15 min',slogan:'Thai Soft Rice - Premium Quality',short:'Sweet aroma, soft texture'},en:{},de:{}}},
+      {artikelnummer:'002',id:'002',nameKurz:'Hasmin 25kg',sorte:'Hasmin',qualitaet:'Premium',herkunft:'Thailand',gewicht:'25',einheit:'kg',bildSackUrl:'',bildReisUrl:'',marketing:{tl:{},en:{},de:{}}},
+      {artikelnummer:'003',id:'003',nameKurz:'Hasmin 5kg',sorte:'Hasmin',qualitaet:'Premium',herkunft:'Thailand',gewicht:'5',einheit:'kg',bildSackUrl:'',bildReisUrl:'',marketing:{tl:{},en:{},de:{}}},
+      {artikelnummer:'004',id:'004',nameKurz:'Sushi 5kg',sorte:'Sushi',qualitaet:'Premium',herkunft:'Japan',gewicht:'5',einheit:'kg',bildSackUrl:'',bildReisUrl:'',marketing:{tl:{},en:{},de:{}}},
+      {artikelnummer:'005',id:'005',nameKurz:'Sticky 1kg',sorte:'Sticky',qualitaet:'Premium',herkunft:'Thailand',gewicht:'1',einheit:'kg',bildSackUrl:'',bildReisUrl:'',marketing:{tl:{},en:{},de:{}}},
+    ];
+    localStorage.setItem('kingfields_full_v3',JSON.stringify(articles.map(a=>({artikelnummer:a.artikelnummer,nameKurz:a.nameKurz,sorte:a.sorte,qualitaet:a.qualitaet,herkunft:a.herkunft,gewicht:a.gewicht,einheit:a.einheit,bildSackUrl:a.bildSackUrl,bildReisUrl:a.bildReisUrl,marketing:a.marketing}))));
+  }else{
+    articles=local.map(d=>({artikelnummer:d.artikelnummer||d.id,id:d.artikelnummer||d.id,nameKurz:d.nameKurz||d.name_kurz||'',marke:d.marke||'',sorte:d.sorte||'',qualitaet:d.qualitaet||'',herkunft:d.herkunft||'',gewicht:d.gewicht||'',einheit:d.einheit||'kg',bildSackUrl:d.bildSackUrl||d.bild_sack_url||'',bildReisUrl:d.bildReisUrl||d.bild_reis_url||'',marketing:d.marketing||{en:{},tl:{},de:{}}}));
   }
-  const idx=articles.findIndex(a=>a.id===current.id); if(idx>=0) articles[idx]=current; else articles.push(current)
-  localStorage.setItem('kingfields_full_v3', JSON.stringify(articles)); renderList()
+  document.getElementById('status').textContent='✅ '+articles.length+' aus Browser';
+  renderList(); if(articles.length>0) selectArticle(articles[0].id);
 }
-function renderForm(){
-  if(!current){ document.getElementById('form').innerHTML=`<div class="text-center py-20 text-zinc-400"><div class="font-display text-xl mb-2">${t('Select article','Pumili ng article','Artikel wählen')}</div><button onclick="newArticle()" class="bg-black text-white px-6 py-2 rounded-full text-sm">+ New ${getNextArtNr()}</button></div>`; return }
-  const val = (fieldBase) => { if(lang==='EN') return current[fieldBase+'En']||''; if(lang==='TL') return current[fieldBase+'Tl']||''; return current[fieldBase+'De']||'' }
-  document.getElementById('form').innerHTML=`
-    <div class="space-y-6">
-      <div><h3 class="font-display font-semibold text-[16px] mb-3">${t('Technical Data','Teknikal na Data','Technische Daten')} • ${current.status} • ${lang}</h3>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div><label class="text-[11px] font-medium text-zinc-500">Article Nr * 001</label><input id="f-artnr" value="${current.artikelnummer||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div><label class="text-[11px] text-zinc-500">Brand</label><input id="f-marke" value="${current.marke||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div><label class="text-[11px] text-zinc-500">Kurz Name</label><input id="f-nameKurz" value="${current.nameKurz||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div><label class="text-[11px] text-zinc-500">Lang Name</label><input id="f-nameLang" value="${current.nameLang||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div><label class="text-[11px] text-zinc-500">Sorte</label><input id="f-sorte" value="${current.sorte||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div><label class="text-[11px] text-zinc-500">Qualität</label><select id="f-qualitaet" class="w-full border rounded-full px-3 py-2 text-sm"><option>Premium</option><option>Standard</option><option>Organic</option></select></div>
-          <div><label class="text-[11px] text-zinc-500">Herkunft</label><input id="f-herkunft" value="${current.herkunft||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div><label class="text-[11px] text-zinc-500">Erntejahr</label><input id="f-erntejahr" value="${current.erntejahr||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div><label class="text-[11px] text-zinc-500">Gewicht</label><input id="f-gewicht" value="${current.gewicht||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div><label class="text-[11px] text-zinc-500">Einheit</label><input id="f-einheit" value="${current.einheit||'kg'}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div class="col-span-2"><label class="text-[11px] text-zinc-500">Distributor</label><input id="f-distributor" value="${current.distributor||'Kingfields Trade'}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-        </div>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div><label class="text-xs font-bold">1. Sack Bild (transparent)</label><div id="drop-sack" class="chessboard border-2 border-dashed rounded-[16px] h-[320px] flex items-center justify-center relative overflow-hidden cursor-pointer mt-1" onclick="document.getElementById('file-sack').click()">${bildSackBase64?`<img src="${bildSackBase64}" class="max-w-full max-h-full object-contain">`:`<div class="bg-white px-3 py-1 rounded-full text-xs shadow">Click / Drop sack image</div>`}</div><input id="file-sack" type="file" accept="image/*" class="hidden" onchange="handleSackFile(this)"></div>
-        <div><label class="text-xs font-bold">2. Loser Reis Detail (Zuschneiden)</label><div id="drop-reis" class="border-2 border-dashed rounded-[16px] h-[320px] flex items-center justify-center relative overflow-hidden bg-zinc-100 cursor-pointer mt-1" onclick="document.getElementById('file-reis').click()">${bildReisBase64?`<img id="reis-img" src="${bildReisBase64}" style="transform: translate(${panX}px, ${panY}px) scale(${zoom}); ${isRound?'border-radius:50%':''}" class="max-w-full max-h-full object-contain">`:`<div class="bg-white px-3 py-1 rounded-full text-xs shadow">Click Reis Bild</div>`}</div><input id="file-reis" type="file" accept="image/*" class="hidden" onchange="handleReisFile(this)"></div>
-      </div>
-      <div class="bg-green-50 border-2 border-green-300 rounded-[16px] p-4"><h3 class="font-display font-semibold text-[14px] mb-3">⭐ Verkaufsargumente / Bullet Points • ${lang} • An oberster Stelle!</h3><p class="text-[11px] text-zinc-600 mb-3">5 Felder für Vorteile, USPs, Fuji Apple süß & knackig etc. Wenn leer, wird Feld nicht angezeigt und andere rutschen hoch.</p><div class="grid grid-cols-1 gap-2"><div class="flex gap-2"><span class="text-xs font-bold w-6">1.</span><input id="f-bullet1" value="${val('bullet1')}" placeholder="${t('z.B. Fuji - Süß & Knackig','e.g. Fuji - Sweet & Crunchy','z.B. Fuji - Süß & Knackig')}" class="flex-1 border rounded-full px-3 py-2 text-sm bg-white"></div><div class="flex gap-2"><span class="text-xs font-bold w-6">2.</span><input id="f-bullet2" value="${val('bullet2')}" placeholder="${t('z.B. 100% Premium Qualität','e.g. 100% Premium Quality','z.B. 100% Premium')}" class="flex-1 border rounded-full px-3 py-2 text-sm bg-white"></div><div class="flex gap-2"><span class="text-xs font-bold w-6">3.</span><input id="f-bullet3" value="${val('bullet3')}" class="flex-1 border rounded-full px-3 py-2 text-sm bg-white"></div><div class="flex gap-2"><span class="text-xs font-bold w-6">4.</span><input id="f-bullet4" value="${val('bullet4')}" class="flex-1 border rounded-full px-3 py-2 text-sm bg-white"></div><div class="flex gap-2"><span class="text-xs font-bold w-6">5.</span><input id="f-bullet5" value="${val('bullet5')}" class="flex-1 border rounded-full px-3 py-2 text-sm bg-white"></div></div></div>
-      <div class="bg-amber-50 border border-amber-200 rounded-[16px] p-4"><h3 class="font-display font-semibold text-[14px] mb-3">🍚 Food Properties • ${lang}</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-3"><div><label class="text-[11px] font-medium">Geschmack</label><input id="f-geschmack" value="${val('geschmack')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div><div><label class="text-[11px] font-medium">Aroma</label><input id="f-aroma" value="${val('aroma')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div><div><label class="text-[11px] font-medium">Textur</label><input id="f-textur" value="${val('textur')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div><div><label class="text-[11px] font-medium">Kochmethode</label><input id="f-kochmethode" value="${val('kochmethode')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div><div class="md:col-span-2"><label class="text-[11px] font-medium">Passt gut zu</label><input id="f-passtZu" value="${val('passtZu')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div></div></div>
-      <div class="flex gap-2"><button onclick="saveCurrent()" class="flex-1 bg-black text-white py-3 rounded-full font-bold text-sm">💾 In Supabase speichern ✅</button><button onclick="deleteCurrent()" class="bg-red-50 text-red-600 border border-red-200 px-6 py-3 rounded-full text-sm">Delete</button></div>
-    </div>
-  `
-  document.getElementById('f-qualitaet').value=current.qualitaet||'Premium'
+
+function renderList(){
+  const q=(document.getElementById('search').value||'').toLowerCase();
+  const list=document.getElementById('list');
+  list.innerHTML=articles.filter(a=>!q||a.artikelnummer.toLowerCase().includes(q)|| (a.nameKurz||'').toLowerCase().includes(q)).map(a=>`<div onclick="selectArticle('${a.id}')" class="border rounded-xl p-2 cursor-pointer ${current&&current.id===a.id?'bg-zinc-900 text-white':'bg-white hover:bg-zinc-50'}"><div class="text-[11px] font-bold">${a.artikelnummer} - ${a.nameKurz||''}</div><div class="text-[10px] opacity-60">${a.sorte||''} • ${a.gewicht||''}${a.einheit||''}</div></div>`).join('');
 }
-function handleSackFile(input){ const file=input.files[0]; if(!file) return; bildSackFile=file; const r=new FileReader(); r.onload=e=>{ bildSackBase64=e.target.result; renderForm() }; r.readAsDataURL(file) }
-function handleReisFile(input){ const file=input.files[0]; if(!file) return; const r=new FileReader(); r.onload=e=>{ bildReisBase64=e.target.result; renderForm() }; r.readAsDataURL(file) }
-function deleteCurrent(){ if(!confirm('Delete '+current.artikelnummer+'?')) return; articles=articles.filter(a=>a.id!==current.id); localStorage.setItem('kingfields_full_v3', JSON.stringify(articles)); current=null; renderList(); renderForm(); }
-function setLang(l){ if(current){ const fields=['bullet1','bullet2','bullet3','bullet4','bullet5','geschmack','aroma','textur','passtZu','kochmethode','slogan','short','story','taste','origin','cooking']; fields.forEach(f=>{ const el=document.getElementById('f-'+f); if(el){ if(lang==='EN') current[f+'En']=el.value; else if(lang==='TL') current[f+'Tl']=el.value; else current[f+'De']=el.value; } }) } lang=l; localStorage.setItem('lang',l); document.querySelectorAll('[id^=btn-]').forEach(b=>{ b.className='px-4 py-1.5 rounded-full text-sm text-zinc-600' }); document.getElementById('btn-'+l.toLowerCase()).className='px-4 py-1.5 rounded-full text-sm bg-black text-white font-medium'; if(current) renderForm() }
-setLang(lang); renderList(); loadNavLabels();
+
+function selectArticle(id){
+  current=articles.find(a=>a.id===id); if(!current) return;
+  document.getElementById('editor').classList.remove('hidden'); document.getElementById('noSel').classList.add('hidden');
+  document.getElementById('artNr').value=current.artikelnummer;
+  document.getElementById('nameKurz').value=current.nameKurz||'';
+  renderList();
+  renderEditor();
+  loadImages();
+}
+
+function getM(){ if(!current.marketing) current.marketing={en:{},tl:{},de:{}}; const l=document.getElementById('lang').value.toLowerCase(); lang=l.toUpperCase(); if(!current.marketing[l]) current.marketing[l]={}; return current.marketing[l]; }
+
+function renderEditor(){
+  if(!current) return;
+  const m=getM();
+  const bulletsDiv=document.getElementById('bullets');
+  bulletsDiv.innerHTML=[1,2,3,4,5].map(i=>`<div class="flex gap-2 items-center"><span class="text-[10px] w-4">${i}.</span><input id="b${i}" value="${(m['bullet'+i]||'').replace(/"/g,'&quot;')}" placeholder="Bullet ${i} - z.B. Fuji süß & knackig" class="flex-1 border rounded-full px-3 py-1.5 text-xs" oninput="updateBullet(${i})"></div>`).join('');
+  document.getElementById('geschmack').value=m.geschmack||'';
+  document.getElementById('aroma').value=m.aroma||'';
+  document.getElementById('textur').value=m.textur||'';
+  document.getElementById('passtZu').value=m.passtZu||'';
+  document.getElementById('kochmethode').value=m.kochmethode||'';
+  document.getElementById('slogan').value=m.slogan||'';
+  document.getElementById('short').value=m.short||'';
+  
+  document.getElementById('geschmack').oninput=(e)=>{ getM().geschmack=e.target.value; autoSaveLocal(); };
+  document.getElementById('aroma').oninput=(e)=>{ getM().aroma=e.target.value; autoSaveLocal(); };
+  document.getElementById('textur').oninput=(e)=>{ getM().textur=e.target.value; autoSaveLocal(); };
+  document.getElementById('passtZu').oninput=(e)=>{ getM().passtZu=e.target.value; autoSaveLocal(); };
+  document.getElementById('kochmethode').oninput=(e)=>{ getM().kochmethode=e.target.value; autoSaveLocal(); };
+  document.getElementById('slogan').oninput=(e)=>{ getM().slogan=e.target.value; autoSaveLocal(); };
+  document.getElementById('short').oninput=(e)=>{ getM().short=e.target.value; autoSaveLocal(); };
+}
+
+function updateBullet(i){ getM()['bullet'+i]=document.getElementById('b'+i).value; autoSaveLocal(); }
+
+function loadImages(){
+  const sack=document.getElementById('previewSack');
+  const reis=document.getElementById('previewReis');
+  const pS=document.getElementById('placeholderSack');
+  const pR=document.getElementById('placeholderReis');
+  // Restore crop meta if exists
+  const cropMeta = current.marketing && current.marketing._crop ? current.marketing._crop : {sack:{x:0,y:0,scale:1},reis:{x:0,y:0,scale:1}};
+  if(current.bildSackUrl){ sack.src=current.bildSackUrl; sack.classList.remove('hidden'); pS.classList.add('hidden'); initDrag('sack'); } else { sack.classList.add('hidden'); pS.classList.remove('hidden'); }
+  if(current.bildReisUrl){ reis.src=current.bildReisUrl; reis.classList.remove('hidden'); pR.classList.add('hidden'); initDrag('reis'); } else { reis.classList.add('hidden'); pR.classList.remove('hidden'); }
+  // If baked image (no meta after save), reset to 0/1
+  if(cropMeta.sack && current.bildSackUrl){ dragData.sack.x=cropMeta.sack.x||0; dragData.sack.y=cropMeta.sack.y||0; dragData.sack.scale=cropMeta.sack.scale||1; } else { dragData.sack.x=0; dragData.sack.y=0; dragData.sack.scale=1; }
+  if(cropMeta.reis && current.bildReisUrl){ dragData.reis.x=cropMeta.reis.x||0; dragData.reis.y=cropMeta.reis.y||0; dragData.reis.scale=cropMeta.reis.scale||1; } else { dragData.reis.x=0; dragData.reis.y=0; dragData.reis.scale=1; }
+  document.getElementById('zoomSack').value=dragData.sack.scale; document.getElementById('zoomSackLabel').textContent=Math.round(dragData.sack.scale*100)+'%';
+  document.getElementById('zoomReis').value=dragData.reis.scale; document.getElementById('zoomReisLabel').textContent=Math.round(dragData.reis.scale*100)+'%';
+  setTimeout(()=>{ applyZoom('sack'); applyZoom('reis'); },100);
+}
+
+function handleFile(e,type){
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=(ev)=>{
+    if(type==='sack'){ current.bildSackUrl=ev.target.result; document.getElementById('previewSack').src=ev.target.result; document.getElementById('previewSack').classList.remove('hidden'); document.getElementById('placeholderSack').classList.add('hidden'); initDrag('sack'); }
+    else { current.bildReisUrl=ev.target.result; document.getElementById('previewReis').src=ev.target.result; document.getElementById('previewReis').classList.remove('hidden'); document.getElementById('placeholderReis').classList.add('hidden'); initDrag('reis'); }
+    autoSaveLocal();
+  };
+  reader.readAsDataURL(file);
+}
+
+function initDrag(type){
+  const img=document.getElementById(type==='sack'?'previewSack':'previewReis');
+  img.style.cursor='grab';
+  img.style.position='relative';
+  img.onmousedown=(e)=>{ dragData[type].isDrag=true; dragData[type].startX=e.clientX; dragData[type].startY=e.clientY; dragData[type].initX=dragData[type].x; dragData[type].initY=dragData[type].y; img.style.cursor='grabbing'; e.preventDefault(); };
+  window.addEventListener('mousemove',(e)=>{ if(!dragData[type].isDrag) return; const dx=e.clientX-dragData[type].startX; const dy=e.clientY-dragData[type].startY; dragData[type].x=dragData[type].initX+dx; dragData[type].y=dragData[type].initY+dy; applyTransform(type); });
+  window.addEventListener('mouseup',()=>{ dragData[type].isDrag=false; const im=document.getElementById(type==='sack'?'previewSack':'previewReis'); if(im) im.style.cursor='grab'; });
+  // touch
+  img.ontouchstart=(e)=>{ dragData[type].isDrag=true; dragData[type].startX=e.touches[0].clientX; dragData[type].startY=e.touches[0].clientY; dragData[type].initX=dragData[type].x; dragData[type].initY=dragData[type].y; };
+  window.addEventListener('touchmove',(e)=>{ if(!dragData[type].isDrag) return; const dx=e.touches[0].clientX-dragData[type].startX; const dy=e.touches[0].clientY-dragData[type].startY; dragData[type].x=dragData[type].initX+dx; dragData[type].y=dragData[type].initY+dy; applyTransform(type); });
+  window.addEventListener('touchend',()=>{ dragData[type].isDrag=false; });
+}
+
+function applyZoom(type){
+  const v=parseFloat(document.getElementById(type==='sack'?'zoomSack':'zoomReis').value);
+  dragData[type].scale=v;
+  document.getElementById(type==='sack'?'zoomSackLabel':'zoomReisLabel').textContent=Math.round(v*100)+'%';
+  applyTransform(type);
+}
+
+function applyTransform(type){
+  const img=document.getElementById(type==='sack'?'previewSack':'previewReis');
+  if(!img) return;
+  img.style.transform=`translate(${dragData[type].x}px, ${dragData[type].y}px) scale(${dragData[type].scale})`;
+  img.style.transformOrigin='center center';
+}
+
+function resetZoom(type){
+  dragData[type].x=0; dragData[type].y=0; dragData[type].scale=1;
+  document.getElementById(type==='sack'?'zoomSack':'zoomReis').value=1;
+  document.getElementById(type==='sack'?'zoomSackLabel':'zoomReisLabel').textContent='100%';
+  applyTransform(type);
+}
+
+function autoSaveLocal(){
+  if(!current) return;
+  current.nameKurz=document.getElementById('nameKurz').value;
+  current.artikelnummer=document.getElementById('artNr').value;
+  const idx=articles.findIndex(a=>a.id===current.id);
+  if(idx>=0) articles[idx]=current;
+  localStorage.setItem('kingfields_full_v3', JSON.stringify(articles.map(a=>({artikelnummer:a.artikelnummer,nameKurz:a.nameKurz,sorte:a.sorte,qualitaet:a.qualitaet,herkunft:a.herkunft,gewicht:a.gewicht,einheit:a.einheit,bildSackUrl:a.bildSackUrl,bildReisUrl:a.bildReisUrl,marketing:a.marketing}))));
+}
+
+async function saveCurrent(){
+  if(!current) return;
+  autoSaveLocal();
+  const m=current.marketing||{en:{},tl:{},de:{}};
+  // Create canvas crop
+  const saveCropImage=async(type)=>{
+    const img=document.getElementById(type==='sack'?'previewSack':'previewReis');
+    if(!img || img.classList.contains('hidden')) return current[type==='sack'?'bildSackUrl':'bildReisUrl'];
+    const container=document.getElementById(type==='sack'?'dropSack':'dropReis');
+    const canvas=document.createElement('canvas');
+    const size=800;
+    canvas.width=size; canvas.height=size;
+    const ctx=canvas.getContext('2d');
+    ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,size,size);
+    // simple: draw image centered with transform applied as crop
+    const tempImg=new Image();
+    tempImg.src=img.src;
+    await new Promise(r=>{ tempImg.onload=r; });
+    ctx.save();
+    ctx.translate(size/2 + dragData[type].x*(size/container.clientWidth), size/2 + dragData[type].y*(size/container.clientHeight));
+    const s=dragData[type].scale;
+    ctx.scale(s,s);
+    const drawW = type==='sack' ? size*0.8 : size*0.9;
+    const ratio = Math.min(drawW/tempImg.width, drawW/tempImg.height);
+    ctx.drawImage(tempImg, -tempImg.width*ratio/2, -tempImg.height*ratio/2, tempImg.width*ratio, tempImg.height*ratio);
+    ctx.restore();
+    return canvas.toDataURL('image/png');
+  };
+  
+  const croppedSack = await saveCropImage('sack');
+  const croppedReis = await saveCropImage('reis');
+  
+  try{
+    const {error}=await sb.from('stammdaten').upsert({
+      artikelnummer:current.artikelnummer,
+      name_kurz:current.nameKurz,
+      sorte:current.sorte,
+      qualitaet:current.qualitaet,
+      herkunft:current.herkunft,
+      gewicht:current.gewicht,
+      einheit:current.einheit,
+      bild_sack_url:croppedSack,
+      bild_reis_url:croppedReis,
+      marketing:m,
+      updated_at:new Date().toISOString()
+    },{onConflict:'artikelnummer'});
+    if(error) throw error;
+    document.getElementById('status').textContent='✅ Gespeichert in Supabase!';
+    setTimeout(()=>{ document.getElementById('status').textContent='✅ '+articles.length+' aus Supabase'; },2000);
+  }catch(e){
+    document.getElementById('status').textContent='❌ '+e.message;
+    alert('Supabase Fehler: '+e.message+' - lokal gespeichert');
+  }
+}
+
+async function migrate(){
+  const local=JSON.parse(localStorage.getItem('kingfields_full_v3')||'[]');
+  if(local.length===0){ alert('Kein Browser Storage!'); return; }
+  document.getElementById('status').textContent='⏳ MIGRATE '+local.length+'...';
+  for(const a of local){
+    await sb.from('stammdaten').upsert({
+      artikelnummer:a.artikelnummer,
+      name_kurz:a.nameKurz||a.name_kurz||'',
+      sorte:a.sorte||'',
+      qualitaet:a.qualitaet||'',
+      herkunft:a.herkunft||'',
+      gewicht:a.gewicht||'',
+      einheit:a.einheit||'kg',
+      bild_sack_url:a.bildSackUrl||a.bild_sack_url||'',
+      bild_reis_url:a.bildReisUrl||a.bild_reis_url||'',
+      marketing:a.marketing||{en:{},tl:{},de:{}},
+      updated_at:new Date().toISOString()
+    },{onConflict:'artikelnummer'});
+  }
+  document.getElementById('status').textContent='✅ MIGRATE fertig '+local.length;
+  loadSupabase();
+}
+
+loadSupabase();
 </script>
 </body>
 </html>
