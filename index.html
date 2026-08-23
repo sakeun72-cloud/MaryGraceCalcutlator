@@ -1,217 +1,153 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kingfields Trade - Stammdaten EN/TL + Supabase</title>
+<title>Kingfields Trade - Vollständige Stammdaten</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-.chessboard { background-image: linear-gradient(45deg, #e5e7eb 25%, transparent 25%), linear-gradient(-45deg, #e5e7eb 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e5e7eb 75%), linear-gradient(-45deg, transparent 75%, #e5e7eb 75%); background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px; }
+  .font-display{font-family:"Fraunces",serif}
+  .font-body{font-family:"Plus Jakarta Sans",sans-serif}
+  .chessboard{background-image:linear-gradient(45deg,#e5e7eb 25%,transparent 25%),linear-gradient(-45deg,#e5e7eb 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#e5e7eb 75%),linear-gradient(-45deg,transparent 75%,#e5e7eb 75%);background-size:20px 20px;background-position:0 0,0 10px,10px -10px,-10px 0px}
 </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-<div id="app" class="max-w-7xl mx-auto p-4">
-  <!-- HEADER + NAV -->
-  <div class="bg-white rounded-xl shadow p-4 mb-4">
-    <div class="flex flex-wrap justify-between items-center gap-4 mb-3">
-      <h1 class="text-xl font-bold">Kingfields Trade - Product Master</h1>
-      <div class="flex gap-2">
-        <button onclick="setLang('EN')" id="btn-en" class="px-3 py-1 rounded bg-black text-white">EN</button>
-        <button onclick="setLang('TL')" id="btn-tl" class="px-3 py-1 rounded bg-gray-200">TL</button>
-        <button onclick="setLang('DE')" id="btn-de" class="px-3 py-1 rounded bg-gray-200">DE</button>
+<body class="bg-[#f6f5f2] font-body min-h-screen">
+<div class="max-w-[1600px] mx-auto p-3 md:p-6">
+
+  <!-- HEADER -->
+  <div class="bg-white rounded-[20px] shadow-sm border p-4 mb-4">
+    <div class="flex flex-wrap justify-between items-center gap-3 mb-3">
+      <div>
+        <h1 class="font-display text-2xl font-semibold">Kingfields Trade - Product Master</h1>
+        <p class="text-xs text-zinc-500">Vollständige Stammdaten mit Supabase • 3-stellig 001</p>
+      </div>
+      <div class="flex gap-2 items-center">
+        <div class="flex bg-zinc-100 rounded-full p-1">
+          <button onclick="setLang('EN')" id="btn-en" class="px-4 py-1.5 rounded-full text-sm bg-black text-white font-medium">EN</button>
+          <button onclick="setLang('TL')" id="btn-tl" class="px-4 py-1.5 rounded-full text-sm text-zinc-600">TL</button>
+          <button onclick="setLang('DE')" id="btn-de" class="px-4 py-1.5 rounded-full text-sm text-zinc-600">DE</button>
+        </div>
       </div>
     </div>
-    <!-- NAV BUTTONS 5 Platzhalter -->
+    <!-- 5 NAV BUTTONS -->
     <div class="flex flex-wrap gap-2 border-t pt-3">
-      <button onclick="openLink(0)" class="nav-btn bg-gray-100 hover:bg-black hover:text-white border px-4 py-2 rounded-full text-sm font-medium transition">📋 <span id="nav-label-0">Preisliste</span></button>
-      <button onclick="openLink(1)" class="nav-btn bg-gray-100 hover:bg-black hover:text-white border px-4 py-2 rounded-full text-sm font-medium transition">🛒 <span id="nav-label-1">Shop / Vercel</span></button>
-      <button onclick="openLink(2)" class="nav-btn bg-gray-100 hover:bg-black hover:text-white border px-4 py-2 rounded-full text-sm font-medium transition">📦 <span id="nav-label-2">Katalog</span></button>
-      <button onclick="openLink(3)" class="nav-btn bg-gray-100 hover:bg-black hover:text-white border px-4 py-2 rounded-full text-sm font-medium transition">🌐 <span id="nav-label-3">Website</span></button>
-      <button onclick="openLink(4)" class="nav-btn bg-gray-100 hover:bg-black hover:text-white border px-4 py-2 rounded-full text-sm font-medium transition">📊 <span id="nav-label-4">Supabase</span></button>
-      <button onclick="toggleNavEdit()" class="ml-auto text-xs border px-3 py-1 rounded bg-white">⚙️ Edit Links</button>
+      <button onclick="openLink(0)" class="bg-zinc-900 text-white px-4 py-2 rounded-full text-[13px] font-medium hover:bg-black">📋 <span id="nav-label-0">Preisliste</span></button>
+      <button onclick="openLink(1)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">🛒 <span id="nav-label-1">Shop</span></button>
+      <button onclick="openLink(2)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">📦 <span id="nav-label-2">Katalog</span></button>
+      <button onclick="openLink(3)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">🌐 <span id="nav-label-3">Website</span></button>
+      <button onclick="openLink(4)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">📊 <span id="nav-label-4">Supabase</span></button>
+      <button onclick="toggleNavEdit()" class="ml-auto text-[11px] border px-3 py-1 rounded-full bg-white">⚙️ Edit Links</button>
     </div>
-    <div id="nav-edit" class="hidden mt-3 bg-gray-50 p-3 rounded-lg grid grid-cols-1 md:grid-cols-2 gap-2">
-      <div class="flex gap-2"><input id="nav-name-0" placeholder="Button 1 Name" class="border p-1 rounded text-xs flex-1"><input id="nav-url-0" placeholder="https://..." class="border p-1 rounded text-xs flex-[2]"></div>
-      <div class="flex gap-2"><input id="nav-name-1" placeholder="Button 2 Name" class="border p-1 rounded text-xs flex-1"><input id="nav-url-1" placeholder="https://..." class="border p-1 rounded text-xs flex-[2]"></div>
-      <div class="flex gap-2"><input id="nav-name-2" placeholder="Button 3 Name" class="border p-1 rounded text-xs flex-1"><input id="nav-url-2" placeholder="https://..." class="border p-1 rounded text-xs flex-[2]"></div>
-      <div class="flex gap-2"><input id="nav-name-3" placeholder="Button 4 Name" class="border p-1 rounded text-xs flex-1"><input id="nav-url-3" placeholder="https://..." class="border p-1 rounded text-xs flex-[2]"></div>
-      <div class="flex gap-2"><input id="nav-name-4" placeholder="Button 5 Name" class="border p-1 rounded text-xs flex-1"><input id="nav-url-4" placeholder="https://..." class="border p-1 rounded text-xs flex-[2]"></div>
-      <button onclick="saveNavLinks()" class="bg-black text-white px-4 py-1 rounded text-xs">Save Links</button>
+    <div id="nav-edit" class="hidden mt-3 bg-zinc-50 p-3 rounded-xl grid grid-cols-1 md:grid-cols-2 gap-2">
+      <div class="flex gap-2"><input id="nav-name-0" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-0" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
+      <div class="flex gap-2"><input id="nav-name-1" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-1" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
+      <div class="flex gap-2"><input id="nav-name-2" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-2" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
+      <div class="flex gap-2"><input id="nav-name-3" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-3" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
+      <div class="flex gap-2"><input id="nav-name-4" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-4" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
+      <button onclick="saveNavLinks()" class="bg-black text-white px-4 py-1.5 rounded-full text-xs w-fit">Save Links</button>
     </div>
   </div>
 
-  <!-- SUPABASE CONFIG -->
-  <div class="bg-yellow-50 border border-yellow-300 rounded-xl p-4 mb-4">
-    <h2 class="font-bold mb-2">⚙️ Supabase Connection (1x einrichten)</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-      <input id="sb-url" placeholder="https://xyz.supabase.co" class="border p-2 rounded text-sm" />
-      <input id="sb-key" placeholder="anon key eyJ..." class="border p-2 rounded text-sm" type="password" />
-      <div class="flex gap-2">
-        <button onclick="saveSupabaseConfig()" class="bg-black text-white px-4 py-2 rounded text-sm">Save & Connect</button>
-        <button onclick="testConnection()" class="bg-white border px-4 py-2 rounded text-sm">Test</button>
-      </div>
+  <!-- SUPABASE -->
+  <div class="bg-yellow-50 border border-yellow-200 rounded-[16px] p-3 mb-4">
+    <div class="flex flex-wrap gap-2 items-center">
+      <span class="text-xs font-bold">⚙️ Supabase (1x einrichten):</span>
+      <input id="sb-url" placeholder="https://xyz.supabase.co" class="border p-1.5 rounded-full text-xs flex-1 min-w-[200px] bg-white px-3">
+      <input id="sb-key" placeholder="anon key eyJ..." class="border p-1.5 rounded-full text-xs flex-1 min-w-[200px] bg-white px-3" type="password">
+      <button onclick="saveSupabaseConfig()" class="bg-black text-white px-4 py-1.5 rounded-full text-xs">Save & Connect</button>
+      <button onclick="testConnection()" class="bg-white border px-4 py-1.5 rounded-full text-xs">Test</button>
+      <span id="sb-status" class="text-[11px] text-zinc-600">Not connected - localStorage only</span>
     </div>
-    <div id="sb-status" class="mt-2 text-sm text-gray-600">Not connected - using localStorage only</div>
-    <details class="mt-2 text-xs">
-      <summary class="cursor-pointer">How to get URL + Key?</summary>
-      <p class="mt-1">Supabase -> Project Settings (gear) -> API -> Copy Project URL and anon public key</p>
-      <p class="mt-1 font-mono text-[10px] bg-white p-2 rounded">SQL once in SQL Editor: see migration.sql file I sent you. Buckets: sack-bilder + reis-detail-bilder (Public ON)</p>
-    </details>
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+  <div class="grid grid-cols-12 gap-4">
     <!-- LIST -->
-    <div class="bg-white rounded-xl shadow p-4">
-      <div class="flex justify-between mb-3">
-        <h3 class="font-bold">Articles</h3>
-        <button onclick="newArticle()" class="bg-black text-white px-3 py-1 rounded text-sm">+ New</button>
+    <div class="col-span-12 lg:col-span-3 bg-white rounded-[20px] shadow-sm border p-4 h-fit sticky top-4">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="font-display font-semibold" id="lbl-articles">Articles</h3>
+        <button onclick="newArticle()" class="bg-black text-white px-3 py-1.5 rounded-full text-xs" id="btn-new">+ New 001</button>
       </div>
-      <input id="search" placeholder="Search..." class="w-full border p-2 rounded mb-3 text-sm" oninput="renderList()" />
-      <div id="list" class="space-y-2 max-h-[70vh] overflow-auto"></div>
+      <input id="search" placeholder="Search..." class="w-full border rounded-full px-3 py-2 text-sm mb-3 bg-zinc-50" oninput="renderList()">
+      <div id="list" class="space-y-2 max-h-[70vh] overflow-auto pr-1"></div>
     </div>
 
     <!-- FORM -->
-    <div class="lg:col-span-2 bg-white rounded-xl shadow p-4">
-      <div id="form">
-        <p class="text-gray-400 text-center py-20">Select article or create new</p>
-      </div>
+    <div class="col-span-12 lg:col-span-9 bg-white rounded-[20px] shadow-sm border p-5">
+      <div id="form"></div>
     </div>
   </div>
 
-  <div id="toast" class="fixed bottom-4 right-4 bg-black text-white px-4 py-2 rounded hidden"></div>
+  <div id="toast" class="fixed bottom-4 right-4 bg-zinc-900 text-white px-4 py-2 rounded-full text-sm hidden shadow-lg z-50"></div>
 </div>
 
 <script>
-
-function openLink(i){
-  const link = navLinks[i]
-  if(link && link.url){
-    window.open(link.url, '_blank')
-  } else {
-    showToast('Kein Link gesetzt für ' + link.name + ' - klick auf Edit Links')
-    toggleNavEdit()
-  }
-}
-function toggleNavEdit(){
-  const el = document.getElementById('nav-edit')
-  el.classList.toggle('hidden')
-  // fill inputs
-  for(let i=0;i<5;i++){
-    document.getElementById('nav-name-'+i).value = navLinks[i]?.name || ''
-    document.getElementById('nav-url-'+i).value = navLinks[i]?.url || ''
-  }
-}
-function saveNavLinks(){
-  for(let i=0;i<5;i++){
-    navLinks[i] = {
-      name: document.getElementById('nav-name-'+i).value || ('Button '+(i+1)),
-      url: document.getElementById('nav-url-'+i).value || ''
-    }
-    document.getElementById('nav-label-'+i).textContent = navLinks[i].name
-  }
-  localStorage.setItem('navLinks', JSON.stringify(navLinks))
-  document.getElementById('nav-edit').classList.add('hidden')
-  showToast('Links gespeichert')
-}
-function loadNavLabels(){
-  for(let i=0;i<5;i++){
-    const lbl = document.getElementById('nav-label-'+i)
-    if(lbl && navLinks[i]) lbl.textContent = navLinks[i].name
-  }
-}
-
+let navLinks = JSON.parse(localStorage.getItem('navLinks') || '[{"name":"Preisliste","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Pricelist.html"},{"name":"Shop","url":""},{"name":"Katalog","url":""},{"name":"Website","url":""},{"name":"Supabase","url":"https://supabase.com"}]')
 let lang = localStorage.getItem('lang') || 'EN'
-let articles = JSON.parse(localStorage.getItem('kingfields_articles_en_tl_final') || '[]')
+let articles = JSON.parse(localStorage.getItem('kingfields_full_v3') || '[]')
 let current = null
 let sbClient = null
-let bildSackFile = null
-let bildSackBase64 = null
-let bildReisBase64 = null
-let zoom = 1, panX=0, panY=0, isRound=false
+let bildSackFile=null, bildSackBase64=null, bildReisBase64=null
+let zoom=1, panX=0, panY=0, isRound=false
 
-// Load Supabase config
-const savedConf = JSON.parse(localStorage.getItem('supabase_config') || '{}')
-if(savedConf.url) document.getElementById('sb-url').value = savedConf.url
-if(savedConf.key) document.getElementById('sb-key').value = savedConf.key
+const savedConf = JSON.parse(localStorage.getItem('supabase_config')||'{}')
+if(savedConf.url) document.getElementById('sb-url').value=savedConf.url
+if(savedConf.key) document.getElementById('sb-key').value=savedConf.key
 if(savedConf.url && savedConf.key) initSupabase(savedConf.url, savedConf.key)
 
-function initSupabase(url, key) {
-  try {
-    sbClient = supabase.createClient(url, key)
-    document.getElementById('sb-status').innerHTML = '✅ Connected: ' + url + ' | Images will upload to Supabase and get real URLs'
-    document.getElementById('sb-status').className = 'mt-2 text-sm text-green-700'
-    return true
-  } catch(e) {
-    document.getElementById('sb-status').innerHTML = '❌ Error: ' + e.message
-    return false
-  }
+function initSupabase(url,key){
+  try{ sbClient=supabase.createClient(url,key); document.getElementById('sb-status').innerHTML='✅ Connected '+url.substring(0,25)+'... | Real URLs active'; document.getElementById('sb-status').className='text-[11px] text-green-700'; return true }catch(e){ document.getElementById('sb-status').innerHTML='❌ '+e.message; return false }
 }
+function saveSupabaseConfig(){ const url=document.getElementById('sb-url').value.trim(), key=document.getElementById('sb-key').value.trim(); if(!url||!key) return showToast('URL + Key eingeben'); localStorage.setItem('supabase_config', JSON.stringify({url,key})); initSupabase(url,key); showToast('Saved & Connected') }
+async function testConnection(){ const url=document.getElementById('sb-url').value.trim(), key=document.getElementById('sb-key').value.trim(); if(!url||!key) return showToast('URL + Key first'); const c=supabase.createClient(url,key); const {error}=await c.from('stammdaten').select('id').limit(1); if(error) showToast('Test failed: '+error.message); else showToast('✅ Table exists') }
+function openLink(i){ const l=navLinks[i]; if(l&&l.url) window.open(l.url,'_blank'); else { showToast('Kein Link für '+l.name); toggleNavEdit() } }
+function toggleNavEdit(){ const el=document.getElementById('nav-edit'); el.classList.toggle('hidden'); for(let i=0;i<5;i++){ document.getElementById('nav-name-'+i).value=navLinks[i]?.name||''; document.getElementById('nav-url-'+i).value=navLinks[i]?.url||'' } }
+function saveNavLinks(){ for(let i=0;i<5;i++){ navLinks[i]={name:document.getElementById('nav-name-'+i).value||('Button '+(i+1)), url:document.getElementById('nav-url-'+i).value||''}; document.getElementById('nav-label-'+i).textContent=navLinks[i].name } localStorage.setItem('navLinks', JSON.stringify(navLinks)); document.getElementById('nav-edit').classList.add('hidden'); showToast('Links gespeichert') }
+function loadNavLabels(){ for(let i=0;i<5;i++){ const lbl=document.getElementById('nav-label-'+i); if(lbl&&navLinks[i]) lbl.textContent=navLinks[i].name } }
 
-function saveSupabaseConfig(){
-  const url = document.getElementById('sb-url').value.trim()
-  const key = document.getElementById('sb-key').value.trim()
-  if(!url || !key) return showToast('Enter URL + Key')
-  localStorage.setItem('supabase_config', JSON.stringify({url, key}))
-  initSupabase(url, key)
-  showToast('Saved & Connected')
-}
+function t(en,tl,de){ if(lang==='EN') return en; if(lang==='TL') return tl; return de }
 
-async function testConnection(){
-  const url = document.getElementById('sb-url').value.trim()
-  const key = document.getElementById('sb-key').value.trim()
-  if(!url || !key) return showToast('Enter URL + Key first')
-  const client = supabase.createClient(url, key)
-  const { data, error } = await client.from('stammdaten').select('id').limit(1)
-  if(error) showToast('Test failed: ' + error.message)
-  else showToast('✅ Connection OK, table exists')
-}
+function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'),3500) }
 
-function setLang(l){
-  lang = l
-  localStorage.setItem('lang', l)
-  document.querySelectorAll('[id^=btn-]').forEach(b=>b.className='px-3 py-1 rounded bg-gray-200')
-  document.getElementById('btn-'+l.toLowerCase()).className='px-3 py-1 rounded bg-black text-white'
-  if(current) renderForm()
-}
-
-function showToast(msg){
-  const t=document.getElementById('toast')
-  t.textContent=msg
-  t.classList.remove('hidden')
-  setTimeout(()=>t.classList.add('hidden'),3000)
-}
-
-function getNextArtNr(){
-  // Find highest 3-digit number in existing articles
-  let max = 0
-  articles.forEach(a=>{
-    const num = parseInt((a.artikelnummer||'').replace(/\D/g,'')) || 0
-    if(num > max) max = num
-  })
-  const next = max + 1
-  return String(next).padStart(3,'0') // 001, 002...
-}
+function getNextArtNr(){ let max=0; articles.forEach(a=>{ const n=parseInt((a.artikelnummer||'').replace(/\D/g,''))||0; if(n>max) max=n }); return String(max+1).padStart(3,'0') }
 
 function newArticle(){
-  const nextNr = getNextArtNr()
-  current = { id: Date.now().toString(), artikelnummer: nextNr, nameKurz:'', brand:'', gewicht:'', status:'Draft', sloganEn:'Thai Soft Rice - Premium Quality', sloganTl:'De Kalidad na Bigas - Malambot at Mabango', shortEn:'Sweet aroma, soft texture', shortTl:'Mabango at malambot', storyEn:'Premium Hasmin rice from Thailand', storyTl:'Premium na Hasmin bigas mula sa Thailand', tasteEn:'Soft & Fragrant', tasteTl:'Malambot at Mabango', originEn:'From the fields of Thailand', originTl:'Mula sa bukirin ng Thailand', cookingEn:'1 cup rice : 1.2 cup water', cookingTl:'1 tasa bigas : 1.2 tasa tubig', bildSackUrl:'', bildReisUrl:'' }
+  const nr=getNextArtNr()
+  current={
+    id:Date.now().toString(),
+    artikelnummer:nr,
+    nameKurz:'', nameLang:'', marke:'', sorte:'Hasmin', qualitaet:'Premium', herkunft:'Thailand', erntejahr:new Date().getFullYear(), gewicht:'5', einheit:'kg', distributor:'Kingfields Trade',
+    // Essen Eigenschaften
+    geschmackEn:'Soft, fluffy, fragrant', geschmackTl:'Malambot, mabango', geschmackDe:'Weich, fluffig, duftend',
+    aromaEn:'Natural jasmine aroma', aromaTl:'Natural na jasmine aroma', aromaDe:'Natürliches Jasmin Aroma',
+    texturEn:'Soft & slightly sticky', texturTl:'Malambot at medyo malagkit', texturDe:'Weich & leicht klebrig',
+    passtZuEn:'Curry, grilled meat, vegetables, adobo', passtZuTl:'Curry, inihaw na karne, gulay, adobo', passtZuDe:'Curry, Grillfleisch, Gemüse, Adobo',
+    kochmethodeEn:'1 cup rice : 1.2 cup water, 15 min', kochmethodeTl:'1 tasa bigas : 1.2 tasa tubig, 15 min', kochmethodeDe:'1 Tasse Reis : 1,2 Tasse Wasser, 15 Min',
+    // Marketing
+    sloganEn:'Thai Soft Rice - Premium Quality', sloganTl:'De Kalidad na Bigas', sloganDe:'Thai Duftreis - Premium Qualität',
+    shortEn:'Sweet aroma, soft texture', shortTl:'Mabango at malambot', shortDe:'Süßes Aroma, weiche Textur',
+    storyEn:'Premium Hasmin rice from Thailand, carefully selected', storyTl:'Premium na Hasmin bigas mula sa Thailand', storyDe:'Premium Hasmin Reis aus Thailand, sorgfältig ausgewählt',
+    tasteEn:'Soft & Fragrant', tasteTl:'Malambot at Mabango', tasteDe:'Weich & Duftend',
+    originEn:'From the fertile fields of Thailand', originTl:'Mula sa matabang bukirin ng Thailand', originDe:'Von den fruchtbaren Feldern Thailands',
+    cookingEn:'Rinse, 1:1.2 water, simmer 15 min', cookingTl:'Hugasan, 1:1.2 tubig, 15 min', cookingDe:'Waschen, 1:1,2 Wasser, 15 Min köcheln',
+    status:'Draft', bildSackUrl:'', bildReisUrl:'', bildSack:'', bildReis:''
+  }
   bildSackBase64=null; bildReisBase64=null; bildSackFile=null; zoom=1; panX=0; panY=0
-  renderForm()
-  showToast('New article ' + nextNr + ' created')
+  renderForm(); showToast('New article '+nr)
 }
 
 function renderList(){
-  const q = document.getElementById('search').value.toLowerCase()
-  const list = document.getElementById('list')
-  list.innerHTML = articles.filter(a => (a.artikelnummer + a.nameKurz).toLowerCase().includes(q)).map(a=>`
-    <div onclick="openArticle('${a.id}')" class="border rounded p-2 cursor-pointer hover:bg-gray-50 ${current && current.id===a.id ? 'bg-gray-100 border-black' : ''}">
+  const q=document.getElementById('search').value.toLowerCase()
+  const list=document.getElementById('list')
+  list.innerHTML=articles.filter(a=>(a.artikelnummer+' '+a.nameKurz+' '+a.marke).toLowerCase().includes(q)).map(a=>`
+    <div onclick="openArticle('${a.id}')" class="border rounded-[12px] p-2 cursor-pointer hover:bg-zinc-50 ${current&&current.id===a.id?'bg-zinc-100 border-zinc-900':''}">
       <div class="flex gap-2">
-        <div class="w-12 h-12 bg-gray-100 rounded overflow-hidden flex-shrink-0">${a.bildSackUrl ? `<img src="${a.bildSackUrl}" class="w-full h-full object-cover">` : (a.bildSack ? `<img src="${a.bildSack}" class="w-full h-full object-cover">` : '')}</div>
+        <div class="w-12 h-12 rounded-lg bg-zinc-100 overflow-hidden flex-shrink-0 chessboard">${a.bildSackUrl?`<img src="${a.bildSackUrl}" class="w-full h-full object-cover">`: (a.bildSack?`<img src="${a.bildSack}" class="w-full h-full object-cover">`:'')}</div>
         <div class="flex-1 min-w-0">
-          <div class="font-bold text-sm truncate">${a.artikelnummer || 'No ArtNr'} ${a.status==='Active' ? '<span class="bg-green-100 text-green-700 text-[10px] px-1 rounded">Active</span>' : '<span class="bg-gray-200 text-[10px] px-1 rounded">Draft</span>'}</div>
-          <div class="text-xs truncate">${a.nameKurz || ''}</div>
-          ${a.bildSackUrl ? '<div class="text-[10px] text-green-600">✓ Supabase URL</div>' : ''}
+          <div class="font-bold text-[13px] truncate">${a.artikelnummer||'???'} ${a.status==='Active'?'<span class="bg-green-100 text-green-700 text-[10px] px-1.5 py-0.5 rounded-full">Active</span>':'<span class="bg-zinc-200 text-[10px] px-1.5 py-0.5 rounded-full">Draft</span>'}</div>
+          <div class="text-[11px] truncate">${a.nameKurz||a.sorte||''} • ${a.marke||''}</div>
+          ${a.bildSackUrl?'<div class="text-[9px] text-green-600">✓ Supabase</div>':''}
         </div>
       </div>
     </div>
@@ -219,228 +155,228 @@ function renderList(){
 }
 
 function openArticle(id){
-  current = articles.find(a=>a.id===id)
-  bildSackBase64 = current.bildSack || null
-  bildReisBase64 = current.bildReis || null
-  zoom = current.bildReisZoom || 1
-  panX = current.bildReisPanX || 0
-  panY = current.bildReisPanY || 0
-  isRound = current.bildReisRund || false
+  current=articles.find(a=>a.id===id)
+  bildSackBase64=current.bildSack||null; bildReisBase64=current.bildReis||null; zoom=current.bildReisZoom||1; panX=current.bildReisPanX||0; panY=current.bildReisPanY||0; isRound=current.bildReisRund||false
   renderForm()
 }
 
-function base64ToBlob(base64){
-  const arr = base64.split(',')
-  const mime = arr[0].match(/:(.*?);/)[1]
-  const bstr = atob(arr[1])
-  let n = bstr.length
-  const u8arr = new Uint8Array(n)
-  while(n--) u8arr[n]=bstr.charCodeAt(n)
-  return new Blob([u8arr], {type:mime})
-}
+function base64ToBlob(b64){ const arr=b64.split(','), mime=arr[0].match(/:(.*?);/)[1], bstr=atob(arr[1]); let n=bstr.length; const u8=new Uint8Array(n); while(n--) u8[n]=bstr.charCodeAt(n); return new Blob([u8],{type:mime}) }
+function getCroppedBlob(){ return new Promise(res=>{ if(!bildReisBase64) return res(null); const c=document.createElement('canvas'); c.width=800; c.height=800; const ctx=c.getContext('2d'); if(isRound){ ctx.beginPath(); ctx.arc(400,400,400,0,Math.PI*2); ctx.clip() } const img=new Image(); img.onload=()=>{ const w=img.width*zoom, h=img.height*zoom, x=(800-w)/2+panX, y=(800-h)/2+panY; ctx.drawImage(img,x,y,w,h); c.toBlob(b=>res(b),'image/png',0.9) }; img.src=bildReisBase64 }) }
 
-function getCroppedBlob(){
-  return new Promise((resolve)=>{
-    if(!bildReisBase64) return resolve(null)
-    const canvas=document.createElement('canvas')
-    canvas.width=800; canvas.height=800
-    const ctx=canvas.getContext('2d')
-    if(isRound){ ctx.beginPath(); ctx.arc(400,400,400,0,Math.PI*2); ctx.clip() }
-    const img=new Image()
-    img.onload=()=>{
-      const imgW=img.width*zoom
-      const imgH=img.height*zoom
-      const x=(800-imgW)/2+panX
-      const y=(800-imgH)/2+panY
-      ctx.drawImage(img,x,y,imgW,imgH)
-      canvas.toBlob(b=>resolve(b),'image/png',0.9)
-    }
-    img.src=bildReisBase64
-  })
-}
-
-async function uploadToSupabase(artikelNr){
-  if(!sbClient) return {sackUrl: null, reisUrl: null}
-  let sackUrl = current.bildSackUrl || null
-  let reisUrl = current.bildReisUrl || null
-
+async function uploadToSupabase(artNr){
+  if(!sbClient) return {sackUrl: current.bildSackUrl||null, reisUrl: current.bildReisUrl||null}
+  let sackUrl=current.bildSackUrl||null, reisUrl=current.bildReisUrl||null
   try{
-    if(bildSackFile || bildSackBase64){
-      showToast('Uploading sack to Supabase...')
-      let blob = bildSackFile
-      if(!blob && bildSackBase64) blob = base64ToBlob(bildSackBase64)
-      const path = `${artikelNr}/sack.png`
-      const { error } = await sbClient.storage.from('sack-bilder').upload(path, blob, { upsert: true, contentType: 'image/png' })
-      if(error) throw error
-      sackUrl = sbClient.storage.from('sack-bilder').getPublicUrl(path).data.publicUrl
+    if(bildSackFile||bildSackBase64){
+      showToast('Uploading sack...')
+      let blob=bildSackFile; if(!blob&&bildSackBase64) blob=base64ToBlob(bildSackBase64)
+      const path=`${artNr}/sack.png`
+      const {error}=await sbClient.storage.from('sack-bilder').upload(path, blob, {upsert:true, contentType:'image/png'}); if(error) throw error
+      sackUrl=sbClient.storage.from('sack-bilder').getPublicUrl(path).data.publicUrl
     }
     if(bildReisBase64){
-      showToast('Uploading rice detail (cropped)...')
-      const cropped = await getCroppedBlob()
-      if(cropped){
-        const path = `${artikelNr}/reis-detail.png`
-        const { error } = await sbClient.storage.from('reis-detail-bilder').upload(path, cropped, { upsert: true, contentType: 'image/png' })
-        if(error) throw error
-        reisUrl = sbClient.storage.from('reis-detail-bilder').getPublicUrl(path).data.publicUrl
-      }
+      showToast('Uploading reis detail...')
+      const cropped=await getCroppedBlob()
+      if(cropped){ const path=`${artNr}/reis-detail.png`; const {error}=await sbClient.storage.from('reis-detail-bilder').upload(path,cropped,{upsert:true, contentType:'image/png'}); if(error) throw error; reisUrl=sbClient.storage.from('reis-detail-bilder').getPublicUrl(path).data.publicUrl }
     }
-    return { sackUrl, reisUrl }
-  }catch(e){
-    showToast('Upload error: '+e.message)
-    console.error(e)
-    return { sackUrl, reisUrl }
-  }
+    return {sackUrl, reisUrl}
+  }catch(e){ showToast('Upload error: '+e.message); console.error(e); return {sackUrl, reisUrl} }
 }
 
 async function saveCurrent(){
   if(!current) return
-  const artNr = document.getElementById('f-artnr').value.trim()
-  if(!artNr){ showToast('Article number required'); return }
+  const artNr=document.getElementById('f-artnr').value.trim()
+  if(!artNr){ showToast('Artikelnummer 001 nötig'); return }
 
-  current.artikelnummer = artNr
-  current.nameKurz = document.getElementById('f-name').value
-  current.brand = document.getElementById('f-brand').value
-  current.gewicht = document.getElementById('f-gewicht').value
-  if(lang==='EN'){
-    current.sloganEn = document.getElementById('f-slogan').value
-    current.shortEn = document.getElementById('f-short').value
-    current.storyEn = document.getElementById('f-story').value
-    current.tasteEn = document.getElementById('f-taste').value
-  } else if(lang==='TL'){
-    current.sloganTl = document.getElementById('f-slogan').value
-    current.shortTl = document.getElementById('f-short').value
-    current.storyTl = document.getElementById('f-story').value
-    current.tasteTl = document.getElementById('f-taste').value
-  }
-  current.status = artNr ? 'Active' : 'Draft'
-  current.bildSack = bildSackBase64
-  current.bildReis = bildReisBase64
-  current.bildReisZoom = zoom
-  current.bildReisPanX = panX
-  current.bildReisPanY = panY
-  current.bildReisRund = isRound
-
-  // If Supabase connected -> upload and get real URLs
-  if(sbClient){
-    const urls = await uploadToSupabase(artNr)
-    if(urls.sackUrl) current.bildSackUrl = urls.sackUrl
-    if(urls.reisUrl) current.bildReisUrl = urls.reisUrl
-
-    // Save to Supabase table
-    showToast('Saving to database...')
-    const payload = {
-      artikelnummer: artNr,
-      name_kurz: current.nameKurz,
-      marke: current.brand,
-      gewicht: current.gewicht ? parseFloat(current.gewicht) : null,
-      marketing: { en: { slogan: current.sloganEn, short: current.shortEn, story: current.storyEn, taste: current.tasteEn }, tl: { slogan: current.sloganTl, short: current.shortTl, story: current.storyTl, taste: current.tasteTl } },
-      bild_sack_url: current.bildSackUrl,
-      bild_reis_url: current.bildReisUrl,
-      status: 'Active'
+  // Collect all fields
+  const fields=['nameKurz','nameLang','marke','sorte','qualitaet','herkunft','erntejahr','gewicht','einheit','distributor','geschmack','aroma','textur','passtZu','kochmethode','slogan','short','story','taste','origin','cooking']
+  fields.forEach(f=>{
+    const el=document.getElementById('f-'+f)
+    if(el){
+      if(lang==='EN') current[f+'En']=el.value
+      else if(lang==='TL') current[f+'Tl']=el.value
+      else current[f+'De']=el.value
+      // Also keep generic for backward
+      if(['nameKurz','marke','sorte','gewicht'].includes(f)) current[f]=el.value
     }
-    const { error } = await sbClient.from('stammdaten').upsert(payload, { onConflict: 'artikelnummer' })
-    if(error){ showToast('DB error: '+error.message); console.error(error) }
-    else showToast('✅ Saved to Supabase! URL: '+ (current.bildSackUrl||'').substring(0,30)+'...')
+  })
+  // Non-lang fields
+  current.artikelnummer=artNr
+  current.nameKurz=document.getElementById('f-nameKurz').value
+  current.nameLang=document.getElementById('f-nameLang').value
+  current.marke=document.getElementById('f-marke').value
+  current.sorte=document.getElementById('f-sorte').value
+  current.qualitaet=document.getElementById('f-qualitaet').value
+  current.herkunft=document.getElementById('f-herkunft').value
+  current.erntejahr=document.getElementById('f-erntejahr').value
+  current.gewicht=document.getElementById('f-gewicht').value
+  current.einheit=document.getElementById('f-einheit').value
+  current.status=artNr?'Active':'Draft'
+  current.bildSack=bildSackBase64
+  current.bildReis=bildReisBase64
+  current.bildReisZoom=zoom; current.bildReisPanX=panX; current.bildReisPanY=panY; current.bildReisRund=isRound
+
+  if(sbClient){
+    const urls=await uploadToSupabase(artNr)
+    if(urls.sackUrl) current.bildSackUrl=urls.sackUrl
+    if(urls.reisUrl) current.bildReisUrl=urls.reisUrl
+    showToast('Saving to DB...')
+    const payload={
+      artikelnummer:artNr,
+      name_kurz:current.nameKurz,
+      name_lang:current.nameLang,
+      marke:current.marke,
+      sorte:current.sorte,
+      qualitaet:current.qualitaet,
+      herkunft:current.herkunft,
+      erntejahr:current.erntejahr,
+      gewicht:current.gewicht,
+      einheit:current.einheit,
+      marketing:{
+        en:{geschmack:current.geschmackEn, aroma:current.aromaEn, textur:current.texturEn, passtZu:current.passtZuEn, kochmethode:current.kochmethodeEn, slogan:current.sloganEn, short:current.shortEn, story:current.storyEn, taste:current.tasteEn, origin:current.originEn, cooking:current.cookingEn},
+        tl:{geschmack:current.geschmackTl, aroma:current.aromaTl, textur:current.texturTl, passtZu:current.passtZuTl, kochmethode:current.kochmethodeTl, slogan:current.sloganTl, short:current.shortTl, story:current.storyTl, taste:current.tasteTl, origin:current.originTl, cooking:current.cookingTl},
+        de:{geschmack:current.geschmackDe, aroma:current.aromaDe, textur:current.texturDe, passtZu:current.passtZuDe, kochmethode:current.kochmethodeDe, slogan:current.sloganDe, short:current.shortDe, story:current.storyDe, taste:current.tasteDe, origin:current.originDe, cooking:current.cookingDe}
+      },
+      bild_sack_url:current.bildSackUrl,
+      bild_reis_url:current.bildReisUrl,
+      status:'Active'
+    }
+    const {error}=await sbClient.from('stammdaten').upsert(payload,{onConflict:'artikelnummer'})
+    if(error) showToast('DB error: '+error.message)
+    else showToast('✅ Gespeichert: '+artNr+' mit echten URLs')
   } else {
-    showToast('Saved locally (connect Supabase for real URLs)')
+    showToast('Lokal gespeichert (Supabase verbinden für echte URLs)')
   }
 
-  // Save to localStorage as backup
-  const idx = articles.findIndex(a=>a.id===current.id)
-  if(idx>=0) articles[idx]=current
-  else articles.push(current)
-  localStorage.setItem('kingfields_articles_en_tl_final', JSON.stringify(articles))
+  const idx=articles.findIndex(a=>a.id===current.id)
+  if(idx>=0) articles[idx]=current; else articles.push(current)
+  localStorage.setItem('kingfields_full_v3', JSON.stringify(articles))
   renderList()
 }
 
 function renderForm(){
-  if(!current){ document.getElementById('form').innerHTML='<p class="text-gray-400 text-center py-20">Select article</p>'; return }
-  const t = (en, tl, de) => lang==='EN' ? en : lang==='TL' ? tl : de
-  document.getElementById('form').innerHTML = `
-    <div class="space-y-4">
-      <div class="grid grid-cols-2 gap-3">
-        <div><label class="text-xs">Article Number * 3-digit (001,002...) - auto Active</label><input id="f-artnr" value="${current.artikelnummer||''}" class="w-full border p-2 rounded text-sm"></div>
-        <div><label class="text-xs">Brand</label><input id="f-brand" value="${current.brand||''}" class="w-full border p-2 rounded text-sm"></div>
-        <div><label class="text-xs">Product Name Short</label><input id="f-name" value="${current.nameKurz||''}" class="w-full border p-2 rounded text-sm"></div>
-        <div><label class="text-xs">Weight</label><input id="f-gewicht" value="${current.gewicht||''}" class="w-full border p-2 rounded text-sm"></div>
+  if(!current){ document.getElementById('form').innerHTML=`<div class="text-center py-20 text-zinc-400"><div class="font-display text-xl mb-2">${t('Select article','Pumili ng article','Artikel wählen')}</div><p class="text-sm mb-4">${t('Or create new with 001','Or gumawa ng bago','Oder neu mit 001 erstellen')}</p><button onclick="newArticle()" class="bg-black text-white px-6 py-2 rounded-full text-sm">+ New ${getNextArtNr()}</button></div>`; return }
+
+  const val = (fieldBase) => {
+    if(lang==='EN') return current[fieldBase+'En']||''
+    if(lang==='TL') return current[fieldBase+'Tl']||''
+    return current[fieldBase+'De']||''
+  }
+
+  document.getElementById('form').innerHTML=`
+    <div class="space-y-6">
+      <!-- Technical -->
+      <div>
+        <h3 class="font-display font-semibold text-[16px] mb-3">${t('Technical Data','Teknikal na Data','Technische Daten')} • ${current.status} • ${lang}</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div><label class="text-[11px] font-medium text-zinc-500">${t('Article Nr * 001','Article Nr * 001','Artikel Nr * 001')}</label><input id="f-artnr" value="${current.artikelnummer||''}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
+          <div><label class="text-[11px] text-zinc-500">${t('Brand','Brand','Marke')}</label><input id="f-marke" value="${current.marke||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
+          <div><label class="text-[11px] text-zinc-500">${t('Short Name','Maikling Pangalan','Kurz Name')}</label><input id="f-nameKurz" value="${current.nameKurz||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
+          <div><label class="text-[11px] text-zinc-500">${t('Long Name','Mahabang Pangalan','Lang Name')}</label><input id="f-nameLang" value="${current.nameLang||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
+          <div><label class="text-[11px] text-zinc-500">${t('Variety','Variety','Sorte')}</label><input id="f-sorte" value="${current.sorte||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
+          <div><label class="text-[11px] text-zinc-500">${t('Quality','Kalidad','Qualität')}</label><select id="f-qualitaet" class="w-full border rounded-full px-3 py-2 text-sm"><option>Premium</option><option>Standard</option><option>Organic</option><option>Bio</option></select></div>
+          <div><label class="text-[11px] text-zinc-500">${t('Origin','Pinagmulan','Herkunft')}</label><input id="f-herkunft" value="${current.herkunft||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
+          <div><label class="text-[11px] text-zinc-500">${t('Harvest Year','Taon ng Ani','Erntejahr')}</label><input id="f-erntejahr" value="${current.erntejahr||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
+          <div><label class="text-[11px] text-zinc-500">${t('Weight','Timbang','Gewicht')}</label><input id="f-gewicht" value="${current.gewicht||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
+          <div><label class="text-[11px] text-zinc-500">${t('Unit','Yunit','Einheit')}</label><input id="f-einheit" value="${current.einheit||'kg'}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
+          <div class="col-span-2"><label class="text-[11px] text-zinc-500">Distributor</label><input id="f-distributor" value="${current.distributor||'Kingfields Trade'}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
+        </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-4">
-        <!-- Sack -->
+      <!-- Images -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="text-xs font-bold">1. Sack (transparent)</label>
-          <div id="drop-sack" class="chessboard border-2 border-dashed rounded h-64 flex items-center justify-center relative overflow-hidden cursor-pointer" onclick="document.getElementById('file-sack').click()">
-            ${bildSackBase64 ? `<img src="${bildSackBase64}" class="max-w-full max-h-full object-contain">` : '<span class="text-xs bg-white p-1 rounded">Click / Drop image</span>'}
+          <label class="text-xs font-bold">${t('1. Sack Image (transparent)','1. Sako Larawan','1. Sack Bild (transparent)')}</label>
+          <div id="drop-sack" class="chessboard border-2 border-dashed rounded-[16px] h-[320px] flex items-center justify-center relative overflow-hidden cursor-pointer mt-1" onclick="document.getElementById('file-sack').click()">
+            ${bildSackBase64?`<img src="${bildSackBase64}" class="max-w-full max-h-full object-contain">`:`<div class="bg-white px-3 py-1 rounded-full text-xs shadow">${t('Click / Drop sack image','I-click / I-drop sako','Klick / Drop Sack Bild')}</div>`}
           </div>
           <input id="file-sack" type="file" accept="image/*" class="hidden" onchange="handleSackFile(this)">
-          ${current.bildSackUrl ? `<div class="text-[10px] text-green-600 mt-1 truncate">URL: ${current.bildSackUrl}</div>` : ''}
+          ${current.bildSackUrl?`<div class="text-[10px] text-green-600 mt-1 truncate">URL: ${current.bildSackUrl}</div>`:''}
         </div>
-        <!-- Reis -->
         <div>
-          <label class="text-xs font-bold">2. Loose Rice - ${t('Zoom & Drag to crop','I-zoom at i-drag','Zoomen & Ziehen')}</label>
-          <div class="flex gap-2 mb-1">
-            <input type="range" min="0.5" max="3" step="0.1" value="${zoom}" oninput="zoom=parseFloat(this.value); updateReisPreview()" class="flex-1">
-            <button onclick="isRound=!isRound; updateReisPreview()" class="text-xs border px-2 rounded">${isRound ? 'Round' : 'Square'}</button>
-            <button onclick="panX=0;panY=0;zoom=1;updateReisPreview()" class="text-xs border px-2 rounded">Reset</button>
+          <div class="flex justify-between items-center">
+            <label class="text-xs font-bold">${t('2. Loose Rice Detail (crop)','2. Detalyeng Bigas','2. Loser Reis Detail (Zuschneiden)')}</label>
+            <div class="flex gap-1">
+              <input type="range" min="0.5" max="3" step="0.1" value="${zoom}" oninput="zoom=parseFloat(this.value); updateReisPreview()" class="w-20">
+              <button onclick="isRound=!isRound; updateReisPreview()" class="text-[10px] border px-2 py-0.5 rounded-full bg-white">${isRound?'Round':'Square'}</button>
+              <button onclick="panX=0;panY=0;zoom=1;updateReisPreview()" class="text-[10px] border px-2 py-0.5 rounded-full bg-white">Reset</button>
+            </div>
           </div>
-          <div id="drop-reis" class="border-2 border-dashed rounded h-64 flex items-center justify-center relative overflow-hidden bg-gray-100 cursor-pointer" onclick="document.getElementById('file-reis').click()" onmousedown="startDrag(event)">
-            ${bildReisBase64 ? `<img id="reis-img" src="${bildReisBase64}" style="transform: translate(${panX}px, ${panY}px) scale(${zoom}); ${isRound ? 'border-radius:50%' : ''}" class="max-w-full max-h-full object-contain pointer-events-none">` : '<span class="text-xs bg-white p-1 rounded">Click / Drop image</span>'}
+          <div id="drop-reis" class="border-2 border-dashed rounded-[16px] h-[320px] flex items-center justify-center relative overflow-hidden bg-zinc-100 cursor-pointer mt-1" onclick="document.getElementById('file-reis').click()" onmousedown="startDrag(event)">
+            ${bildReisBase64?`<img id="reis-img" src="${bildReisBase64}" style="transform: translate(${panX}px, ${panY}px) scale(${zoom}); ${isRound?'border-radius:50%':''}" class="max-w-full max-h-full object-contain pointer-events-none">`:`<div class="bg-white px-3 py-1 rounded-full text-xs shadow">${t('Click / Drop rice image','I-click bigas','Klick Reis Bild')}</div>`}
           </div>
           <input id="file-reis" type="file" accept="image/*" class="hidden" onchange="handleReisFile(this)">
-          ${current.bildReisUrl ? `<div class="text-[10px] text-green-600 mt-1 truncate">URL: ${current.bildReisUrl}</div>` : ''}
+          ${current.bildReisUrl?`<div class="text-[10px] text-green-600 mt-1 truncate">URL: ${current.bildReisUrl}</div>`:''}
         </div>
       </div>
 
-      <div class="bg-gray-50 p-3 rounded">
-        <h4 class="font-bold text-sm mb-2">Marketing - ${lang} (${t('English','Tagalog','Deutsch')})</h4>
-        <div class="space-y-2">
-          <input id="f-slogan" value="${lang==='EN' ? (current.sloganEn||'') : lang==='TL' ? (current.sloganTl||'') : (current.sloganEn||'')}" placeholder="${t('Slogan EN','Slogan TL','Slogan')}" class="w-full border p-2 rounded text-sm">
-          <input id="f-short" value="${lang==='EN' ? (current.shortEn||'') : lang==='TL' ? (current.shortTl||'') : ''}" placeholder="${t('Short Desc EN','Maikling Paglalarawan TL','Kurz DE')}" class="w-full border p-2 rounded text-sm">
-          <textarea id="f-story" placeholder="${t('Long Story EN','Mahabang Kwento TL','Story')}" class="w-full border p-2 rounded text-sm h-20">${lang==='EN' ? (current.storyEn||'') : lang==='TL' ? (current.storyTl||'') : ''}</textarea>
-          <input id="f-taste" value="${lang==='EN' ? (current.tasteEn||'') : lang==='TL' ? (current.tasteTl||'') : ''}" placeholder="${t('Taste: Soft & Fragrant','Lasa: Malambot at Mabango','Geschmack')}" class="w-full border p-2 rounded text-sm">
+      <!-- Food Properties - ESSEN -->
+      <div class="bg-amber-50 border border-amber-200 rounded-[16px] p-4">
+        <h3 class="font-display font-semibold text-[14px] mb-3">🍚 ${t('Food Properties - What it goes well with','Katangian ng Pagkain - Bagay sa','Lebensmittel Eigenschaften - Passt zu')} • ${lang}</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div><label class="text-[11px] font-medium">${t('Taste / Flavor','Lasa','Geschmack')}</label><input id="f-geschmack" value="${val('geschmack')}" placeholder="${t('Soft, fluffy, fragrant','Malambot, mabango','Weich, fluffig, duftend')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
+          <div><label class="text-[11px] font-medium">${t('Aroma','Aroma','Aroma')}</label><input id="f-aroma" value="${val('aroma')}" placeholder="${t('Natural jasmine','Natural jasmine','Natürliches Jasmin')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
+          <div><label class="text-[11px] font-medium">${t('Texture','Texture','Textur')}</label><input id="f-textur" value="${val('textur')}" placeholder="${t('Soft & slightly sticky','Malambot at medyo malagkit','Weich & leicht klebrig')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
+          <div><label class="text-[11px] font-medium">${t('Cooking Method','Paraan ng Pagluluto','Kochmethode')}</label><input id="f-kochmethode" value="${val('kochmethode')}" placeholder="${t('1:1.2 water 15min','1:1.2 tubig 15min','1:1,2 Wasser 15Min')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
+          <div class="md:col-span-2"><label class="text-[11px] font-medium">${t('Pairs well with / Passt zu','Bagay sa / Passt zu','Passt gut zu / Pairs with')}</label><input id="f-passtZu" value="${val('passtZu')}" placeholder="${t('Curry, grilled meat, vegetables, adobo, fish','Curry, inihaw, gulay, adobo','Curry, Grillfleisch, Gemüse, Adobo, Fisch')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
         </div>
+      </div>
+
+      <!-- Marketing per Language -->
+      <div class="bg-zinc-50 border rounded-[16px] p-4">
+        <h3 class="font-display font-semibold text-[14px] mb-3">📢 ${t('Marketing Texts','Mga Teksto sa Marketing','Marketing Texte')} • ${lang} (${t('English','Tagalog','German')})</h3>
+        <div class="grid grid-cols-1 gap-3">
+          <div><label class="text-[11px]">Slogan (${lang})</label><input id="f-slogan" value="${val('slogan')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
+          <div><label class="text-[11px]">Short Desc (${lang})</label><input id="f-short" value="${val('short')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
+          <div><label class="text-[11px]">Long Story (${lang})</label><textarea id="f-story" class="w-full border rounded-[12px] px-3 py-2 text-sm bg-white h-20">${val('story')}</textarea></div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div><label class="text-[11px]">Taste Tag (${lang})</label><input id="f-taste" value="${val('taste')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
+            <div><label class="text-[11px]">Origin Text (${lang})</label><input id="f-origin" value="${val('origin')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
+            <div><label class="text-[11px]">Cooking Tip (${lang})</label><input id="f-cooking" value="${val('cooking')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
+          </div>
+        </div>
+        <p class="text-[10px] text-zinc-500 mt-2">${t('Switch EN/TL/DE on top to edit each language. All 3 languages are saved.','Magpalit ng EN/TL/DE sa itaas. Lahat ng wika ay sine-save.','Oben EN/TL/DE umschalten um jede Sprache zu bearbeiten. Alle 3 Sprachen werden gespeichert.')}</p>
       </div>
 
       <div class="flex gap-2">
-        <button onclick="saveCurrent()" class="flex-1 bg-black text-white py-2 rounded font-bold">💾 Save ${sbClient ? 'to Supabase (real URL)' : '(local only)'}</button>
-        <button onclick="deleteCurrent()" class="bg-red-100 text-red-600 px-4 py-2 rounded">Delete</button>
+        <button onclick="saveCurrent()" class="flex-1 bg-black text-white py-3 rounded-full font-bold text-sm">💾 ${t('Save to Supabase (real URLs)','I-save sa Supabase','In Supabase speichern (echte URLs)')} ${sbClient?'':'(local only)'}</button>
+        <button onclick="deleteCurrent()" class="bg-red-50 text-red-600 border border-red-200 px-6 py-3 rounded-full text-sm">Delete</button>
       </div>
-      <div class="text-[10px] text-gray-500">Status: ${current.status} | If Article Number filled -> auto Active. With Supabase connected, images upload directly from tablet to storage and you get real https://... URLs.</div>
+      <div class="text-[10px] text-zinc-400 text-center">${t('Article number 001 makes it Active. With Supabase connected, images upload directly and you get real https://... URLs.','Ang article number 001 ay nagiging Active. Sa Supabase, direkt upload.','Artikelnummer 001 macht Active. Mit Supabase verbunden werden Bilder direkt hochgeladen mit echten https://... URLs.')}</div>
     </div>
   `
+  document.getElementById('f-qualitaet').value=current.qualitaet||'Premium'
 }
 
-function handleSackFile(input){
-  const file=input.files[0]
-  if(!file) return
-  bildSackFile=file
-  const reader=new FileReader()
-  reader.onload=e=>{ bildSackBase64=e.target.result; renderForm() }
-  reader.readAsDataURL(file)
-}
-function handleReisFile(input){
-  const file=input.files[0]
-  if(!file) return
-  const reader=new FileReader()
-  reader.onload=e=>{ bildReisBase64=e.target.result; renderForm() }
-  reader.readAsDataURL(file)
-}
-function updateReisPreview(){
-  const img=document.getElementById('reis-img')
-  if(img){ img.style.transform=`translate(${panX}px, ${panY}px) scale(${zoom})`; img.style.borderRadius=isRound?'50%':'' }
-}
+function handleSackFile(input){ const file=input.files[0]; if(!file) return; bildSackFile=file; const r=new FileReader(); r.onload=e=>{ bildSackBase64=e.target.result; renderForm() }; r.readAsDataURL(file) }
+function handleReisFile(input){ const file=input.files[0]; if(!file) return; const r=new FileReader(); r.onload=e=>{ bildReisBase64=e.target.result; renderForm() }; r.readAsDataURL(file) }
+function updateReisPreview(){ const img=document.getElementById('reis-img'); if(img){ img.style.transform=`translate(${panX}px, ${panY}px) scale(${zoom})`; img.style.borderRadius=isRound?'50%':'' } }
 let dragging=false, startX, startY
 function startDrag(e){ dragging=true; startX=e.clientX-panX; startY=e.clientY-panY; window.addEventListener('mousemove', onDrag); window.addEventListener('mouseup', stopDrag) }
 function onDrag(e){ if(!dragging) return; panX=e.clientX-startX; panY=e.clientY-startY; updateReisPreview() }
 function stopDrag(){ dragging=false; window.removeEventListener('mousemove', onDrag); window.removeEventListener('mouseup', stopDrag) }
+function deleteCurrent(){ if(!confirm('Delete '+current.artikelnummer+'?')) return; articles=articles.filter(a=>a.id!==current.id); localStorage.setItem('kingfields_full_v3', JSON.stringify(articles)); current=null; renderList(); renderForm(); showToast('Deleted') }
 
-function deleteCurrent(){
-  if(!confirm('Delete?')) return
-  articles=articles.filter(a=>a.id!==current.id)
-  localStorage.setItem('kingfields_articles_en_tl_final', JSON.stringify(articles))
-  current=null
-  renderList()
-  renderForm()
+function setLang(l){
+  // Before switching, save current lang fields
+  if(current){
+    const fields=['geschmack','aroma','textur','passtZu','kochmethode','slogan','short','story','taste','origin','cooking']
+    fields.forEach(f=>{
+      const el=document.getElementById('f-'+f)
+      if(el){
+        if(lang==='EN') current[f+'En']=el.value
+        else if(lang==='TL') current[f+'Tl']=el.value
+        else current[f+'De']=el.value
+      }
+    })
+  }
+  lang=l; localStorage.setItem('lang',l)
+  document.querySelectorAll('[id^=btn-]').forEach(b=>{ if(b.id.startsWith('btn-')){ b.className='px-4 py-1.5 rounded-full text-sm text-zinc-600' } })
+  document.getElementById('btn-'+l.toLowerCase()).className='px-4 py-1.5 rounded-full text-sm bg-black text-white font-medium'
+  const lbl={EN:'Articles', TL:'Mga Artikulo', DE:'Artikel'}; const btnNew={EN:'+ New ', TL:'+ Bago ', DE:'+ Neu '}
+  document.getElementById('lbl-articles').textContent=lbl[l]||'Articles'
+  document.getElementById('btn-new').textContent=btnNew[l]+getNextArtNr()
+  if(current) renderForm()
 }
 
 // Init
