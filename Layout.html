@@ -184,7 +184,21 @@ function initSupabase(url,key){
 function saveSB(){ const u=document.getElementById('sb-url').value.trim(), k=document.getElementById('sb-key').value.trim(); if(!u||!k) return; localStorage.setItem('supabase_config', JSON.stringify({url:u,key:k})); initSupabase(u,k) }
 
 function loadLocal(){
-  const local = JSON.parse(localStorage.getItem('kingfields_full_v3')||'[]')
+  // Try all possible localStorage keys
+  let local = JSON.parse(localStorage.getItem('kingfields_full_v3')||'[]')
+  if(local.length===0) local = JSON.parse(localStorage.getItem('kingfields_full_v2')||'[]')
+  if(local.length===0) local = JSON.parse(localStorage.getItem('kingfields')||'[]')
+  if(local.length===0) {
+    // Try to find any key with articles
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i)
+      try{
+        const v=JSON.parse(localStorage.getItem(k))
+        if(Array.isArray(v) && v.length>0 && v[0].artikelnummer) { local=v; console.log('Found in',k); break }
+      }catch(e){}
+    }
+  }
+  console.log('Local articles found:', local.length, local[0])
   if(local.length===0) return
   articles=local
   fillSelect()
@@ -194,9 +208,10 @@ async function loadFromSupabase(){
   if(!sbClient){ loadLocal(); return }
   const {data, error} = await sbClient.from('stammdaten').select('*').order('artikelnummer')
   if(error){ console.error(error); loadLocal(); return }
-  // Map supabase to local format
+  // Map supabase to local format + keep base64 if any
   articles=data.map(d=>{
     const m=d.marketing||{}
+    const en=m.en||{}, tl=m.tl||{}, de=m.de||{}
     return {
       id:d.artikelnummer,
       artikelnummer:d.artikelnummer,
@@ -209,18 +224,25 @@ async function loadFromSupabase(){
       erntejahr:d.erntejahr||'2024',
       gewicht:d.gewicht||'5',
       einheit:d.einheit||'kg',
-      bildSackUrl:d.bild_sack_url||'',
-      bildReisUrl:d.bild_reis_url||'',
-      geschmackEn:m.en?.geschmack||'', geschmackTl:m.tl?.geschmack||'', geschmackDe:m.de?.geschmack||'',
-      aromaEn:m.en?.aroma||'', aromaTl:m.tl?.aroma||'', aromaDe:m.de?.aroma||'',
-      texturEn:m.en?.textur||'', texturTl:m.tl?.textur||'', texturDe:m.de?.textur||'',
-      passtZuEn:m.en?.passtZu||'', passtZuTl:m.tl?.passtZu||'', passtZuDe:m.de?.passtZu||'',
-      kochmethodeEn:m.en?.kochmethode||'', kochmethodeTl:m.tl?.kochmethode||'', kochmethodeDe:m.de?.kochmethode||'',
-      sloganEn:m.en?.slogan||'', sloganTl:m.tl?.slogan||'', sloganDe:m.de?.slogan||'',
-      shortEn:m.en?.short||'', shortTl:m.tl?.short||'', shortDe:m.de?.short||'',
-      storyEn:m.en?.story||'', storyTl:m.tl?.story||'', storyDe:m.de?.story||'',
+      bildSackUrl:d.bild_sack_url||d.bild_sack||'',
+      bildReisUrl:d.bild_reis_url||d.bild_reis||'',
+      bildSack:d.bild_sack||'',
+      bildReis:d.bild_reis||'',
+      // Support all naming variants
+      geschmackEn:en.geschmack||m.geschmack||'', geschmackTl:tl.geschmack||'', geschmackDe:de.geschmack||m.geschmack_de||'',
+      aromaEn:en.aroma||'', aromaTl:tl.aroma||'', aromaDe:de.aroma||'',
+      texturEn:en.textur||'', texturTl:tl.textur||'', texturDe:de.textur||'',
+      passtZuEn:en.passtZu||en.passt_zu||'', passtZuTl:tl.passtZu||'', passtZuDe:de.passtZu||'',
+      kochmethodeEn:en.kochmethode||'', kochmethodeTl:tl.kochmethode||'', kochmethodeDe:de.kochmethode||'',
+      sloganEn:en.slogan||'', sloganTl:tl.slogan||'', sloganDe:de.slogan||'',
+      shortEn:en.short||'', shortTl:tl.short||'', shortDe:de.short||'',
+      storyEn:en.story||'', storyTl:tl.story||'', storyDe:de.story||'',
+      tasteEn:en.taste||'', tasteTl:tl.taste||'', tasteDe:de.taste||'',
+      originEn:en.origin||'', originTl:tl.origin||'', originDe:de.origin||'',
+      cookingEn:en.cooking||'', cookingTl:tl.cooking||'', cookingDe:de.cooking||'',
     }
   })
+  console.log('Supabase articles:', articles)
   fillSelect()
 }
 
@@ -265,8 +287,12 @@ function setLang(l){
 
 function renderLayouts(){
   if(!current) return
-  const sack = current.bildSackUrl ? `<img src="${current.bildSackUrl}" class="w-full h-full object-contain">` : `<div class="w-full h-full chessboard flex items-center justify-center text-[10px] text-zinc-400">Sack ${current.artikelnummer}</div>`
-  const reis = current.bildReisUrl ? `<img src="${current.bildReisUrl}" class="w-full h-full object-cover rounded-full">` : `<div class="w-full h-full bg-amber-100 rounded-full flex items-center justify-center text-[10px]">Reis Detail</div>`
+  console.log('Current article:', current)
+  // Sack: try URL first, then base64 (bildSack, bild_sack, Sack Base64)
+  const sackSrc = current.bildSackUrl || current.bild_sack_url || current.bildSack || current.bild_sack || current.sackBase64 || ''
+  const reisSrc = current.bildReisUrl || current.bild_reis_url || current.bildReis || current.bild_reis || current.reisBase64 || ''
+  const sack = sackSrc ? `<img src="${sackSrc}" class="w-full h-full object-contain" onerror="this.parentElement.innerHTML='<div class=\'text-[10px] text-red-500 p-2\'>Bild Fehler: URL ungültig</div>'">` : `<div class="w-full h-full chessboard flex items-center justify-center text-[10px] text-zinc-400">Kein Sack Bild<br>${current.artikelnummer}</div>`
+  const reis = reisSrc ? `<img src="${reisSrc}" class="w-full h-full object-cover rounded-full" onerror="this.parentElement.innerHTML='<div class=\'w-full h-full bg-amber-100 rounded-full flex items-center justify-center text-[10px]\'>Fehler</div>'">` : `<div class="w-full h-full bg-amber-100 rounded-full flex items-center justify-center text-[10px]">Kein Reis Bild</div>`
 
   // LAYOUT 1 Classic
   document.getElementById('layout1').innerHTML=`
