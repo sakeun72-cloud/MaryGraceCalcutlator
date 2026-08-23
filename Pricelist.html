@@ -9,16 +9,25 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;background:#fffbe6}
-.edit-toggle{position:fixed;top:10px;right:10px;z-index:999;background:#000;color:#fff;border:2px solid #000;border-radius:999px;padding:10px 16px;font-weight:900;cursor:pointer;box-shadow:4px 4px 0 #000}
-.edit-toggle.on{background:#ffb900;color:#000}
-.lang-switch{position:fixed;top:10px;left:10px;z-index:999;background:#fff;border:2px solid #000;border-radius:999px;padding:4px;display:flex;gap:4px;box-shadow:3px 3px 0 #000}
-.lang-btn{border:none;padding:6px 12px;border-radius:999px;font-weight:900;font-size:12px;cursor:pointer;background:#eee}
+
+.top-toolbar{position:sticky;top:0;z-index:998;background:#fff;border-bottom:3px solid #000;display:flex;justify-content:space-between;align-items:center;padding:8px 12px;gap:8px;flex-wrap:wrap}
+.toolbar-left{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.toolbar-right{display:flex;gap:8px;align-items:center}
+.lang-switch{background:#fff;border:2px solid #000;border-radius:999px;padding:3px;display:flex;gap:3px;box-shadow:2px 2px 0 #000}
+.lang-btn{border:none;padding:5px 10px;border-radius:999px;font-weight:900;font-size:11px;cursor:pointer;background:#eee}
 .lang-btn.active{background:#0d5cb6;color:#fff}
-.grund-switch{position:fixed;top:55px;left:10px;z-index:999;background:#e8f5e9;border:2px solid #2e7d32;border-radius:999px;padding:6px 12px;display:flex;align-items:center;gap:8px;box-shadow:3px 3px 0 #000;font-weight:900;font-size:11px}
-.grund-switch input{width:18px;height:18px}
-@media(max-width:700px){.lang-switch{top:auto;bottom:60px;left:50%;transform:translateX(-50%)} .grund-switch{top:auto;bottom:15px;left:50%;transform:translateX(-50%);white-space:nowrap}}
+.grund-switch{background:#e8f5e9;border:2px solid #2e7d32;border-radius:999px;padding:5px 10px;display:flex;align-items:center;gap:6px;box-shadow:2px 2px 0 #000;font-weight:900;font-size:11px}
+.grund-switch input{width:16px;height:16px}
+.edit-toggle{background:#000;color:#fff;border:2px solid #000;border-radius:999px;padding:7px 14px;font-weight:900;cursor:pointer;box-shadow:2px 2px 0 #000;font-size:12px;position:static}
+.edit-toggle.on{background:#ffb900;color:#000}
+@media(max-width:600px){
+  .top-toolbar{padding:6px 8px}
+  .toolbar-left{width:100%;justify-content:space-between}
+  .toolbar-right{width:100%;justify-content:center}
+}
+
 [contenteditable="true"]{outline:2px dashed #ffb900;background:rgba(255,185,0,.25);border-radius:4px;padding:0 4px}
-.header{background:#0d5cb6;padding:22px 16px;color:#fff;padding-top:50px}
+.header{background:#0d5cb6;padding:16px 16px;color:#fff}
 .header h1{font-weight:900;font-size:26px;text-transform:uppercase}
 .yellow-bar{height:9px;background:#ffb900}
 .wrap{max-width:780px;margin:0 auto;padding:12px}
@@ -46,17 +55,22 @@ footer{background:#0d5cb6;color:#fff;text-align:center;padding:14px;margin-top:2
 </style>
 </head>
 <body>
-<div class="lang-switch">
- <button class="lang-btn active" id="lang-de" onclick="setLang('de')">🇩🇪 DE</button>
- <button class="lang-btn" id="lang-en" onclick="setLang('en')">🇬🇧 EN</button>
- <button class="lang-btn" id="lang-tl" onclick="setLang('tl')">🇵🇭 TL</button>
+<div class="top-toolbar">
+  <div class="toolbar-left">
+    <div class="lang-switch">
+     <button class="lang-btn active" id="lang-de" onclick="setLang('de')">🇩🇪 DE</button>
+     <button class="lang-btn" id="lang-en" onclick="setLang('en')">🇬🇧 EN</button>
+     <button class="lang-btn" id="lang-tl" onclick="setLang('tl')">🇵🇭 TL</button>
+    </div>
+    <div class="grund-switch">
+     <input type="checkbox" id="grundToggle" checked onchange="toggleGrund(this.checked)">
+     <span id="grundLabel">Grundpreis: AN</span>
+    </div>
+  </div>
+  <div class="toolbar-right">
+    <button id="toggle" class="edit-toggle">✏️ EDITIEREN - OFF</button>
+  </div>
 </div>
-<div class="grund-switch">
- <input type="checkbox" id="grundToggle" checked onchange="toggleGrund(this.checked)">
- <span id="grundLabel">Grundpreis: AN</span>
-</div>
-
-<button id="toggle" class="edit-toggle">✏️ ALLES EDITIEREN - OFF</button>
 
 <div class="header">
 <h1 id="hTitle" data-i18n="title">MARY GRACE RICE SUPPLY</h1>
@@ -114,8 +128,8 @@ const TRANSLATIONS = {
    priceTitle: "MURANG BIGAS - PREISLISTE",
    warnLeft: "⚠️ NICHT 20KG, NICHT 10KG - 25KG SAKTO!",
    warnRight: "SACK",
-   editOff: "✏️ ALLES EDITIEREN - OFF",
-   editOn: "✏️ EDIT AN - Alles editierbar!",
+   editOff: "✏️ EDITIEREN - OFF",
+   editOn: "✏️ EDIT AN - ON",
    fbTitle: "📋 FÜR FACEBOOK KOPIEREN",
    copy: "Kopieren",
    addTitle: "Produktanlage - KG (1/5/10/25)",
@@ -138,8 +152,8 @@ const TRANSLATIONS = {
    priceTitle: "CHEAP RICE - PRICE LIST",
    warnLeft: "⚠️ NOT 20KG, NOT 10KG - 25KG EXACT!",
    warnRight: "SACK",
-   editOff: "✏️ EDIT ALL - OFF",
-   editOn: "✏️ EDIT ON - All editable!",
+   editOff: "✏️ EDIT - OFF",
+   editOn: "✏️ EDIT - ON",
    fbTitle: "📋 COPY FOR FACEBOOK",
    copy: "Copy",
    addTitle: "Product Setup - KG (1/5/10/25)",
@@ -162,8 +176,8 @@ const TRANSLATIONS = {
    priceTitle: "MURANG BIGAS - PRESYO",
    warnLeft: "⚠️ HINDI 20KG, HINDI 10KG - 25KG SAKTO PO!",
    warnRight: "SAKO",
-   editOff: "✏️ I-EDIT LAHAT - OFF",
-   editOn: "✏️ EDIT ON - Lahat edit!",
+   editOff: "✏️ EDIT - OFF",
+   editOn: "✏️ EDIT - ON",
    fbTitle: "📋 KOPYAHIN PARA SA FACEBOOK",
    copy: "Kopyahin",
    addTitle: "Magdagdag ng Produkto - KG (1/5/10/25)",
