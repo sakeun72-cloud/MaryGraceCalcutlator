@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MARY GRACE - FIXED</title>
+<title>MARY GRACE - All Editable + Grundpreis</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -11,12 +11,19 @@
 body{font-family:'Inter',sans-serif;background:#fffbe6}
 .edit-toggle{position:fixed;top:10px;right:10px;z-index:999;background:#000;color:#fff;border:2px solid #000;border-radius:999px;padding:10px 16px;font-weight:900;cursor:pointer;box-shadow:4px 4px 0 #000}
 .edit-toggle.on{background:#ffb900;color:#000}
-.header{background:#0d5cb6;padding:18px 16px;color:#fff}
+.lang-switch{position:fixed;top:10px;left:10px;z-index:999;background:#fff;border:2px solid #000;border-radius:999px;padding:4px;display:flex;gap:4px;box-shadow:3px 3px 0 #000}
+.lang-btn{border:none;padding:6px 12px;border-radius:999px;font-weight:900;font-size:12px;cursor:pointer;background:#eee}
+.lang-btn.active{background:#0d5cb6;color:#fff}
+.grund-switch{position:fixed;top:55px;left:10px;z-index:999;background:#e8f5e9;border:2px solid #2e7d32;border-radius:999px;padding:6px 12px;display:flex;align-items:center;gap:8px;box-shadow:3px 3px 0 #000;font-weight:900;font-size:11px}
+.grund-switch input{width:18px;height:18px}
+@media(max-width:700px){.lang-switch{top:auto;bottom:60px;left:50%;transform:translateX(-50%)} .grund-switch{top:auto;bottom:15px;left:50%;transform:translateX(-50%);white-space:nowrap}}
+[contenteditable="true"]{outline:2px dashed #ffb900;background:rgba(255,185,0,.25);border-radius:4px;padding:0 4px}
+.header{background:#0d5cb6;padding:22px 16px;color:#fff;padding-top:50px}
 .header h1{font-weight:900;font-size:26px;text-transform:uppercase}
 .yellow-bar{height:9px;background:#ffb900}
 .wrap{max-width:780px;margin:0 auto;padding:12px}
 .badges{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
-.badge{border-radius:999px;padding:6px 14px;font-weight:900;font-size:12px;color:#fff}
+.badge{border-radius:999px;padding:6px 14px;font-weight:900;font-size:12px;color:#fff;display:flex;align-items:center;gap:6px}
 .title{color:#0a2a7a;font-weight:900;font-size:22px;margin:14px 0 8px;text-transform:uppercase}
 .warn-bar{display:flex;border:2px solid #000;background:#fff}
 .warn-left{flex:1;padding:7px 10px;font-weight:900;font-size:13px}
@@ -25,24 +32,17 @@ body{font-family:'Inter',sans-serif;background:#fffbe6}
 .card.master{background:#fff9c4;border:1.5px solid #ffb900}
 .card.fuji{background:#e6f4ea}
 .left{display:flex;align-items:center;gap:10px}
-.sack{width:52px;height:46px;background:#000;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#ffeb3b;font-weight:900}
-.sack b{font-size:13px}
-.price{font-weight:900;color:#0d3b8c}
+.sack{width:54px;height:46px;background:#000;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#ffeb3b;font-weight:900;cursor:pointer}
+.sack b{font-size:13px} .sack span{font-size:9px;color:#fff}
+.price{font-weight:900;color:#0d3b8c;text-align:right}
 .admin{margin-top:16px;border:2px dashed #000;background:#fff;padding:12px;border-radius:10px;display:none}
 .admin.open{display:block}
 .admin input,.admin select{width:100%;padding:7px;border:1.5px solid #000;border-radius:6px;font-size:12px;margin-top:4px}
 .btn{padding:8px 14px;border-radius:999px;font-weight:900;border:2px solid #000;cursor:pointer}
-.btn-primary{background:#0d5cb6;color:#fff}
-.btn-black{background:#000;color:#fff}
+.btn-primary{background:#0d5cb6;color:#fff} .btn-black{background:#000;color:#fff}
 .fb-box{margin-top:20px;background:#fff;border:2px solid #000;border-radius:12px;padding:12px;box-shadow:3px 3px 0 #000}
 .fb-box textarea{width:100%;min-height:350px;margin-top:10px;background:#fffbe6;border:2px solid #ffb900;border-radius:10px;padding:10px;font-family:monospace;font-size:12px}
 footer{background:#0d5cb6;color:#fff;text-align:center;padding:14px;margin-top:20px}
-.kg-select{border:2px solid #000;border-radius:6px;padding:3px 5px;font-weight:900;font-size:12px}
-
-.lang-switch{position:fixed;top:10px;left:10px;z-index:999;background:#fff;border:2px solid #000;border-radius:999px;padding:4px;display:flex;gap:4px;box-shadow:3px 3px 0 #000}
-.lang-btn{border:none;padding:6px 12px;border-radius:999px;font-weight:900;font-size:12px;cursor:pointer;background:#eee}
-.lang-btn.active{background:#0d5cb6;color:#fff}
-@media(max-width:600px){.lang-switch{top:auto;bottom:10px;left:50%;transform:translateX(-50%)}}
 </style>
 </head>
 <body>
@@ -51,53 +51,59 @@ footer{background:#0d5cb6;color:#fff;text-align:center;padding:14px;margin-top:2
  <button class="lang-btn" id="lang-en" onclick="setLang('en')">🇬🇧 EN</button>
  <button class="lang-btn" id="lang-tl" onclick="setLang('tl')">🇵🇭 TL</button>
 </div>
+<div class="grund-switch">
+ <input type="checkbox" id="grundToggle" checked onchange="toggleGrund(this.checked)">
+ <span id="grundLabel">Grundpreis: AN</span>
+</div>
 
 <button id="toggle" class="edit-toggle">✏️ ALLES EDITIEREN - OFF</button>
-<div class="header"><h1 data-i18n="title">MARY GRACE RICE SUPPLY</h1><div>📍 Wood Town Block 7 Lot 3 Phase 3</div></div>
+
+<div class="header">
+<h1 id="hTitle" data-i18n="title">MARY GRACE RICE SUPPLY</h1>
+<div>📍 <span id="hAddr">Wood Town Block 7 Lot 3 Phase 3</span></div>
+</div>
 <div class="yellow-bar"></div>
+
 <div class="wrap">
 <div class="badges" id="badges"></div>
-<div class="title" data-i18n="priceTitle">MURANG BIGAS - PRESYO (25KG SAKTO)</div>
-<div class="warn-bar"><div class="warn-left" data-i18n="warnLeft">⚠️ HINDI 20KG, HINDI 10KG - 25KG SAKTO PO!</div><div class="warn-right" data-i18n="warnRight">25KG SACK</div></div>
+<div class="title" id="mainTitle" data-i18n="priceTitle">MURANG BIGAS - PRESYO</div>
+<div class="warn-bar">
+<div class="warn-left" id="warnLeft" data-i18n="warnLeft">⚠️ HINDI 20KG, HINDI 10KG - 25KG SAKTO PO!</div>
+<div class="warn-right" id="warnRight" data-i18n="warnRight">SACK</div>
+</div>
 <div id="cards" style="margin-top:14px"></div>
 
 <div id="admin" class="admin">
-<h3 style="font-weight:900" data-i18n="addTitle">Produktanlage - KG editierbar (5/10/25)</h3>
+<h3 style="font-weight:900" data-i18n="addTitle">Produktanlage - KG editierbar (1/5/10/25)</h3>
 <div style="margin-top:10px;background:#fffbe6;border:2px solid #ffb900;border-radius:10px;padding:10px">
 <div style="font-weight:900;font-size:13px" data-i18n="addNew">➕ NEUEN ARTIKEL EINSTELLEN</div>
 <div style="display:grid;grid-template-columns:1fr 100px;gap:8px;margin-top:8px">
 <input id="qaName" data-i18n-ph="namePh" placeholder="Name z.B. DENORADO">
 <input id="qaPrice" type="number" data-i18n-ph="pricePh" placeholder="Preis 1450">
 </div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px">
 <select id="qaKg"><option value="1">1 KG</option><option value="5">5 KG</option><option value="10">10 KG</option><option value="25" selected>25 KG</option></select>
 <input id="qaBadge" data-i18n-ph="badgePh" placeholder="Badge z.B. PREMIUM">
+<select id="qaVariant"><option value="normal">Normal</option><option value="master">Master (gelb)</option><option value="fuji">Fuji (grün)</option></select>
 </div>
 <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="quickAdd()" data-i18n="addBtn">+ HINZUFÜGEN</button>
 <div id="status" style="font-weight:900;font-size:11px;margin-top:8px"></div>
 </div>
-<div style="margin-top:10px;display:flex;align-items:center;gap:10px;background:#e8f5e9;border:2px solid #2e7d32;border-radius:10px;padding:10px">
- <label style="display:flex;align-items:center;gap:8px;font-weight:900;font-size:13px;cursor:pointer">
-  <input type="checkbox" id="grundToggle" checked onchange="toggleGrund(this.checked)" style="width:20px;height:20px">
-  <span data-i18n="grundToggle">Grundpreis anzeigen (an Sprache gekoppelt: DE=an, EN/TL=aus)</span>
- </label>
- <span style="font-size:10px;color:#555">DE=an, EN/TL=aus - manuell änderbar</span>
-</div>
 <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-<button class="btn btn-black" onclick="saveToSupabase()" data-i18n="save">💾 IN SUPABASE SPEICHERN</button>
+<button class="btn btn-black" onclick="saveToSupabase()" data-i18n="save">💾 SPEICHERN</button>
 <button class="btn btn-black" onclick="loadFromSupabase()" data-i18n="load">LADEN</button>
-<button class="btn btn-black" onclick="resetToDefault()" data-i18n="reset">Reset auf Standard</button>
+<button class="btn btn-black" onclick="resetToDefault()" data-i18n="reset">Reset</button>
+<button class="btn btn-black" onclick="addBadge()" data-i18n="addBadge">+ Badge</button>
 </div>
-<input type="hidden" id="sbUrl"><input type="hidden" id="sbKey"><input type="hidden" id="sbTable" value="pricelist_config">
 </div>
 
 <div class="fb-box"><div style="display:flex;justify-content:space-between"><h3 data-i18n="fbTitle">📋 FÜR FACEBOOK KOPIEREN</h3><button class="btn btn-black" onclick="copyFB()" data-i18n="copy">Kopieren</button></div><textarea id="fbText"></textarea></div>
 </div>
-<footer><div style="color:#ffeb3b;font-weight:900;font-size:12px">⚠️ HINDI 20KG, HINDI 10KG - 25KG SAKTO PO! LAHAT NG SAKO 25KG!</div></footer>
+<footer><div id="footWarn" style="color:#ffeb3b;font-weight:900;font-size:12px">⚠️ HINDI 20KG, HINDI 10KG - 25KG SAKTO PO!</div><div style="font-size:12px;margin-top:4px">✅ GCash ONLY | FREE DELIVERY Wood Town</div></footer>
 
 <script>
-
-
+const SUPABASE_URL="https://crdtuptjybxbsezxtksp.supabase.co";
+const SUPABASE_KEY="sb_publishable_GU6AAlF0zc3LB4hFlKK0fw_TNxo9z7q";
 const TRANSLATIONS = {
  de: {
    title: "MARY GRACE RICE SUPPLY",
@@ -105,25 +111,23 @@ const TRANSLATIONS = {
    warnLeft: "⚠️ NICHT 20KG, NICHT 10KG - 25KG SAKTO!",
    warnRight: "SACK",
    editOff: "✏️ ALLES EDITIEREN - OFF",
-   editOn: "✏️ EDIT AN - KG + Grundpreis!",
+   editOn: "✏️ EDIT AN - Alles editierbar!",
    fbTitle: "📋 FÜR FACEBOOK KOPIEREN",
    copy: "Kopieren",
-   addTitle: "Produktanlage - KG editierbar (1/5/10/25)",
+   addTitle: "Produktanlage - KG (1/5/10/25)",
    addNew: "➕ NEUEN ARTIKEL EINSTELLEN",
    addBtn: "+ HINZUFÜGEN",
    save: "💾 SPEICHERN",
    load: "LADEN",
    reset: "Reset",
+   addBadge: "+ Badge",
    namePh: "Name z.B. DENORADO",
    pricePh: "Preis 1450",
    badgePh: "Badge z.B. PREMIUM",
-   copied: "Kopiert!",
-   sakto: "SAKTO",
-   footWarn: "⚠️ ALLE SÄCKE SAKTO GEWOGEN!",
-   gcash: "GCash ONLY | FREE DELIVERY",
    grundLabel: "Grundpreis",
-   grundTooltip: "Preis pro 1kg zum Vergleich",
-   grundToggle: "Grundpreis anzeigen (DE=an, EN/TL=aus)"
+   grundOn: "Grundpreis: AN",
+   grundOff: "Grundpreis: AUS",
+   grundToggleFull: "Grundpreis anzeigen"
  },
  en: {
    title: "MARY GRACE RICE SUPPLY",
@@ -131,7 +135,7 @@ const TRANSLATIONS = {
    warnLeft: "⚠️ NOT 20KG, NOT 10KG - 25KG EXACT!",
    warnRight: "SACK",
    editOff: "✏️ EDIT ALL - OFF",
-   editOn: "✏️ EDIT ON - KG + Unit Price!",
+   editOn: "✏️ EDIT ON - All editable!",
    fbTitle: "📋 COPY FOR FACEBOOK",
    copy: "Copy",
    addTitle: "Product Setup - KG (1/5/10/25)",
@@ -140,16 +144,14 @@ const TRANSLATIONS = {
    save: "💾 SAVE",
    load: "LOAD",
    reset: "Reset",
+   addBadge: "+ Badge",
    namePh: "Name e.g. DENORADO",
    pricePh: "Price 1450",
    badgePh: "Badge e.g. PREMIUM",
-   copied: "Copied!",
-   sakto: "EXACT",
-   footWarn: "⚠️ ALL SACKS EXACT WEIGHT!",
-   gcash: "GCash ONLY | FREE DELIVERY",
    grundLabel: "Unit price",
-   grundTooltip: "Price per 1kg for comparison",
-   grundToggle: "Show unit price (DE=on, EN/TL=off)"
+   grundOn: "Unit price: ON",
+   grundOff: "Unit price: OFF",
+   grundToggleFull: "Show unit price"
  },
  tl: {
    title: "MARY GRACE RICE SUPPLY",
@@ -157,7 +159,7 @@ const TRANSLATIONS = {
    warnLeft: "⚠️ HINDI 20KG, HINDI 10KG - 25KG SAKTO PO!",
    warnRight: "SAKO",
    editOff: "✏️ I-EDIT LAHAT - OFF",
-   editOn: "✏️ EDIT ON - KG + Grundpreis!",
+   editOn: "✏️ EDIT ON - Lahat edit!",
    fbTitle: "📋 KOPYAHIN PARA SA FACEBOOK",
    copy: "Kopyahin",
    addTitle: "Magdagdag ng Produkto - KG (1/5/10/25)",
@@ -166,50 +168,17 @@ const TRANSLATIONS = {
    save: "💾 I-SAVE",
    load: "I-LOAD",
    reset: "I-reset",
+   addBadge: "+ Badge",
    namePh: "Pangalan hal. DENORADO",
    pricePh: "Presyo 1450",
    badgePh: "Badge hal. PREMIUM",
-   copied: "Nakopya na!",
-   sakto: "SAKTO",
-   footWarn: "⚠️ LAHAT NG SAKO SAKTO PO!",
-   gcash: "GCash ONLY | FREE DELIVERY",
    grundLabel: "Presyo per kg",
-   grundTooltip: "Presyo sa bawat 1kg",
-   grundToggle: "Ipakita ang presyo per kg (DE=on, EN/TL=off)"
+   grundOn: "Presyo per kg: ON",
+   grundOff: "Presyo per kg: OFF",
+   grundToggleFull: "Ipakita presyo per kg"
  }
 };
-
-let currentLang = 'de';
-function setLang(lang){
-  // Auto Grundpreis an Sprache koppeln, wenn nicht manuell übersteuert
-  if(!manualGrundToggle){
-    showGrundpreis = (lang === 'de');
-    const chk = document.getElementById('grundToggle');
-    if(chk) chk.checked = showGrundpreis;
-  }
-
- currentLang = lang;
- localStorage.setItem('mg_lang', lang);
- const t = TRANSLATIONS[lang];
- document.querySelectorAll('[data-i18n]').forEach(el=>{
-   const k = el.getAttribute('data-i18n');
-   if(t[k]) el.textContent = t[k];
- });
- document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
-   const k = el.getAttribute('data-i18n-ph');
-   if(t[k]) el.placeholder = t[k];
- });
- // update toggle button text depending on edit mode
- document.getElementById('toggle').textContent = edit ? t.editOn : t.editOff;
- // update sakto labels in cards via re-render
- render();
- document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
- const activeBtn = document.getElementById('lang-'+lang);
- if(activeBtn) activeBtn.classList.add('active');
-}
-
-const SUPABASE_URL="https://crdtuptjybxbsezxtksp.supabase.co";
-const SUPABASE_KEY="sb_publishable_GU6AAlF0zc3LB4hFlKK0fw_TNxo9z7q";
+let currentLang='de'; let showGrundpreis=true; let edit=false; let supa=null; let manualGrund=false;
 let badges=[
 {id:"b1",label:"GCash Only",color:"#1e88e5"},
 {id:"b2",label:"FREE DELIVERY",color:"#2e7d32"},
@@ -224,80 +193,123 @@ let items=[
 {id:"aroma",name:"MASTER AROMA",price:1340,variant:"normal",kg:25},
 {id:"fuji",name:"FUJI",badge:"PREMIUM",price:1400,variant:"fuji",kg:25},
 ];
-let edit=false; let supa=null; let showGrundpreis=true; let manualGrundToggle=false;
 function getClient(){
- let url=SUPABASE_URL;
- let key=SUPABASE_KEY;
- url=url.replace(/\/rest\/v1\/?$/,'').replace(/\/$/,'');
+ let u=SUPABASE_URL.replace(/\/rest\/v1\/?$/,'').replace(/\/$/,'');
  if(supa) return supa;
- supa=window.supabase.createClient(url,key);
+ supa=window.supabase.createClient(u,SUPABASE_KEY);
  return supa;
 }
 function fmt(it){return `₱${Number(it.price).toLocaleString('en-PH')} / ${it.kg}kg`;}
-function grundpreis(it){ const perKg = it.price / it.kg; return perKg.toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2}); }
-function fmtWithGrund(it, lang){
-  const main = fmt(it);
-  if(it.kg==1) return main; // bei 1kg kein Grundpreis nötig
-  const gp = grundpreis(it);
-  const label = TRANSLATIONS[lang||currentLang].grundLabel;
-  return {main, sub: `(≈ ₱${gp} / 1kg)`, label};
+function grundpreis(it){return (it.price/it.kg).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function setLang(lang){
+ currentLang=lang;
+ localStorage.setItem('mg_lang',lang);
+ const t=TRANSLATIONS[lang];
+ document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n'); if(t[k]) el.textContent=t[k];});
+ document.querySelectorAll('[data-i18n-ph]').forEach(el=>{const k=el.getAttribute('data-i18n-ph'); if(t[k]) el.placeholder=t[k];});
+ // Auto Grundpreis logic only if not manually set
+ if(!manualGrund){
+   showGrundpreis = (lang==='de');
+   document.getElementById('grundToggle').checked=showGrundpreis;
+ }
+ updateGrundLabel();
+ document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+ document.getElementById('lang-'+lang).classList.add('active');
+ render();
 }
-
+function updateGrundLabel(){
+ const t=TRANSLATIONS[currentLang];
+ const el=document.getElementById('grundLabel');
+ el.textContent = showGrundpreis ? t.grundOn : t.grundOff;
+}
+function toggleGrund(val){
+ showGrundpreis=val;
+ manualGrund=true;
+ localStorage.setItem('mg_grund', val?'1':'0');
+ localStorage.setItem('mg_grund_manual','1');
+ updateGrundLabel();
+ render();
+}
 function render(){
- document.getElementById('badges').innerHTML=badges.map(b=>`<div class="badge" style="background:${b.color}">${b.label}</div>`).join('');
+ // badges - editierbar wenn edit=true
+ document.getElementById('badges').innerHTML=badges.map(b=>`
+  <div class="badge" style="background:${b.color}">
+   <span data-bid="${b.id}" ${edit?'contenteditable="true" onblur="editBadge(this)"':''}>${b.label}</span>
+   ${edit?`<span style="cursor:pointer" onclick="delBadge('${b.id}')">×</span>`:''}
+  </div>`).join('');
  document.getElementById('cards').innerHTML=items.map(it=>`
   <div class="card ${it.variant}">
+   ${edit?`<div style="position:absolute;top:-6px;right:-6px;background:red;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-weight:900;cursor:pointer" onclick="delItem('${it.id}')">×</div>`:''}
    <div class="left">
-    <div class="sack"><b>${it.kg}KG</b><span>${TRANSLATIONS[currentLang].sakto}</span></div>
-    <div style="font-weight:900;color:#0a1a5e">${it.name} ${it.badge?`<span style="font-size:9px;background:#ffe4c4;padding:3px 7px;border-radius:999px">${it.badge}</span>`:''}</div>
+    <div class="sack" onclick="toggleKg('${it.id}')" title="KG ändern 1/5/10/25"><b>${it.kg}KG</b><span>SAKTO</span></div>
+    <div style="font-weight:900;color:#0a1a5e">
+     <span ${edit?'contenteditable="true" onblur="editName(\''+it.id+'\',this)"':''}>${it.name}</span>
+     ${it.badge||edit?` <span style="font-size:9px;background:#ffe4c4;padding:3px 7px;border-radius:999px" ${edit?'contenteditable="true" onblur="editItemBadge(\''+it.id+'\',this)"':''}>${it.badge||'+BADGE'}</span>`:''}
+    </div>
    </div>
-   <div class="price" style="text-align:right">
-    ${edit?`<input type="number" value="${it.price}" style="width:80px;border:2px solid #000;border-radius:6px;padding:4px;font-weight:900" onchange="editPrice('${it.id}',this.value)"> 
-    <select onchange="editKg('${it.id}',this.value)" style="border:2px solid #000;border-radius:6px;padding:4px;font-weight:900"><option value="1" ${it.kg==1?'selected':''}>1kg</option><option value="5" ${it.kg==5?'selected':''}>5kg</option><option value="10" ${it.kg==10?'selected':''}>10kg</option><option value="25" ${it.kg==25?'selected':''}>25kg</option></select>
-    <button onclick="delItem('${it.id}')" style="background:red;color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-weight:900;cursor:pointer">×</button>`
-    :`<div style="font-size:15px">${fmt(it)}</div>${showGrundpreis && it.kg!=1?`<div style="font-size:10px;color:#666;font-weight:800;margin-top:2px" title="${TRANSLATIONS[currentLang].grundTooltip}">${TRANSLATIONS[currentLang].grundLabel}: ₱${grundpreis(it)} / kg</div>`:''}`}
+   <div class="price">
+    ${edit?`
+      <input type="number" value="${it.price}" style="width:75px;border:2px solid #000;border-radius:6px;padding:4px;font-weight:900" onchange="editPrice('${it.id}',this.value)">
+      <select onchange="editKg('${it.id}',this.value)" style="border:2px solid #000;border-radius:6px;padding:4px;font-weight:900">
+        <option value="1" ${it.kg==1?'selected':''}>1kg</option>
+        <option value="5" ${it.kg==5?'selected':''}>5kg</option>
+        <option value="10" ${it.kg==10?'selected':''}>10kg</option>
+        <option value="25" ${it.kg==25?'selected':''}>25kg</option>
+      </select>
+    `:`
+      <div style="font-size:15px">${fmt(it)}</div>
+      ${showGrundpreis && it.kg!=1?`<div style="font-size:10px;color:#555;font-weight:800;margin-top:2px">${TRANSLATIONS[currentLang].grundLabel}: ₱${grundpreis(it)} / kg</div>`:''}
+    `}
    </div>
   </div>`).join('');
+ // make top fields editable
+ document.getElementById('hTitle').contentEditable=edit;
+ document.getElementById('hAddr').contentEditable=edit;
+ document.getElementById('mainTitle').contentEditable=edit;
+ document.getElementById('warnLeft').contentEditable=edit;
+ document.getElementById('warnRight').contentEditable=edit;
+ document.getElementById('footWarn').contentEditable=edit;
  buildFB();
 }
 function buildFB(){
- let t=`MARY GRACE RICE SUPPLY\n📍 Wood Town Block 7 Lot 3 Phase 3\n\n`;
- t+=`${badges.map(b=>b.label).join(' | ')}\n\nMURANG BIGAS - PRESYO\n\n`;
+ let t=`${document.getElementById('hTitle').textContent}\n📍 ${document.getElementById('hAddr').textContent}\n\n`;
+ t+=`${badges.map(b=>b.label).join(' | ')}\n\n${document.getElementById('mainTitle').textContent}\n${document.getElementById('warnLeft').textContent}\n\n`;
  const groups={1:[],5:[],10:[],25:[]};
  items.forEach(it=>{if(!groups[it.kg]) groups[it.kg]=[]; groups[it.kg].push(it);});
  [1,5,10,25].forEach(kg=>{
   if(groups[kg].length>0){
    t+=`--- ${kg}KG ---\n`;
-   groups[kg].forEach(it=>{ if(showGrundpreis && it.kg!=1){t+=`${it.name}${it.badge?' '+it.badge:''} - ${fmt(it)} (${TRANSLATIONS[currentLang].grundLabel} ₱${grundpreis(it)}/kg)\n`;} else {t+=`${it.name}${it.badge?' '+it.badge:''} - ${fmt(it)}\n`;}});
+   groups[kg].forEach(it=>{
+    if(showGrundpreis && it.kg!=1) t+=`${it.name} ${it.badge||''} - ${fmt(it)} (${TRANSLATIONS[currentLang].grundLabel} ₱${grundpreis(it)}/kg)\n`;
+    else t+=`${it.name} ${it.badge||''} - ${fmt(it)}\n`;
+   });
    t+=`\n`;
   }
  });
  document.getElementById('fbText').value=t;
 }
+window.editName=(id,el)=>{items=items.map(i=>i.id===id?{...i,name:el.textContent.toUpperCase().trim()}:i);buildFB()}
+window.editItemBadge=(id,el)=>{items=items.map(i=>i.id===id?{...i,badge:el.textContent.toUpperCase().trim()}:i);buildFB()}
+window.editBadge=function(el){const id=el.getAttribute('data-bid'); badges=badges.map(b=>b.id===id?{...b,label:el.textContent.trim()}:b);buildFB()}
 window.editPrice=(id,v)=>{items=items.map(i=>i.id===id?{...i,price:parseInt(v,10)||0}:i);buildFB()}
 window.editKg=(id,v)=>{items=items.map(i=>i.id===id?{...i,kg:parseInt(v,10)}:i);render()}
+window.toggleKg=(id)=>{const it=items.find(i=>i.id===id); if(!it) return; const order=[1,5,10,25]; let idx=order.indexOf(it.kg); let next=order[(idx+1)%order.length]; editKg(id,next);}
 window.delItem=id=>{items=items.filter(i=>i.id!==id);render()}
+window.delBadge=id=>{badges=badges.filter(b=>b.id!==id);render()}
+window.addBadge=()=>{const n=prompt('Badge Text:','Cash'); if(!n) return; badges.push({id:'id_'+Date.now(),label:n,color:'#1e88e5'}); render()}
 window.quickAdd=()=>{
  const n=document.getElementById('qaName').value.trim();
  const p=document.getElementById('qaPrice').value.trim();
  const b=document.getElementById('qaBadge').value.trim();
  const kg=parseInt(document.getElementById('qaKg').value,10);
- if(!n||!p){alert('Name und Preis eingeben!');return}
- items.push({id:'id_'+Date.now(),name:n.toUpperCase(),price:parseInt(p,10),badge:b.toUpperCase(),kg:kg,variant:b.toUpperCase().includes('PREMIUM')?'fuji':'normal'});
+ const variant=document.getElementById('qaVariant').value;
+ if(!n||!p){alert('Name und Preis!');return}
+ items.push({id:'id_'+Date.now(),name:n.toUpperCase(),price:parseInt(p,10),badge:b.toUpperCase(),kg:kg,variant:variant});
  document.getElementById('qaName').value='';document.getElementById('qaPrice').value='';document.getElementById('qaBadge').value='';
- render();
- document.getElementById('status').textContent='✅ '+n+' ('+kg+'KG) hinzugefügt - jetzt auf SPEICHERN klicken!';
+ render(); document.getElementById('status').textContent='✅ '+n+' ('+kg+'KG) - jetzt speichern!';
 }
-window.toggleGrund=(val)=>{
-  showGrundpreis = val;
-  manualGrundToggle = true;
-  localStorage.setItem('mg_grund', val ? '1':'0');
-  localStorage.setItem('mg_grund_manual', '1');
-  render();
-}
-window.copyFB=async()=>{await navigator.clipboard.writeText(document.getElementById('fbText').value);alert('Kopiert!')}
+window.copyFB=async()=>{await navigator.clipboard.writeText(document.getElementById('fbText').value); alert(TRANSLATIONS[currentLang].grundLabel+' kopiert!')}
 window.resetToDefault=()=>{
- if(!confirm('Wirklich auf Standard zurücksetzen?')) return;
  items=[
   {id:"master",name:"MASTER",badge:"PINAKA MURA",price:1180,variant:"master",kg:25},
   {id:"sweet",name:"SWEET HASMIN",price:1300,variant:"normal",kg:25},
@@ -306,8 +318,7 @@ window.resetToDefault=()=>{
   {id:"perfect",name:"PERFECT",price:1340,variant:"normal",kg:25},
   {id:"aroma",name:"MASTER AROMA",price:1340,variant:"normal",kg:25},
   {id:"fuji",name:"FUJI",badge:"PREMIUM",price:1400,variant:"fuji",kg:25},
- ];
- render();
+ ]; render();
 }
 async function loadFromSupabase(){
  const c=getClient();
@@ -315,20 +326,16 @@ async function loadFromSupabase(){
  try{
   const {data,error}=await c.from('pricelist_config').select('data').eq('id',1).single();
   if(error) throw error;
-  // WICHTIG: nur überschreiben wenn wirklich Daten drin sind und nicht leer
-  if(data?.data?.items && Array.isArray(data.data.items) && data.data.items.length>0){
+  if(data?.data?.items && data.data.items.length>0){
    items=data.data.items;
-   if(data.data.badges && data.data.badges.length>0) badges=data.data.badges;
+   if(data.data.badges) badges=data.data.badges;
    render();
-   document.getElementById('status').textContent='✅ Geladen ('+items.length+' Artikel)';
+   document.getElementById('status').textContent='✅ Geladen';
   } else {
-   document.getElementById('status').textContent='ℹ️ Supabase leer - zeige Standard Produkte';
+   document.getElementById('status').textContent='ℹ️ Leer - Standard';
    render();
   }
- }catch(e){
-  document.getElementById('status').textContent='❌ '+e.message;
-  render();
- }
+ }catch(e){document.getElementById('status').textContent='❌ '+e.message; render();}
 }
 async function saveToSupabase(){
  const c=getClient();
@@ -337,8 +344,8 @@ async function saveToSupabase(){
   const payload={id:1,data:{items,badges},updated_at:new Date().toISOString()};
   const {error}=await c.from('pricelist_config').upsert(payload,{onConflict:'id'});
   if(error) throw error;
-  document.getElementById('status').textContent='✅ Gespeichert! '+items.length+' Artikel in Supabase';
- }catch(e){document.getElementById('status').textContent='❌ '+e.message}
+  document.getElementById('status').textContent='✅ Gespeichert!';
+ }catch(e){document.getElementById('status').textContent='❌ '+e.message;}
 }
 document.getElementById('toggle').addEventListener('click',()=>{
  edit=!edit;
@@ -348,22 +355,14 @@ document.getElementById('toggle').addEventListener('click',()=>{
  document.getElementById('admin').className=edit?'admin open':'admin';
  render();
 });
-const savedLang=localStorage.getItem('mg_lang')||'de'; 
+const savedLang=localStorage.getItem('mg_lang')||'de';
 const savedGrund=localStorage.getItem('mg_grund');
 const savedManual=localStorage.getItem('mg_grund_manual');
-if(savedManual){
-  manualGrundToggle=true;
-  showGrundpreis = savedGrund==='1';
-}
+if(savedManual){manualGrund=true; showGrundpreis=savedGrund==='1';}
 setLang(savedLang);
-if(savedManual){
-  showGrundpreis = savedGrund==='1';
-  const chk=document.getElementById('grundToggle');
-  if(chk) chk.checked = showGrundpreis;
-}
-
+if(savedManual){document.getElementById('grundToggle').checked=showGrundpreis; updateGrundLabel();}
 render();
-setTimeout(loadFromSupabase,800);
+setTimeout(loadFromSupabase,600);
 </script>
 </body>
 </html>
