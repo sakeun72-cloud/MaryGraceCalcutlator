@@ -218,6 +218,41 @@ function getClient(){
  return supa;
 }
 function fmt(it){return `₱${Number(it.price).toLocaleString('en-PH')} / ${it.kg}kg`;}
+function getCheapestId(){
+  if(items.length===0) return null;
+  let cheapest = items[0];
+  let minPerKg = cheapest.price / cheapest.kg;
+  for(let it of items){
+    let perKg = it.price / it.kg;
+    if(perKg < minPerKg - 0.001){ // günstiger pro kg
+      minPerKg = perKg;
+      cheapest = it;
+    }
+  }
+  return cheapest.id;
+}
+function autoAssignPinakaMura(){
+  const cheapestId = getCheapestId();
+  if(!cheapestId) return;
+  // Entferne PINAKA MURA von allen anderen, setze nur auf günstigstes
+  items = items.map(it=>{
+    let badge = it.badge || '';
+    // entferne alte PINAKA MURA Marker
+    if(badge.toUpperCase().includes('PINAKA MURA')){
+      badge = badge.replace(/PINAKA MURA/gi,'').trim();
+      // wenn badge leer wird und es nicht das günstigste ist, lass leer
+    }
+    if(it.id === cheapestId){
+      // füge PINAKA MURA hinzu wenn nicht schon drin
+      if(!badge.toUpperCase().includes('PINAKA MURA')){
+        badge = (badge ? badge + ' ' : '') + 'PINAKA MURA';
+        badge = badge.trim();
+      }
+    }
+    return {...it, badge: badge};
+  });
+}
+
 function grundpreis(it){return (it.price/it.kg).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function setLang(lang){
  currentLang=lang;
@@ -249,6 +284,8 @@ function toggleGrund(val){
  render();
 }
 function render(){
+  // Auto günstigstes mit PINAKA MURA markieren
+  autoAssignPinakaMura();
  // badges - editierbar wenn edit=true
  document.getElementById('badges').innerHTML=badges.map(b=>`
   <div class="badge" style="background:${b.color}">
@@ -307,6 +344,7 @@ function buildFB(){
  const groups={1:[],5:[],10:[],25:[]};
  items.forEach(it=>{if(!groups[it.kg]) groups[it.kg]=[]; groups[it.kg].push(it);});
  [1,5,10,25].forEach(kg=>{
+  if(groups[kg]) groups[kg].sort((a,b)=> (a.price/a.kg) - (b.price/b.kg));
   if(groups[kg].length>0){
    t+=`--- ${kg}KG ---\n`;
    groups[kg].forEach(it=>{
@@ -325,8 +363,8 @@ window.editBadge=function(el){const id=el.getAttribute('data-bid'); badges=badge
   document.getElementById('footMid').textContent = '✅ ' + badges.map(b=>b.label).join(' | ');
   buildFB(); render();
 }
-window.editPrice=(id,v)=>{items=items.map(i=>i.id===id?{...i,price:parseInt(v,10)||0}:i);buildFB()}
-window.editKg=(id,v)=>{items=items.map(i=>i.id===id?{...i,kg:parseInt(v,10)}:i);render()}
+window.editPrice=(id,v)=>{items=items.map(i=>i.id===id?{...i,price:parseInt(v,10)||0}:i); render();}
+window.editKg=(id,v)=>{items=items.map(i=>i.id===id?{...i,kg:parseInt(v,10)}:i); render();}
 window.toggleKg=(id)=>{const it=items.find(i=>i.id===id); if(!it) return; const order=[1,5,10,25]; let idx=order.indexOf(it.kg); let next=order[(idx+1)%order.length]; editKg(id,next);}
 window.delItem=id=>{items=items.filter(i=>i.id!==id);render()}
 window.delBadge=id=>{badges=badges.filter(b=>b.id!==id); document.getElementById('footMid').textContent = '✅ ' + badges.map(b=>b.label).join(' | '); render()}
@@ -340,7 +378,7 @@ window.quickAdd=()=>{
  if(!n||!p){alert('Name und Preis!');return}
  items.push({id:'id_'+Date.now(),name:n.toUpperCase(),price:parseInt(p,10),badge:b.toUpperCase(),kg:kg,variant:variant});
  document.getElementById('qaName').value='';document.getElementById('qaPrice').value='';document.getElementById('qaBadge').value='';
- render(); document.getElementById('status').textContent='✅ '+n+' ('+kg+'KG) - jetzt speichern!';
+ render(); document.getElementById('status').textContent='✅ '+n+' ('+kg+'KG) - günstigstes auto auf PINAKA MURA geprüft - jetzt speichern!';
 }
 window.copyFB=async()=>{await navigator.clipboard.writeText(document.getElementById('fbText').value); alert(TRANSLATIONS[currentLang].grundLabel+' kopiert!')}
 window.resetToDefault=()=>{
