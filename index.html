@@ -3,40 +3,47 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MG Rangas - Vollständige Stammdaten - FIXED</title>
+<title>Kingfields - Facebook Product Layouts aus Stammdaten</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script><script>if(typeof html2canvas==="undefined"){document.write('<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"><\/script>')}</script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  .font-display{font-family:"Fraunces",serif}
-  .font-body{font-family:"Plus Jakarta Sans",sans-serif}
-  .chessboard{background-image:linear-gradient(45deg,#e5e7eb 25%,transparent 25%),linear-gradient(-45deg,#e5e7eb 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#e5e7eb 75%),linear-gradient(-45deg,transparent 75%,#e5e7eb 75%);background-size:20px 20px;background-position:0 0,0 10px,10px -10px,-10px 0px}
+.font-display{font-family:"Fraunces",serif}
+.font-body{font-family:"Plus Jakarta Sans",sans-serif}
+.chessboard{background-image:linear-gradient(45deg,#e5e7eb 25%,transparent 25%),linear-gradient(-45deg,#e5e7eb 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#e5e7eb 75%),linear-gradient(-45deg,transparent 75%,#e5e7eb 75%);background-size:20px 20px;background-position:0 0,0 10px,10px -10px,-10px 0px}
 </style>
 </head>
-<body class="bg-[#f6f5f2] font-body min-h-screen">
-<div class="max-w-[1600px] mx-auto p-3 md:p-6">
+<body class="bg-[#f6f5f2] font-body">
+<div class="max-w-[1600px] mx-auto p-4">
 
+  <!-- HEADER -->
   <div class="bg-white rounded-[20px] shadow-sm border p-4 mb-4">
-    <div class="flex flex-wrap justify-between items-center gap-3 mb-3">
+    <div class="flex flex-wrap justify-between items-center gap-3">
       <div>
-        <h1 class="font-display text-2xl font-semibold">Kingfields Trade - Product Master - FIXED</h1>
-        <p class="text-xs text-zinc-500">Mit festen Supabase Keys - https://crdtuptjybxbsezxtksp.supabase.co - publishable key aktiv</p>
+        <h1 class="font-display text-2xl font-bold">Facebook Product Studio</h1>
+        <p class="text-xs text-zinc-500">Wählt Artikel aus Stammdaten • Layout wird automatisch befüllt • Ready für Facebook</p>
       </div>
-      <div class="flex gap-2 items-center">
+      <div class="flex gap-2 items-center flex-wrap">
+        <select id="articleSelect" onchange="selectArticle(this.value)" class="border rounded-full px-4 py-2 text-sm bg-zinc-50 min-w-[220px]">
+          <option value="">-- Artikel wählen (DR Menü) --</option>
+        </select>
         <div class="flex bg-zinc-100 rounded-full p-1">
-          <button onclick="setLang('EN')" id="btn-en" class="px-4 py-1.5 rounded-full text-sm bg-black text-white font-medium">EN</button>
-          <button onclick="setLang('TL')" id="btn-tl" class="px-4 py-1.5 rounded-full text-sm text-zinc-600">TL</button>
-          <button onclick="setLang('DE')" id="btn-de" class="px-4 py-1.5 rounded-full text-sm text-zinc-600">DE</button>
+          <button onclick="setLang('EN')" id="btn-en" class="px-4 py-1.5 rounded-full text-xs bg-black text-white">EN</button>
+          <button onclick="setLang('TL')" id="btn-tl" class="px-4 py-1.5 rounded-full text-xs">TL</button>
+          <button onclick="setLang('DE')" id="btn-de" class="px-4 py-1.5 rounded-full text-xs">DE</button>
         </div>
+        <button onclick="loadFromSupabase()" class="bg-yellow-50 border border-yellow-200 px-4 py-2 rounded-full text-xs">🔄 Aus Supabase laden</button>
       </div>
     </div>
-    <div class="flex flex-wrap gap-2 border-t pt-3">
-      <button onclick="openLink(0)" class="bg-zinc-900 text-white px-4 py-2 rounded-full text-[13px] font-medium hover:bg-black">📋 <span id="nav-label-0">Preisliste</span></button>
-      <button onclick="openLink(1)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">🛒 <span id="nav-label-1">Shop</span></button>
-      <button onclick="openLink(2)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">📦 <span id="nav-label-2">Katalog</span></button>
-      <button onclick="openLink(3)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">🌐 <span id="nav-label-3">Website</span></button>
-      <button onclick="window.open('https://sakeun72-cloud.github.io/MaryGraceCalcutlator/facebook_product_studio.html','_blank')" class="bg-amber-100 border border-amber-300 px-4 py-2 rounded-full text-[13px] font-medium hover:bg-amber-200">📘 Facebook Studio</button>
-      <button onclick="toggleNavEdit()" class="ml-auto text-[11px] border px-3 py-1 rounded-full bg-white">⚙ Edit Links</button>
+    <!-- 5 NAV BUTTONS -->
+    <div class="flex flex-wrap gap-2 border-t pt-3 mt-3">
+      <button onclick="openNavLink(0)" class="bg-zinc-900 text-white px-4 py-2 rounded-full text-[13px] font-medium hover:bg-black">📋 <span id="nav-label-0">Preisliste</span></button>
+      <button onclick="openNavLink(1)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">🛒 <span id="nav-label-1">Stammdaten</span></button>
+      <button onclick="openNavLink(2)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">📦 <span id="nav-label-2">Katalog</span></button>
+      <button onclick="openNavLink(3)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">🌐 <span id="nav-label-3">Website</span></button>
+      <button onclick="openNavLink(4)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">📊 <span id="nav-label-4">Facebook Page</span></button>
+      <button onclick="toggleNavEdit()" class="ml-auto text-[11px] border px-3 py-1 rounded-full bg-white">⚙️ Edit Links</button>
     </div>
     <div id="nav-edit" class="hidden mt-3 bg-zinc-50 p-3 rounded-xl grid grid-cols-1 md:grid-cols-2 gap-2">
       <div class="flex gap-2"><input id="nav-name-0" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-0" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
@@ -46,332 +53,478 @@
       <div class="flex gap-2"><input id="nav-name-4" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-4" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
       <button onclick="saveNavLinks()" class="bg-black text-white px-4 py-1.5 rounded-full text-xs w-fit">Save Links</button>
     </div>
-  </div>
-
-  <div class="bg-green-50 border border-green-300 rounded-[16px] p-3 mb-4">
-    <div class="flex flex-wrap gap-2 items-center">
-      <span class="text-xs font-bold">✅ Supabase FIXED (hardcoded):</span>
-      <span id="sb-url-display" class="text-xs bg-white border px-3 py-1 rounded-full">https://crdtuptjybxbsezxtksp.supabase.co</span>
-      <span class="text-xs bg-white border px-3 py-1 rounded-full">sb_publishable_GU6AAlF... fest eingebaut</span>
-      <button onclick="testConnection()" class="bg-black text-white px-4 py-1.5 rounded-full text-xs">Test Connection</button>
-      <span id="sb-status" class="text-[11px] text-zinc-600">⏳ Verbinde...</span>
+    <div class="mt-3 flex flex-wrap gap-2 text-[11px] text-zinc-600 border-t pt-3">
+      <span>Supabase URL:</span><input id="sb-url" class="border rounded-full px-2 py-1 text-[11px] min-w-[200px]" placeholder="https://xyz.supabase.co">
+      <input id="sb-key" type="password" class="border rounded-full px-2 py-1 text-[11px] min-w-[200px]" placeholder="anon key">
+      <button onclick="saveSB()" class="bg-black text-white px-3 py-1 rounded-full text-[11px]">Connect</button>
+      <span id="sb-status" class="text-[11px]">Lokal: nutzt letzte Stammdaten</span>
     </div>
   </div>
 
-  <div class="grid grid-cols-12 gap-4">
-    <div class="col-span-12 lg:col-span-3 bg-white rounded-[20px] shadow-sm border p-4 h-fit sticky top-4">
-      <div class="flex justify-between items-center mb-3">
-        <h3 class="font-display font-semibold" id="lbl-articles">Articles</h3>
-        <button onclick="newArticle()" class="bg-black text-white px-3 py-1.5 rounded-full text-xs" id="btn-new">+ New 001</button>
+  <!-- NO DATA HINT -->
+  <div id="no-data" class="bg-white rounded-[20px] p-12 text-center border">
+    <div class="font-display text-xl mb-2">Keine Stammdaten gefunden</div>
+    <p class="text-sm text-zinc-500 mb-4">Erst in der Stammdatenpflege Artikel mit 001 anlegen und speichern. Dann erscheinen sie hier im Dropdown.</p>
+    <div class="flex justify-center gap-2">
+      <button onclick="loadDemo()" class="bg-black text-white px-6 py-2 rounded-full text-sm">Demo Daten laden (3 Beispiel Artikel)</button>
+    </div>
+  </div>
+
+  <!-- LAYOUTS -->
+  <div id="layouts" class="hidden">
+    <div class="mb-4 flex flex-wrap justify-between items-center gap-3">
+      <div>
+        <h2 class="font-display text-lg font-semibold">4 Facebook-Ready Layout Ideen - Wie es aussehen könnte:</h2>
+        <p class="text-xs text-zinc-500">Alle Layouts ziehen automatisch: Sack Bild, Reis Detail, Geschmack, Passt zu, Aroma, Textur, Slogan aus deinen Stammdaten</p>
       </div>
-      <input id="search" placeholder="Search..." class="w-full border rounded-full px-3 py-2 text-sm mb-3 bg-zinc-50" oninput="renderList()">
-      <div id="list" class="space-y-2 max-h-[70vh] overflow-auto pr-1"></div>
+      <button onclick="downloadAllLayouts()" class="bg-black text-white px-5 py-2 rounded-full text-sm font-bold">📥 Alle 4 als PNG exportieren (1080px)</button>
     </div>
-    <div class="col-span-12 lg:col-span-9 bg-white rounded-[20px] shadow-sm border p-5">
-      <div id="form"></div>
+
+    <div class="grid grid-cols-12 gap-4">
+      
+      <!-- LAYOUT 1: Classic Square 1080x1080 -->
+      <div class="col-span-12 lg:col-span-6">
+        <div class="bg-white rounded-[20px] border shadow-sm p-4">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="font-semibold text-sm">Layout 1: Classic Product Card • 1080x1080 (Facebook Feed)</h3>
+            <button onclick="downloadLayout('layout1')" class="text-[11px] border px-3 py-1 rounded-full">📥 PNG Export</button>
+          </div>
+          <div id="layout1" class="aspect-square bg-white border-2 border-zinc-100 rounded-[20px] overflow-hidden relative flex">
+            <!-- Content will be injected -->
+          </div>
+          <p class="text-[11px] text-zinc-500 mt-2">Perfekt für normalen Facebook Post. Sack links groß, Eigenschaften rechts.</p>
+        </div>
+      </div>
+
+      <!-- LAYOUT 2: Food Pairing Focus -->
+      <div class="col-span-12 lg:col-span-6">
+        <div class="bg-white rounded-[20px] border shadow-sm p-4">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="font-semibold text-sm">Layout 2: Food Pairing • 1080x1080 (Passt zu Essen)</h3>
+            <button onclick="downloadLayout('layout2')" class="text-[11px] border px-3 py-1 rounded-full">📥 PNG Export</button>
+          </div>
+          <div id="layout2" class="aspect-square bg-[#fef9ec] border-2 border-zinc-100 rounded-[20px] overflow-hidden relative">
+          </div>
+          <p class="text-[11px] text-zinc-500 mt-2">Fokus auf "Passt gut zu" - ideal für Engagement: Leute taggen was sie dazu essen.</p>
+        </div>
+      </div>
+
+      <!-- LAYOUT 3: Story 9:16 -->
+      <div class="col-span-12 lg:col-span-4">
+        <div class="bg-white rounded-[20px] border shadow-sm p-4">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="font-semibold text-sm">Layout 3: Story • 1080x1920</h3>
+            <button onclick="downloadLayout('layout3')" class="text-[11px] border px-3 py-1 rounded-full">📥 Export</button>
+          </div>
+          <div id="layout3" class="aspect-[9/16] bg-zinc-900 border-2 border-zinc-100 rounded-[20px] overflow-hidden relative max-h-[600px] mx-auto w-full">
+          </div>
+        </div>
+      </div>
+
+      <!-- LAYOUT 4: Minimal Premium Ad -->
+      <div class="col-span-12 lg:col-span-8">
+        <div class="bg-white rounded-[20px] border shadow-sm p-4">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="font-semibold text-sm">Layout 4: Minimal Premium Ad • 1200x628 (Facebook Ads)</h3>
+            <button onclick="downloadLayout('layout4')" class="text-[11px] border px-3 py-1 rounded-full">📥 PNG Export</button>
+          </div>
+          <div id="layout4" class="aspect-[1200/628] bg-white border-2 border-zinc-100 rounded-[20px] overflow-hidden relative">
+          </div>
+          <p class="text-[11px] text-zinc-500 mt-2">Für bezahlte Facebook Ads optimiert - wenig Text (20% Regel), großer Slogan.</p>
+        </div>
+        
+        <!-- TECH INFO -->
+        <div class="bg-white rounded-[20px] border shadow-sm p-4 mt-4">
+          <h3 class="font-semibold text-sm mb-2">🔧 Umsetzung - So funktioniert es:</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-[12px]">
+            <div class="bg-zinc-50 p-3 rounded-xl">
+              <b>1. Daten kommen aus Supabase</b><br>
+              Tabelle <code>stammdaten</code> • Feld <code>marketing</code> JSONB enthält EN/TL/DE<br>
+              Bild URLs: <code>bild_sack_url</code> + <code>bild_reis_url</code> echte https:// links
+            </div>
+            <div class="bg-zinc-50 p-3 rounded-xl">
+              <b>2. Dropdown füllt Layouts</b><br>
+              JS: <code>supabase.from('stammdaten').select('*')</code> -> füllt Select<br>
+              Bei Auswahl: alle 4 Layouts werden mit <code>artikel.marketing[lang]</code> befüllt
+            </div>
+            <div class="bg-zinc-50 p-3 rounded-xl">
+              <b>3. Facebook Ready Export</b><br>
+              Button "PNG Export" nutzt html2canvas -> 1080px PNG<br>
+              Direkt hochladen zu Facebook Page / Ads Manager. Kein Photoshop nötig.
+            </div>
+          </div>
+          <div class="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-[11px]">
+            <b>Dein nächster Schritt:</b> Du hast jetzt Stammdatenpflege (Eingabe) + diese Seite (Ausgabe). Beide nutzen gleiche Supabase Tabelle. Tablet für Eingabe, diese Seite für Facebook Erstellung. Willst du dass ich den PNG Export (html2canvas) gleich fest einbaue + automatischen Upload zu Facebook Page?
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
-  <div id="toast" class="fixed bottom-4 right-4 bg-zinc-900 text-white px-4 py-2 rounded-full text-sm hidden shadow-lg z-50"></div>
+
 </div>
 
 <script>
-const SUPABASE_URL = "https://crdtuptjybxbsezxtksp.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_GU6AAlF0zc3LB4hFlKK0fw_TNxo9z7q";
-
-let navLinks = JSON.parse(localStorage.getItem('navLinks') || '[{"name":"Preisliste","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Pricelist.html"},{"name":"Shop","url":""},{"name":"Katalog","url":""},{"name":"Website","url":""},{"name":"Supabase","url":"https://supabase.com"}]')
+let navLinks = JSON.parse(localStorage.getItem('navLinks_fb') || '[{"name":"Preisliste","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Pricelist.html"},{"name":"Stammdaten","url":""},{"name":"Katalog","url":""},{"name":"Website","url":""},{"name":"Facebook Page","url":""}]')
 let lang = localStorage.getItem('lang') || 'EN'
-let articles = JSON.parse(localStorage.getItem('kingfields_full_v3') || '[]')
+let articles = []
 let current = null
 let sbClient = null
-let bildSackFile=null, bildSackBase64=null, bildReisBase64=null
-let zoom=1, panX=0, panY=0, isRound=false
 
-// HARDCODED init
-try{
-  sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-  console.log("Supabase client created with publishable key");
-  document.getElementById('sb-status').textContent = "⏳ Lade aus Supabase...";
-  setTimeout(()=>loadFromSupabase(), 500);
-}catch(e){
-  console.error(e);
-  document.getElementById('sb-status').textContent = "❌ " + e.message;
+function openNavLink(i){ const l=navLinks[i]; if(l&&l.url) window.open(l.url,'_blank'); else { alert('Kein Link für '+l.name+' - klick auf Edit Links'); toggleNavEdit() } }
+function toggleNavEdit(){ const el=document.getElementById('nav-edit'); el.classList.toggle('hidden'); for(let i=0;i<5;i++){ document.getElementById('nav-name-'+i).value=navLinks[i]?.name||''; document.getElementById('nav-url-'+i).value=navLinks[i]?.url||'' } }
+function saveNavLinks(){ for(let i=0;i<5;i++){ navLinks[i]={name:document.getElementById('nav-name-'+i).value||('Button '+(i+1)), url:document.getElementById('nav-url-'+i).value||''}; document.getElementById('nav-label-'+i).textContent=navLinks[i].name } localStorage.setItem('navLinks_fb', JSON.stringify(navLinks)); document.getElementById('nav-edit').classList.add('hidden') }
+function loadNavLabels(){ for(let i=0;i<5;i++){ const lbl=document.getElementById('nav-label-'+i); if(lbl&&navLinks[i]) lbl.textContent=navLinks[i].name } }
+
+const savedConf = JSON.parse(localStorage.getItem('supabase_config')||'{}')
+if(savedConf.url) document.getElementById('sb-url').value=savedConf.url
+if(savedConf.key) document.getElementById('sb-key').value=savedConf.key
+if(savedConf.url && savedConf.key) initSupabase(savedConf.url, savedConf.key)
+else loadLocal()
+
+function initSupabase(url,key){
+  try{ sbClient=supabase.createClient(url,key); document.getElementById('sb-status').textContent='✅ Connected'; loadFromSupabase() }catch(e){ document.getElementById('sb-status').textContent='❌ '+e.message; loadLocal() }
+}
+function saveSB(){ const u=document.getElementById('sb-url').value.trim(), k=document.getElementById('sb-key').value.trim(); if(!u||!k) return; localStorage.setItem('supabase_config', JSON.stringify({url:u,key:k})); initSupabase(u,k) }
+
+function loadLocal(){
+  // Try all possible localStorage keys
+  let local = JSON.parse(localStorage.getItem('kingfields_full_v3')||'[]')
+  if(local.length===0) local = JSON.parse(localStorage.getItem('kingfields_full_v2')||'[]')
+  if(local.length===0) local = JSON.parse(localStorage.getItem('kingfields')||'[]')
+  if(local.length===0) {
+    // Try to find any key with articles
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i)
+      try{
+        const v=JSON.parse(localStorage.getItem(k))
+        if(Array.isArray(v) && v.length>0 && v[0].artikelnummer) { local=v; console.log('Found in',k); break }
+      }catch(e){}
+    }
+  }
+  console.log('Local articles found:', local.length, local[0])
+  if(local.length===0) return
+  articles=local
+  fillSelect()
 }
 
 async function loadFromSupabase(){
-  if(!sbClient) return;
-  document.getElementById('sb-status').textContent = "⏳ Lade stammdaten...";
-  const {data, error} = await sbClient.from('stammdaten').select('*').order('artikelnummer');
-  if(error){
-    console.error(error);
-    document.getElementById('sb-status').innerHTML = "❌ " + error.message + " | Nutze localStorage";
-    document.getElementById('sb-status').className = "text-[11px] text-red-600 font-bold";
-    if(error.message.includes("RLS") || error.code==="42501"){
-      document.getElementById('sb-status').innerHTML += "<br>→ In Supabase: Table Editor > stammdaten > RLS ausschalten oder Policy erstellen";
-    }
-    renderList();
-    return;
-  }
-  console.log("Supabase data loaded:", data.length);
-  if(data && data.length>0){
-    // Convert Supabase to local format
-    articles = data.map(d=>{
-      const m=d.marketing||{};
-      const en=m.en||{}, tl=m.tl||{}, de=m.de||{};
-      return {
-        id: d.artikelnummer,
-        artikelnummer: d.artikelnummer,
-        nameKurz: d.name_kurz||'',
-        nameLang: d.name_lang||'',
-        marke: d.marke||'',
-        sorte: d.sorte||'',
-        qualitaet: d.qualitaet||'Premium',
-        herkunft: d.herkunft||'',
-        erntejahr: d.erntejahr||'',
-        gewicht: d.gewicht||'',
-        einheit: d.einheit||'kg',
-        distributor: 'Kingfields Trade',
-        geschmackEn: en.geschmack||'', geschmackTl: tl.geschmack||'', geschmackDe: de.geschmack||'',
-        aromaEn: en.aroma||'', aromaTl: tl.aroma||'', aromaDe: de.aroma||'',
-        texturEn: en.textur||'', texturTl: tl.textur||'', texturDe: de.textur||'',
-        passtZuEn: en.passtZu||'', passtZuTl: tl.passtZu||'', passtZuDe: de.passtZu||'',
-        kochmethodeEn: en.kochmethode||'', kochmethodeTl: tl.kochmethode||'', kochmethodeDe: de.kochmethode||'',
-        sloganEn: en.slogan||'', sloganTl: tl.slogan||'', sloganDe: de.slogan||'',
-        shortEn: en.short||'', shortTl: tl.short||'', shortDe: de.short||'',
-        storyEn: en.story||'', storyTl: tl.story||'', storyDe: de.story||'',
-        tasteEn: en.taste||'', tasteTl: tl.taste||'', tasteDe: de.taste||'',
-        originEn: en.origin||'', originTl: tl.origin||'', originDe: de.origin||'',
-        cookingEn: en.cooking||'', cookingTl: tl.cooking||'', cookingDe: de.cooking||'',
-        bildSackUrl: d.bild_sack_url||'',
-        bildReisUrl: d.bild_reis_url||'',
-        status: 'Active'
-      }
-    });
-    localStorage.setItem('kingfields_full_v3', JSON.stringify(articles));
-    document.getElementById('sb-status').textContent = "✅ " + articles.length + " Artikel aus Supabase geladen";
-    document.getElementById('sb-status').className = "text-[11px] text-green-600 font-bold";
-  } else {
-    document.getElementById('sb-status').textContent = "⚠️ Supabase leer (" + data.length + ") - nutze " + articles.length + " aus localStorage - speichere einen Artikel um zu Supabase zu übertragen";
-    document.getElementById('sb-status').className = "text-[11px] text-amber-600 font-bold";
-  }
-  renderList();
-}
-
-function initSupabase(url,key){ try{ sbClient=supabase.createClient(url,key); document.getElementById('sb-status').innerHTML='✅ Connected'; return true }catch(e){ document.getElementById('sb-status').innerHTML='❌ '+e.message; return false } }
-async function testConnection(){ const {data, error} = await sbClient.from('stammdaten').select('artikelnummer').limit(1); if(error) showToast('Test failed: '+error.message); else showToast('✅ Connected! Table exists, ' + (data.length) + ' rows sample') }
-function openLink(i){ const l=navLinks[i]; if(l&&l.url) window.open(l.url,'_blank'); else { showToast('Kein Link'); toggleNavEdit() } }
-function toggleNavEdit(){ const el=document.getElementById('nav-edit'); el.classList.toggle('hidden'); for(let i=0;i<5;i++){ document.getElementById('nav-name-'+i).value=navLinks[i]?.name||''; document.getElementById('nav-url-'+i).value=navLinks[i]?.url||'' } }
-function saveNavLinks(){ for(let i=0;i<5;i++){ navLinks[i]={name:document.getElementById('nav-name-'+i).value||('Button '+(i+1)), url:document.getElementById('nav-url-'+i).value||''}; const lbl=document.getElementById('nav-label-'+i); if(lbl) lbl.textContent=navLinks[i].name } localStorage.setItem('navLinks', JSON.stringify(navLinks)); document.getElementById('nav-edit').classList.add('hidden'); showToast('Links gespeichert') }
-function loadNavLabels(){ for(let i=0;i<5;i++){ const lbl=document.getElementById('nav-label-'+i); if(lbl&&navLinks[i]) lbl.textContent=navLinks[i].name } }
-function t(en,tl,de){ if(lang==='EN') return en; if(lang==='TL') return tl; return de }
-function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'),3500) }
-function getNextArtNr(){ let max=0; articles.forEach(a=>{ const n=parseInt((a.artikelnummer||'').replace(/\D/g,''))||0; if(n>max) max=n }); return String(max+1).padStart(3,'0') }
-function newArticle(){
-  const nr=getNextArtNr()
-  current={ id:Date.now().toString(), artikelnummer:nr, nameKurz:'', nameLang:'', marke:'', sorte:'Hasmin', qualitaet:'Premium', herkunft:'Thailand', erntejahr:new Date().getFullYear(), gewicht:'5', einheit:'kg', distributor:'Kingfields Trade', geschmackEn:'Soft, fluffy, fragrant', geschmackTl:'Malambot, mabango', geschmackDe:'Weich, fluffig, duftend', aromaEn:'Natural jasmine aroma', aromaTl:'Natural na jasmine aroma', aromaDe:'Natürliches Jasmin Aroma', texturEn:'Soft & slightly sticky', texturTl:'Malambot at medyo malagkit', texturDe:'Weich & leicht klebrig', passtZuEn:'Curry, grilled meat, vegetables, adobo', passtZuTl:'Curry, inihaw na karne, gulay, adobo', passtZuDe:'Curry, Grillfleisch, Gemüse, Adobo', kochmethodeEn:'1 cup rice : 1.2 cup water, 15 min', kochmethodeTl:'1 tasa bigas : 1.2 tasa tubig, 15 min', kochmethodeDe:'1 Tasse Reis : 1,2 Tasse Wasser, 15 Min', sloganEn:'Thai Soft Rice - Premium Quality', sloganTl:'De Kalidad na Bigas', sloganDe:'Thai Duftreis - Premium Qualität', shortEn:'Sweet aroma, soft texture', shortTl:'Mabango at malambot', shortDe:'Süßes Aroma, weiche Textur', storyEn:'Premium Hasmin rice from Thailand', storyTl:'Premium na Hasmin bigas mula sa Thailand', storyDe:'Premium Hasmin Reis aus Thailand', tasteEn:'Soft & Fragrant', tasteTl:'Malambot at Mabango', tasteDe:'Weich & Duftend', originEn:'From fertile fields of Thailand', originTl:'Mula sa matabang bukirin ng Thailand', originDe:'Von fruchtbaren Feldern Thailands', cookingEn:'Rinse, 1:1.2 water, 15 min', cookingTl:'Hugasan, 1:1.2 tubig, 15 min', cookingDe:'Waschen, 1:1,2 Wasser, 15 Min', status:'Draft', bildSackUrl:'', bildReisUrl:'', bildSack:'', bildReis:'' }
-  bildSackBase64=null; bildReisBase64=null; bildSackFile=null; zoom=1; panX=0; panY=0; renderForm(); showToast('New article '+nr)
-}
-function renderList(){
-  const q=document.getElementById('search').value.toLowerCase()
-  const list=document.getElementById('list')
-  const filtered = articles.filter(a=>(a.artikelnummer+' '+a.nameKurz+' '+a.marke).toLowerCase().includes(q))
-  if(filtered.length===0){ list.innerHTML = '<div class="text-center text-xs text-zinc-400 py-10">Keine Artikel<br><button onclick="newArticle()" class="mt-2 bg-black text-white px-3 py-1 rounded-full">+ Ersten erstellen</button></div>'; return; }
-  list.innerHTML=filtered.map(a=>`
-    <div onclick="openArticle('${a.id}')" class="border rounded-[12px] p-2 cursor-pointer hover:bg-zinc-50 ${current&&current.id===a.id?'bg-zinc-100 border-zinc-900':''}">
-      <div class="flex gap-2">
-        <div class="w-12 h-12 rounded-lg bg-zinc-100 overflow-hidden flex-shrink-0 chessboard">${a.bildSackUrl?`<img src="${a.bildSackUrl}" class="w-full h-full object-cover">`: (a.bildSack?`<img src="${a.bildSack}" class="w-full h-full object-cover">`:'')}</div>
-        <div class="flex-1 min-w-0">
-          <div class="font-bold text-[13px] truncate">${a.artikelnummer||'???'} ${a.status==='Active'?'<span class="bg-green-100 text-green-700 text-[10px] px-1.5 py-0.5 rounded-full">Active</span>':'<span class="bg-zinc-200 text-[10px] px-1.5 py-0.5 rounded-full">Draft</span>'}</div>
-          <div class="text-[11px] truncate">${a.nameKurz||a.sorte||''} • ${a.marke||''}</div>
-          ${a.bildSackUrl?'<div class="text-[9px] text-green-600">✓ Supabase</div>':''}
-        </div>
-      </div>
-    </div>
-  `).join('')
-}
-function openArticle(id){ current=articles.find(a=>a.id===id); bildSackBase64=current.bildSack||null; bildReisBase64=current.bildReis||null; zoom=current.bildReisZoom||1; panX=current.bildReisPanX||0; panY=current.bildReisPanY||0; isRound=current.bildReisRund||false; renderForm() }
-function base64ToBlob(b64){ const arr=b64.split(','), mime=arr[0].match(/:(.*?);/)[1], bstr=atob(arr[1]); let n=bstr.length; const u8=new Uint8Array(n); while(n--) u8[n]=bstr.charCodeAt(n); return new Blob([u8],{type:mime}) }
-function getCroppedBlob(){ return new Promise(res=>{ if(!bildReisBase64) return res(null); const c=document.createElement('canvas'); c.width=800; c.height=800; const ctx=c.getContext('2d'); if(isRound){ ctx.beginPath(); ctx.arc(400,400,400,0,Math.PI*2); ctx.clip() } const img=new Image(); img.onload=()=>{ const w=img.width*zoom, h=img.height*zoom, x=(800-w)/2+panX, y=(800-h)/2+panY; ctx.drawImage(img,x,y,w,h); c.toBlob(b=>res(b),'image/png',0.9) }; img.src=bildReisBase64 }) }
-async function uploadToSupabase(artNr){
-  if(!sbClient) return {sackUrl: current.bildSackUrl||null, reisUrl: current.bildReisUrl||null}
-  let sackUrl=current.bildSackUrl||null, reisUrl=current.bildReisUrl||null
-  try{
-    if(bildSackFile||bildSackBase64){
-      showToast('Uploading sack...')
-      let blob=bildSackFile; if(!blob&&bildSackBase64) blob=base64ToBlob(bildSackBase64)
-      const path=`${artNr}/sack.png`
-      const {error}=await sbClient.storage.from('sack-bilder').upload(path, blob, {upsert:true, contentType:'image/png'}); if(error) throw error
-      sackUrl=sbClient.storage.from('sack-bilder').getPublicUrl(path).data.publicUrl
-    }
-    if(bildReisBase64){
-      showToast('Uploading reis...')
-      const cropped=await getCroppedBlob()
-      if(cropped){ const path=`${artNr}/reis-detail.png`; const {error}=await sbClient.storage.from('reis-detail-bilder').upload(path,cropped,{upsert:true, contentType:'image/png'}); if(error) throw error; reisUrl=sbClient.storage.from('reis-detail-bilder').getPublicUrl(path).data.publicUrl }
-    }
-    return {sackUrl, reisUrl}
-  }catch(e){ showToast('Upload error: '+e.message); console.error(e); return {sackUrl, reisUrl} }
-}
-async function saveCurrent(){
-  if(!current) return
-  const artNr=document.getElementById('f-artnr').value.trim()
-  if(!artNr){ showToast('Artikelnummer 001 nötig'); return }
-  const fields=['nameKurz','nameLang','marke','sorte','qualitaet','herkunft','erntejahr','gewicht','einheit','distributor','geschmack','aroma','textur','passtZu','kochmethode','slogan','short','story','taste','origin','cooking']
-  fields.forEach(f=>{
-    const el=document.getElementById('f-'+f)
-    if(el){
-      if(lang==='EN') current[f+'En']=el.value
-      else if(lang==='TL') current[f+'Tl']=el.value
-      else current[f+'De']=el.value
-      if(['nameKurz','marke','sorte','gewicht'].includes(f)) current[f]=el.value
+  if(!sbClient){ loadLocal(); return }
+  const {data, error} = await sbClient.from('stammdaten').select('*').order('artikelnummer')
+  if(error){ console.error(error); loadLocal(); return }
+  // Map supabase to local format + keep base64 if any
+  articles=data.map(d=>{
+    const m=d.marketing||{}
+    const en=m.en||{}, tl=m.tl||{}, de=m.de||{}
+    return {
+      id:d.artikelnummer,
+      artikelnummer:d.artikelnummer,
+      nameKurz:d.name_kurz||'',
+      nameLang:d.name_lang||'',
+      marke:d.marke||'',
+      sorte:d.sorte||'',
+      qualitaet:d.qualitaet||'Premium',
+      herkunft:d.herkunft||'Thailand',
+      erntejahr:d.erntejahr||'2024',
+      gewicht:d.gewicht||'5',
+      einheit:d.einheit||'kg',
+      bildSackUrl:d.bild_sack_url||d.bild_sack||'',
+      bildReisUrl:d.bild_reis_url||d.bild_reis||'',
+      bildSack:d.bild_sack||'',
+      bildReis:d.bild_reis||'',
+      // Support all naming variants
+      geschmackEn:en.geschmack||m.geschmack||'', geschmackTl:tl.geschmack||'', geschmackDe:de.geschmack||m.geschmack_de||'',
+      aromaEn:en.aroma||'', aromaTl:tl.aroma||'', aromaDe:de.aroma||'',
+      texturEn:en.textur||'', texturTl:tl.textur||'', texturDe:de.textur||'',
+      passtZuEn:en.passtZu||en.passt_zu||'', passtZuTl:tl.passtZu||'', passtZuDe:de.passtZu||'',
+      kochmethodeEn:en.kochmethode||'', kochmethodeTl:tl.kochmethode||'', kochmethodeDe:de.kochmethode||'',
+      sloganEn:en.slogan||'', sloganTl:tl.slogan||'', sloganDe:de.slogan||'',
+      shortEn:en.short||'', shortTl:tl.short||'', shortDe:de.short||'',
+      storyEn:en.story||'', storyTl:tl.story||'', storyDe:de.story||'',
+      tasteEn:en.taste||'', tasteTl:tl.taste||'', tasteDe:de.taste||'',
+      originEn:en.origin||'', originTl:tl.origin||'', originDe:de.origin||'',
+      cookingEn:en.cooking||'', cookingTl:tl.cooking||'', cookingDe:de.cooking||'',
     }
   })
-  current.artikelnummer=artNr
-  current.nameKurz=document.getElementById('f-nameKurz').value
-  current.nameLang=document.getElementById('f-nameLang').value
-  current.marke=document.getElementById('f-marke').value
-  current.sorte=document.getElementById('f-sorte').value
-  current.qualitaet=document.getElementById('f-qualitaet').value
-  current.herkunft=document.getElementById('f-herkunft').value
-  current.erntejahr=document.getElementById('f-erntejahr').value
-  current.gewicht=document.getElementById('f-gewicht').value
-  current.einheit=document.getElementById('f-einheit').value
-  current.status=artNr?'Active':'Draft'
-  current.bildSack=bildSackBase64
-  current.bildReis=bildReisBase64
-  current.bildReisZoom=zoom; current.bildReisPanX=panX; current.bildReisPanY=panY; current.bildReisRund=isRound
-  if(sbClient){
-    const urls=await uploadToSupabase(artNr)
-    if(urls.sackUrl) current.bildSackUrl=urls.sackUrl
-    if(urls.reisUrl) current.bildReisUrl=urls.reisUrl
-    showToast('Saving to DB...')
-    const payload={
-      artikelnummer:artNr,
-      name_kurz:current.nameKurz,
-      name_lang:current.nameLang,
-      marke:current.marke,
-      sorte:current.sorte,
-      qualitaet:current.qualitaet,
-      herkunft:current.herkunft,
-      erntejahr:current.erntejahr,
-      gewicht:current.gewicht,
-      einheit:current.einheit,
-      marketing:{
-        en:{geschmack:current.geschmackEn, aroma:current.aromaEn, textur:current.texturEn, passtZu:current.passtZuEn, kochmethode:current.kochmethodeEn, slogan:current.sloganEn, short:current.shortEn, story:current.storyEn, taste:current.tasteEn, origin:current.originEn, cooking:current.cookingEn},
-        tl:{geschmack:current.geschmackTl, aroma:current.aromaTl, textur:current.texturTl, passtZu:current.passtZuTl, kochmethode:current.kochmethodeTl, slogan:current.sloganTl, short:current.shortTl, story:current.storyTl, taste:current.tasteTl, origin:current.originTl, cooking:current.cookingTl},
-        de:{geschmack:current.geschmackDe, aroma:current.aromaDe, textur:current.texturDe, passtZu:current.passtZuDe, kochmethode:current.kochmethodeDe, slogan:current.sloganDe, short:current.shortDe, story:current.storyDe, taste:current.tasteDe, origin:current.originDe, cooking:current.cookingDe}
-      },
-      bild_sack_url:current.bildSackUrl,
-      bild_reis_url:current.bildReisUrl,
-      status:'Active'
-    }
-    const {error}=await sbClient.from('stammdaten').upsert(payload,{onConflict:'artikelnummer'})
-    if(error) showToast('DB error: '+error.message)
-    else showToast('✅ Gespeichert: '+artNr)
-  } else {
-    showToast('Lokal gespeichert')
-  }
-  const idx=articles.findIndex(a=>a.id===current.id)
-  if(idx>=0) articles[idx]=current; else articles.push(current)
-  localStorage.setItem('kingfields_full_v3', JSON.stringify(articles))
-  renderList()
+  console.log('Supabase articles:', articles)
+  fillSelect()
 }
-function renderForm(){
-  if(!current){ document.getElementById('form').innerHTML=`<div class="text-center py-20 text-zinc-400"><div class="font-display text-xl mb-2">${t('Select article','Pumili ng article','Artikel wählen')}</div><p class="text-sm mb-4">${t('Or create new with 001','Or gumawa ng bago','Oder neu mit 001 erstellen')}</p><button onclick="newArticle()" class="bg-black text-white px-6 py-2 rounded-full text-sm">+ New ${getNextArtNr()}</button></div>`; return }
-  const val = (fieldBase) => { if(lang==='EN') return current[fieldBase+'En']||''; if(lang==='TL') return current[fieldBase+'Tl']||''; return current[fieldBase+'De']||'' }
-  document.getElementById('form').innerHTML=`
-    <div class="space-y-6">
-      <div>
-        <h3 class="font-display font-semibold text-[16px] mb-3">${t('Technical Data','Teknikal na Data','Technische Daten')} • ${current.status} • ${lang}</h3>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div><label class="text-[11px] font-medium text-zinc-500">${t('Article Nr * 001','Article Nr * 001','Artikel Nr * 001')}</label><input id="f-artnr" value="${current.artikelnummer||''}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-          <div><label class="text-[11px] text-zinc-500">${t('Brand','Brand','Marke')}</label><input id="f-marke" value="${current.marke||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div><label class="text-[11px] text-zinc-500">${t('Short Name','Maikling Pangalan','Kurz Name')}</label><input id="f-nameKurz" value="${current.nameKurz||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div><label class="text-[11px] text-zinc-500">${t('Long Name','Mahabang Pangalan','Lang Name')}</label><input id="f-nameLang" value="${current.nameLang||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div><label class="text-[11px] text-zinc-500">${t('Variety','Variety','Sorte')}</label><input id="f-sorte" value="${current.sorte||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div><label class="text-[11px] text-zinc-500">${t('Quality','Kalidad','Qualität')}</label><select id="f-qualitaet" class="w-full border rounded-full px-3 py-2 text-sm"><option>Premium</option><option>Standard</option><option>Organic</option><option>Bio</option></select></div>
-          <div><label class="text-[11px] text-zinc-500">${t('Origin','Pinagmulan','Herkunft')}</label><input id="f-herkunft" value="${current.herkunft||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div><label class="text-[11px] text-zinc-500">${t('Harvest Year','Taon ng Ani','Erntejahr')}</label><input id="f-erntejahr" value="${current.erntejahr||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div><label class="text-[11px] text-zinc-500">${t('Weight','Timbang','Gewicht')}</label><input id="f-gewicht" value="${current.gewicht||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div><label class="text-[11px] text-zinc-500">${t('Unit','Yunit','Einheit')}</label><input id="f-einheit" value="${current.einheit||'kg'}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-          <div class="col-span-2"><label class="text-[11px] text-zinc-500">Distributor</label><input id="f-distributor" value="${current.distributor||'Kingfields Trade'}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
+
+function fillSelect(){
+  const sel=document.getElementById('articleSelect')
+  sel.innerHTML='<option value="">-- Artikel wählen (DR Menü) --</option>' + articles.map(a=>`<option value="${a.artikelnummer}">${a.artikelnummer} • ${a.nameKurz||a.sorte} • ${a.marke}</option>`).join('')
+  if(articles.length>0){
+    document.getElementById('no-data').classList.add('hidden')
+    document.getElementById('layouts').classList.remove('hidden')
+    if(!current) selectArticle(articles[0].artikelnummer)
+  }
+}
+
+function loadDemo(){
+  articles=[
+    {artikelnummer:'001', nameKurz:'Hasmin 5kg', marke:'Kingfields', sorte:'Hasmin', qualitaet:'Premium', herkunft:'Thailand', erntejahr:'2024', gewicht:'5', einheit:'kg', bildSackUrl:'', bildReisUrl:'', geschmackEn:'Soft, fluffy, fragrant', geschmackDe:'Weich, fluffig, duftend', geschmackTl:'Malambot, mabango', aromaEn:'Natural jasmine aroma', aromaDe:'Natürliches Jasmin', aromaTl:'Natural jasmine', texturEn:'Soft & slightly sticky', texturDe:'Weich & leicht klebrig', texturTl:'Malambot at medyo malagkit', passtZuEn:'Curry, grilled meat, vegetables, adobo, fish', passtZuDe:'Curry, Grillfleisch, Gemüse, Adobo, Fisch', passtZuTl:'Curry, inihaw, gulay, adobo', kochmethodeEn:'1 cup rice : 1.2 water, 15 min', kochmethodeDe:'1 Tasse : 1,2 Wasser, 15 Min', kochmethodeTl:'1 tasa : 1.2 tubig, 15 min', sloganEn:'Thai Soft Rice - Premium Quality', sloganDe:'Thai Duftreis - Premium Qualität', sloganTl:'De Kalidad na Bigas', shortEn:'Sweet aroma, soft texture', shortDe:'Süßes Aroma, weiche Textur', shortTl:'Mabango at malambot'},
+    {artikelnummer:'002', nameKurz:'Jasmin 10kg', marke:'Kingfields', sorte:'Jasmin', qualitaet:'Premium', herkunft:'Thailand', erntejahr:'2024', gewicht:'10', einheit:'kg', bildSackUrl:'', bildReisUrl:'', geschmackEn:'Extra fragrant', geschmackDe:'Extra duftend', geschmackTl:'Sobrang mabango', aromaEn:'Strong jasmine', aromaDe:'Starkes Jasmin', aromaTl:'Matapang na jasmine', texturEn:'Fluffy', texturDe:'Fluffig', texturTl:'Malambot', passtZuEn:'Fried rice, curry, stir fry', passtZuDe:'Bratreis, Curry, Wok', passtZuTl:'Sinangag, curry', kochmethodeEn:'1:1.2 ratio', kochmethodeDe:'1:1,2 Verhältnis', kochmethodeTl:'1:1.2', sloganEn:'Everyday Jasmine', sloganDe:'Alltags Jasmin', sloganTl:'Araw-araw na Jasmine', shortEn:'Daily premium rice', shortDe:'Täglicher Premium Reis', shortTl:'Araw-araw na premium'},
+    {artikelnummer:'003', nameKurz:'Bio Hasmin 5kg', marke:'Kingfields Bio', sorte:'Hasmin', qualitaet:'Organic', herkunft:'Thailand', erntejahr:'2024', gewicht:'5', einheit:'kg', bildSackUrl:'', bildReisUrl:'', geschmackEn:'Natural, soft', geschmackDe:'Natürlich, weich', geschmackTl:'Natural, malambot', aromaEn:'Organic natural', aromaDe:'Bio natürlich', aromaTl:'Organic', texturEn:'Soft natural', texturDe:'Weich natürlich', texturTl:'Malambot', passtZuEn:'Healthy bowls, vegetables, fish', passtZuDe:'Healthy Bowls, Gemüse, Fisch', passtZuTl:'Healthy, gulay, isda', kochmethodeEn:'Rinse well, 1:1.2', kochmethodeDe:'Gut waschen, 1:1,2', kochmethodeTl:'Hugasang mabuti', sloganEn:'Organic Choice', sloganDe:'Bio Wahl', sloganTl:'Organic na pagpipilian', shortEn:'100% organic', shortDe:'100% Bio', shortTl:'100% organic'},
+  ]
+  fillSelect()
+}
+
+function selectArticle(artNr){
+  current=articles.find(a=>a.artikelnummer===artNr)
+  if(!current) return
+  document.getElementById('articleSelect').value=artNr
+  renderLayouts()
+}
+
+function val(field){
+  if(lang==='EN') return current[field+'En']||''
+  if(lang==='TL') return current[field+'Tl']||''
+  return current[field+'De']||''
+}
+
+function setLang(l){
+  lang=l; localStorage.setItem('lang',l)
+  document.querySelectorAll('[id^=btn-]').forEach(b=>b.className='px-4 py-1.5 rounded-full text-xs text-zinc-600')
+  document.getElementById('btn-'+l.toLowerCase()).className='px-4 py-1.5 rounded-full text-xs bg-black text-white'
+  if(current) renderLayouts()
+}
+
+function renderLayouts(){
+  if(!current) return
+  console.log('Current article:', current)
+  // Sack: try URL first, then base64 (bildSack, bild_sack, Sack Base64)
+  const sackSrc = current.bildSackUrl || current.bild_sack_url || current.bildSack || current.bild_sack || current.sackBase64 || ''
+  const reisSrc = current.bildReisUrl || current.bild_reis_url || current.bildReis || current.bild_reis || current.reisBase64 || ''
+  const sack = sackSrc ? `<img src="${sackSrc}" class="w-full h-full object-contain" onerror="this.parentElement.innerHTML='<div class=\'text-[10px] text-red-500 p-2\'>Bild Fehler: URL ungültig</div>'">` : `<div class="w-full h-full chessboard flex items-center justify-center text-[10px] text-zinc-400">Kein Sack Bild<br>${current.artikelnummer}</div>`
+  const reis = reisSrc ? `<img src="${reisSrc}" class="w-full h-full object-cover rounded-full" onerror="this.parentElement.innerHTML='<div class=\'w-full h-full bg-amber-100 rounded-full flex items-center justify-center text-[10px]\'>Fehler</div>'">` : `<div class="w-full h-full bg-amber-100 rounded-full flex items-center justify-center text-[10px]">Kein Reis Bild</div>`
+
+  // LAYOUT 1 Classic
+  document.getElementById('layout1').innerHTML=`
+    <div class="flex w-full h-full">
+      <div class="w-[48%] bg-[#f9f8f6] p-6 flex flex-col justify-between">
+        <div>
+          <div class="text-[10px] tracking-widest text-zinc-400 font-bold">${current.marke} • ${current.sorte} • ${current.qualitaet}</div>
+          <div class="font-display text-[28px] leading-[0.9] font-bold mt-2">${val('slogan')}</div>
+          <div class="text-[13px] mt-3 text-zinc-600">${val('short')}</div>
         </div>
+        <div class="w-full h-[62%] mt-4">${sack}</div>
+        <div class="text-[10px] text-zinc-400 mt-2">${current.artikelnummer} • ${current.gewicht}${current.einheit} • ${current.herkunft} ${current.erntejahr}</div>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="w-[52%] p-6 flex flex-col justify-between bg-white">
         <div>
-          <label class="text-xs font-bold">${t('1. Sack Image (transparent)','1. Sako Larawan','1. Sack Bild (transparent)')}</label>
-          <div id="drop-sack" class="chessboard border-2 border-dashed rounded-[16px] h-[320px] flex items-center justify-center relative overflow-hidden cursor-pointer mt-1" onclick="document.getElementById('file-sack').click()">
-            ${bildSackBase64?`<img src="${bildSackBase64}" class="max-w-full max-h-full object-contain">`:`<div class="bg-white px-3 py-1 rounded-full text-xs shadow">${t('Click / Drop sack image','I-click / I-drop sako','Klick / Drop Sack Bild')}</div>`}
-          </div>
-          <input id="file-sack" type="file" accept="image/*" class="hidden" onchange="handleSackFile(this)">
-          ${current.bildSackUrl?`<div class="text-[10px] text-green-600 mt-1 truncate">URL: ${current.bildSackUrl}</div>`:''}
-        </div>
-        <div>
-          <div class="flex justify-between items-center">
-            <label class="text-xs font-bold">${t('2. Loose Rice Detail (crop)','2. Detalyeng Bigas','2. Loser Reis Detail (Zuschneiden)')}</label>
-            <div class="flex gap-1">
-              <input type="range" min="0.5" max="3" step="0.1" value="${zoom}" oninput="zoom=parseFloat(this.value); updateReisPreview()" class="w-20">
-              <button onclick="isRound=!isRound; updateReisPreview()" class="text-[10px] border px-2 py-0.5 rounded-full bg-white">${isRound?'Round':'Square'}</button>
-              <button onclick="panX=0;panY=0;zoom=1;updateReisPreview()" class="text-[10px] border px-2 py-0.5 rounded-full bg-white">Reset</button>
+          <div class="flex gap-3 items-center">
+            <div class="w-20 h-20 rounded-full overflow-hidden border">${reis}</div>
+            <div>
+              <div class="text-[11px] font-bold uppercase tracking-widest text-zinc-400">Taste & Aroma</div>
+              <div class="text-[13px] font-semibold">${val('geschmack')}</div>
+              <div class="text-[12px] text-zinc-500">${val('aroma')}</div>
             </div>
           </div>
-          <div id="drop-reis" class="border-2 border-dashed rounded-[16px] h-[320px] flex items-center justify-center relative overflow-hidden bg-zinc-100 cursor-pointer mt-1" onclick="document.getElementById('file-reis').click()" onmousedown="startDrag(event)">
-            ${bildReisBase64?`<img id="reis-img" src="${bildReisBase64}" style="transform: translate(${panX}px, ${panY}px) scale(${zoom}); ${isRound?'border-radius:50%':''}" class="max-w-full max-h-full object-contain pointer-events-none">`:`<div class="bg-white px-3 py-1 rounded-full text-xs shadow">${t('Click / Drop rice image','I-click bigas','Klick Reis Bild')}</div>`}
-          </div>
-          <input id="file-reis" type="file" accept="image/*" class="hidden" onchange="handleReisFile(this)">
-          ${current.bildReisUrl?`<div class="text-[10px] text-green-600 mt-1 truncate">URL: ${current.bildReisUrl}</div>`:''}
-        </div>
-      </div>
-      <div class="bg-amber-50 border border-amber-200 rounded-[16px] p-4">
-        <h3 class="font-display font-semibold text-[14px] mb-3">🍚 ${t('Food Properties','Katangian ng Pagkain','Lebensmittel Eigenschaften')} • ${lang}</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div><label class="text-[11px] font-medium">${t('Taste / Flavor','Lasa','Geschmack')}</label><input id="f-geschmack" value="${val('geschmack')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-          <div><label class="text-[11px] font-medium">${t('Aroma','Aroma','Aroma')}</label><input id="f-aroma" value="${val('aroma')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-          <div><label class="text-[11px] font-medium">${t('Texture','Texture','Textur')}</label><input id="f-textur" value="${val('textur')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-          <div><label class="text-[11px] font-medium">${t('Cooking Method','Paraan ng Pagluluto','Kochmethode')}</label><input id="f-kochmethode" value="${val('kochmethode')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-          <div class="md:col-span-2"><label class="text-[11px] font-medium">${t('Pairs well with','Bagay sa','Passt gut zu')}</label><input id="f-passtZu" value="${val('passtZu')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-        </div>
-      </div>
-      <div class="bg-zinc-50 border rounded-[16px] p-4">
-        <h3 class="font-display font-semibold text-[14px] mb-3">📢 ${t('Marketing Texts','Mga Teksto sa Marketing','Marketing Texte')} • ${lang}</h3>
-        <div class="grid grid-cols-1 gap-3">
-          <div><label class="text-[11px]">Slogan (${lang})</label><input id="f-slogan" value="${val('slogan')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-          <div><label class="text-[11px]">Short Desc (${lang})</label><input id="f-short" value="${val('short')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-          <div><label class="text-[11px]">Long Story (${lang})</label><textarea id="f-story" class="w-full border rounded-[12px] px-3 py-2 text-sm bg-white h-20">${val('story')}</textarea></div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div><label class="text-[11px]">Taste Tag (${lang})</label><input id="f-taste" value="${val('taste')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-            <div><label class="text-[11px]">Origin Text (${lang})</label><input id="f-origin" value="${val('origin')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
-            <div><label class="text-[11px]">Cooking Tip (${lang})</label><input id="f-cooking" value="${val('cooking')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div>
+          <div class="mt-6 space-y-3">
+            <div class="bg-zinc-50 rounded-xl p-3">
+              <div class="text-[10px] font-bold tracking-widest text-zinc-400">TEXTURE</div>
+              <div class="text-[12px]">${val('textur')}</div>
+            </div>
+            <div class="bg-amber-50 border border-amber-100 rounded-xl p-3">
+              <div class="text-[10px] font-bold tracking-widest text-amber-800">PAIRS WELL WITH / PASST ZU</div>
+              <div class="text-[13px] font-semibold text-amber-900">${val('passtZu')}</div>
+            </div>
+            <div class="bg-zinc-900 text-white rounded-xl p-3">
+              <div class="text-[10px] tracking-widest text-zinc-400">COOKING</div>
+              <div class="text-[12px]">${val('kochmethode')}</div>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="flex gap-2">
-        <button onclick="saveCurrent()" class="flex-1 bg-black text-white py-3 rounded-full font-bold text-sm">💾 ${t('Save to Supabase','I-save sa Supabase','In Supabase speichern')} ${sbClient?'✅':'(local only)'}</button>
-        <button onclick="deleteCurrent()" class="bg-red-50 text-red-600 border border-red-200 px-6 py-3 rounded-full text-sm">Delete</button>
+        <div class="text-[10px] text-zinc-400">Kingfields Trade • ${current.herkunft}</div>
       </div>
     </div>
   `
-  document.getElementById('f-qualitaet').value=current.qualitaet||'Premium'
+
+  // LAYOUT 2 Food Pairing
+  document.getElementById('layout2').innerHTML=`
+    <div class="w-full h-full p-8 flex flex-col bg-[#fffaf0]">
+      <div class="text-center">
+        <div class="font-display text-[42px] font-black leading-[1.05]">${val('geschmack') || val('slogan')}</div>
+        <div class="text-[16px] text-zinc-600 mt-4 font-medium">${val('short')}</div>
+      </div>
+      <div class="flex-1 flex items-center justify-center gap-10 mt-10">
+        <div class="w-[38%] aspect-[3/4] rounded-[24px] overflow-hidden border-2 border-zinc-200 bg-white shadow-sm p-4 flex items-center justify-center">${typeof sackImg !== 'undefined' ? sackImg : sack}</div>
+        <div class="w-[42%] aspect-square rounded-full overflow-hidden border-4 border-white shadow-xl bg-white">${typeof reisImgSimple !== 'undefined' ? reisImgSimple : reis}</div>
+      </div>
+      <div class="mt-auto bg-white rounded-[24px] p-8 border-2 border-zinc-100 shadow-sm">
+        <div class="text-[14px] font-black tracking-[0.18em] text-center mb-4 text-zinc-900 uppercase">Passt perfekt zu</div>
+        <div class="text-center text-[22px] font-bold leading-[1.4] text-zinc-900">
+          ${val('passtZu').split(',').map(s=>s.trim()).filter(Boolean).join(' <span style="color:#bbb; margin:0 10px;">•</span> ')}
+        </div>
+        <div class="text-center text-[16px] text-zinc-600 mt-6 font-medium">
+          ${val('aroma')} <span style="color:#bbb; margin:0 10px;">•</span> ${val('textur')} <span style="color:#bbb; margin:0 10px;">•</span> ${current.gewicht}${current.einheit}
+        </div>
+      </div>
+    </div>
+  `
+
+  // LAYOUT 3 Story 9:16
+  document.getElementById('layout3').innerHTML=`
+    <div class="w-full h-full flex flex-col p-5 text-white relative">
+      <div class="absolute inset-0 bg-gradient-to-b from-zinc-800 to-zinc-900"></div>
+      <div class="relative z-10 flex flex-col h-full">
+        <div class="text-[10px] tracking-widest opacity-60">${current.marke} • ${current.sorte} • ${current.artikelnummer}</div>
+        <div class="font-display text-[32px] font-bold leading-[0.9] mt-4">${val('slogan')}</div>
+        <div class="mt-4 w-full h-[42%] rounded-[20px] overflow-hidden bg-white p-2">${sack}</div>
+        <div class="mt-4 flex gap-3">
+          <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-white/20 flex-shrink-0">${reis}</div>
+          <div class="text-[12px] leading-snug">
+            <div class="font-bold">${val('geschmack')}</div>
+            <div class="opacity-70 text-[11px] mt-1">${val('aroma')}<br>${val('textur')}</div>
+          </div>
+        </div>
+        <div class="mt-auto bg-white text-zinc-900 rounded-[16px] p-4">
+          <div class="text-[10px] font-bold tracking-widest">PASST ZU</div>
+          <div class="text-[13px] font-semibold mt-1">${val('passtZu')}</div>
+          <div class="text-[11px] text-zinc-500 mt-2">${val('kochmethode')}</div>
+          <div class="mt-3 text-[10px] text-zinc-400">${current.gewicht}${current.einheit} • ${current.herkunft} • ${current.qualitaet}</div>
+        </div>
+      </div>
+    </div>
+  `
+
+  // LAYOUT 4 Minimal Ad
+  document.getElementById('layout4').innerHTML=`
+    <div class="w-full h-full flex">
+      <div class="w-[35%] p-6 flex flex-col justify-center bg-[#f9f8f6]">
+        <div class="w-full aspect-[3/4] rounded-xl overflow-hidden bg-white border p-1">${sack}</div>
+      </div>
+      <div class="flex-1 p-8 flex flex-col justify-center">
+        <div class="text-[10px] tracking-widest font-bold text-zinc-400">${current.marke} • ${current.artikelnummer} • ${current.gewicht}${current.einheit}</div>
+        <div class="font-display text-[32px] font-bold leading-[0.9] mt-2">${val('slogan')}</div>
+        <div class="text-[14px] text-zinc-600 mt-3">${val('short')}</div>
+        <div class="flex gap-2 mt-4">
+          <span class="bg-zinc-900 text-white px-3 py-1 rounded-full text-[11px]">${val('geschmack')}</span>
+          <span class="border px-3 py-1 rounded-full text-[11px]">${current.qualitaet}</span>
+        </div>
+        <div class="text-[11px] text-zinc-500 mt-4">✓ ${val('passtZu').substring(0,60)}...</div>
+      </div>
+      <div class="w-[18%] bg-zinc-900 text-white p-4 flex flex-col justify-between">
+        <div class="w-16 h-16 rounded-full overflow-hidden mx-auto border border-white/20">${reis}</div>
+        <div class="text-[10px] text-center opacity-60">${val('kochmethode')}</div>
+      </div>
+    </div>
+  `
 }
-function handleSackFile(input){ const file=input.files[0]; if(!file) return; bildSackFile=file; const r=new FileReader(); r.onload=e=>{ bildSackBase64=e.target.result; renderForm() }; r.readAsDataURL(file) }
-function handleReisFile(input){ const file=input.files[0]; if(!file) return; const r=new FileReader(); r.onload=e=>{ bildReisBase64=e.target.result; renderForm() }; r.readAsDataURL(file) }
-function updateReisPreview(){ const img=document.getElementById('reis-img'); if(img){ img.style.transform=`translate(${panX}px, ${panY}px) scale(${zoom})`; img.style.borderRadius=isRound?'50%':'' } }
-let dragging=false, startX, startY
-function startDrag(e){ dragging=true; startX=e.clientX-panX; startY=e.clientY-panY; window.addEventListener('mousemove', onDrag); window.addEventListener('mouseup', stopDrag) }
-function onDrag(e){ if(!dragging) return; panX=e.clientX-startX; panY=e.clientY-startY; updateReisPreview() }
-function stopDrag(){ dragging=false; window.removeEventListener('mousemove', onDrag); window.removeEventListener('mouseup', stopDrag) }
-function deleteCurrent(){ if(!confirm('Delete '+current.artikelnummer+'?')) return; articles=articles.filter(a=>a.id!==current.id); localStorage.setItem('kingfields_full_v3', JSON.stringify(articles)); current=null; renderList(); renderForm(); showToast('Deleted') }
-function setLang(l){
-  if(current){
-    const fields=['geschmack','aroma','textur','passtZu','kochmethode','slogan','short','story','taste','origin','cooking']
-    fields.forEach(f=>{ const el=document.getElementById('f-'+f); if(el){ if(lang==='EN') current[f+'En']=el.value; else if(lang==='TL') current[f+'Tl']=el.value; else current[f+'De']=el.value; } })
+
+async function downloadLayout(id){
+  const el = document.getElementById(id)
+  if(!el){ alert('Layout nicht gefunden'); return }
+  const artNr = current?.artikelnummer || '000'
+  const langSuffix = lang
+  const fileName = `Kingfields_${artNr}_${id}_${langSuffix}_${new Date().toISOString().slice(0,10)}.png`
+  
+  // Show loading
+  const btn = event?.target
+  const origText = btn ? btn.textContent : ''
+  if(btn) { btn.textContent = '⏳ Export...'; btn.disabled = true }
+  
+  try{
+    // For high quality 1080px export, scale up
+    const canvas = await html2canvas(el, {
+      scale: 2, // 2x for 1080 quality (element is ~540px, scale 2 = 1080)
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: null,
+      logging: false,
+      width: el.offsetWidth,
+      height: el.offsetHeight
+    })
+    
+    // Download
+    const link = document.createElement('a')
+    link.download = fileName
+    link.href = canvas.toDataURL('image/png', 1.0)
+    link.click()
+    
+    if(btn) { btn.textContent = '✅ Exported!'; setTimeout(()=>{ btn.textContent = origText; btn.disabled=false }, 2000) }
+    
+    console.log('Exported', fileName, canvas.width+'x'+canvas.height)
+  }catch(e){
+    console.error('Export failed', e)
+    alert('Export Fehler: '+e.message+'\n\nVersuch: Rechtsklick auf Layout > Screenshot speichern als Workaround')
+    if(btn) { btn.textContent = origText; btn.disabled=false }
   }
-  lang=l; localStorage.setItem('lang',l)
-  document.querySelectorAll('[id^=btn-]').forEach(b=>{ if(b.id.startsWith('btn-')){ b.className='px-4 py-1.5 rounded-full text-sm text-zinc-600' } })
-  document.getElementById('btn-'+l.toLowerCase()).className='px-4 py-1.5 rounded-full text-sm bg-black text-white font-medium'
-  if(current) renderForm()
 }
+
+async function downloadAllLayouts(){
+  if(!current){ alert('Erst Artikel wählen'); return }
+  for(const id of ['layout1','layout2','layout3','layout4']){
+    await downloadLayout(id)
+    await new Promise(r=>setTimeout(r, 500))
+  }
+}
+
+
+// Init
 setLang(lang)
-renderList()
 loadNavLabels()
 </script>
+
+<script>
+// HARDCODED Supabase Credentials - FIX 2026-08-23
+const SUPABASE_URL = "https://crdtuptjybxbsezxtksp.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_GU6AAlF0zc3LB4hFlKK0fw_TNxo9z7q";
+console.log("Supabase URL:", SUPABASE_URL);
+console.log("Key present:", !!SUPABASE_PUBLISHABLE_KEY);
+
+// Override localStorage to ensure correct values
+localStorage.setItem("supabase_config", JSON.stringify({url: SUPABASE_URL, key: SUPABASE_PUBLISHABLE_KEY}));
+localStorage.setItem("sb-url", SUPABASE_URL);
+localStorage.setItem("sb-key", SUPABASE_PUBLISHABLE_KEY);
+
+// Auto connect after page load
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const urlInput = document.getElementById('sb-url');
+    const keyInput = document.getElementById('sb-key');
+    const statusEl = document.getElementById('sb-status');
+    if(urlInput) urlInput.value = SUPABASE_URL;
+    if(keyInput) keyInput.value = SUPABASE_PUBLISHABLE_KEY.substring(0,25) + "...";
+    if(statusEl) statusEl.textContent = "⏳ Verbinde mit " + SUPABASE_URL + "...";
+    
+    try{
+      if(typeof supabase === 'undefined'){
+        console.error("supabase-js not loaded!");
+        if(statusEl) statusEl.textContent = "❌ supabase-js nicht geladen - CDN blockiert";
+        return;
+      }
+      const client = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+      window.sbClient = client;
+      sbClient = client;
+      console.log("Client created, testing connection...");
+      client.from('stammdaten').select('artikelnummer').limit(1).then(({data, error}) => {
+        if(error){
+          console.error("Supabase error:", error);
+          if(statusEl) {
+            statusEl.textContent = "❌ Fehler: " + error.message;
+            statusEl.className = "text-[11px] text-red-600 font-bold";
+          }
+          // Check RLS
+          if(error.message.includes("row-level security") || error.message.includes("RLS") || error.code === "42501"){
+            if(statusEl) statusEl.textContent += " - RLS blockiert! In Supabase: Table > RLS ausschalten oder Policy für anon read erstellen";
+          }
+        } else {
+          console.log("Connected! Data:", data);
+          if(statusEl) {
+            statusEl.textContent = "✅ Verbunden! " + (data?.length||0) + " Artikel gefunden";
+            statusEl.className = "text-[11px] text-green-600 font-bold";
+          }
+          if(typeof loadFromSupabase === 'function') loadFromSupabase();
+        }
+      });
+    }catch(e){
+      console.error("CreateClient error:", e);
+      if(statusEl) statusEl.textContent = "❌ " + e.message;
+    }
+  }, 1000);
+});
+</script>
+
 </body>
 </html>
