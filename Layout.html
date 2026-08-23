@@ -1,100 +1,369 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Produktübersicht</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-        .container {
-            display: flex;
-            gap: 20px;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .card {
-            width: 250px;
-            text-align: center;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-        }
-        .card img {
-            width: 100%;
-            height: auto;
-            border-radius: 5px;
-            margin-bottom: 15px;
-        }
-        .title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #333;
-        }
-        .description {
-            font-size: 14px;
-            color: #666;
-            line-height: 1.5;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kingfields - Facebook Product Layouts aus Stammdaten</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+.font-display{font-family:"Fraunces",serif}
+.font-body{font-family:"Plus Jakarta Sans",sans-serif}
+.chessboard{background-image:linear-gradient(45deg,#e5e7eb 25%,transparent 25%),linear-gradient(-45deg,#e5e7eb 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#e5e7eb 75%),linear-gradient(-45deg,transparent 75%,#e5e7eb 75%);background-size:20px 20px;background-position:0 0,0 10px,10px -10px,-10px 0px}
+</style>
 </head>
-<body>
+<body class="bg-[#f6f5f2] font-body">
+<div class="max-w-[1600px] mx-auto p-4">
 
-<div class="container">
-    
-    <!-- ARTIKEL 1 -->
-    <div class="card">
-        <!-- BILD HIER ÄNDERN -->
-        <img src="bild1.jpg" alt="Produkt 1">
-        <!-- TEXT OBEN HIER ÄNDERN -->
-        <div class="title">PERFECT GRAIN JASMINE 25kg</div>
-        <!-- TEXT UNTEN HIER ÄNDERN -->
-        <div class="description">
-            Premium Long Grain Aromatic Rice.<br>
-            Net Weight 25kg.<br>
-            Excellent Quality and Milling.
+  <!-- HEADER -->
+  <div class="bg-white rounded-[20px] shadow-sm border p-4 mb-4">
+    <div class="flex flex-wrap justify-between items-center gap-3">
+      <div>
+        <h1 class="font-display text-2xl font-bold">Facebook Product Studio</h1>
+        <p class="text-xs text-zinc-500">Wählt Artikel aus Stammdaten • Layout wird automatisch befüllt • Ready für Facebook</p>
+      </div>
+      <div class="flex gap-2 items-center flex-wrap">
+        <select id="articleSelect" onchange="selectArticle(this.value)" class="border rounded-full px-4 py-2 text-sm bg-zinc-50 min-w-[220px]">
+          <option value="">-- Artikel wählen (DR Menü) --</option>
+        </select>
+        <div class="flex bg-zinc-100 rounded-full p-1">
+          <button onclick="setLang('EN')" id="btn-en" class="px-4 py-1.5 rounded-full text-xs bg-black text-white">EN</button>
+          <button onclick="setLang('TL')" id="btn-tl" class="px-4 py-1.5 rounded-full text-xs">TL</button>
+          <button onclick="setLang('DE')" id="btn-de" class="px-4 py-1.5 rounded-full text-xs">DE</button>
         </div>
+        <button onclick="loadFromSupabase()" class="bg-yellow-50 border border-yellow-200 px-4 py-2 rounded-full text-xs">🔄 Aus Supabase laden</button>
+      </div>
+    </div>
+    <div class="mt-3 flex flex-wrap gap-2 text-[11px] text-zinc-600">
+      <span>Supabase URL:</span><input id="sb-url" class="border rounded-full px-2 py-1 text-[11px] min-w-[200px]" placeholder="https://xyz.supabase.co">
+      <input id="sb-key" type="password" class="border rounded-full px-2 py-1 text-[11px] min-w-[200px]" placeholder="anon key">
+      <button onclick="saveSB()" class="bg-black text-white px-3 py-1 rounded-full text-[11px]">Connect</button>
+      <span id="sb-status" class="text-[11px]">Lokal: nutzt letzte Stammdaten</span>
+    </div>
+  </div>
+
+  <!-- NO DATA HINT -->
+  <div id="no-data" class="bg-white rounded-[20px] p-12 text-center border">
+    <div class="font-display text-xl mb-2">Keine Stammdaten gefunden</div>
+    <p class="text-sm text-zinc-500 mb-4">Erst in der Stammdatenpflege Artikel mit 001 anlegen und speichern. Dann erscheinen sie hier im Dropdown.</p>
+    <div class="flex justify-center gap-2">
+      <button onclick="loadDemo()" class="bg-black text-white px-6 py-2 rounded-full text-sm">Demo Daten laden (3 Beispiel Artikel)</button>
+    </div>
+  </div>
+
+  <!-- LAYOUTS -->
+  <div id="layouts" class="hidden">
+    <div class="mb-4">
+      <h2 class="font-display text-lg font-semibold">4 Facebook-Ready Layout Ideen - Wie es aussehen könnte:</h2>
+      <p class="text-xs text-zinc-500">Alle Layouts ziehen automatisch: Sack Bild, Reis Detail, Geschmack, Passt zu, Aroma, Textur, Slogan aus deinen Stammdaten</p>
     </div>
 
-    <!-- ARTIKEL 2 -->
-    <div class="card">
-        <!-- BILD HIER ÄNDERN -->
-        <img src="bild2.jpg" alt="Produkt 2">
-        <!-- TEXT OBEN HIER ÄNDERN -->
-        <div class="title">SUEER DINORADO MINDORO RICE</div>
-        <!-- TEXT UNTEN HIER ÄNDERN -->
-        <div class="description">
-            Premium Long Grain Aromatic Rice.<br>
-            Net Weight 25kg.<br>
-            Excellent Quality and Milling.
+    <div class="grid grid-cols-12 gap-4">
+      
+      <!-- LAYOUT 1: Classic Square 1080x1080 -->
+      <div class="col-span-12 lg:col-span-6">
+        <div class="bg-white rounded-[20px] border shadow-sm p-4">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="font-semibold text-sm">Layout 1: Classic Product Card • 1080x1080 (Facebook Feed)</h3>
+            <button onclick="downloadLayout('layout1')" class="text-[11px] border px-3 py-1 rounded-full">📥 PNG Export</button>
+          </div>
+          <div id="layout1" class="aspect-square bg-white border-2 border-zinc-100 rounded-[20px] overflow-hidden relative flex">
+            <!-- Content will be injected -->
+          </div>
+          <p class="text-[11px] text-zinc-500 mt-2">Perfekt für normalen Facebook Post. Sack links groß, Eigenschaften rechts.</p>
         </div>
-    </div>
+      </div>
 
-    <!-- ARTIKEL 3 -->
-    <div class="card">
-        <!-- BILD HIER ÄNDERN -->
-        <img src="bild3.jpg" alt="Produkt 3">
-        <!-- TEXT OBEN HIER ÄNDERN -->
-        <div class="title">PERFECT GRAIN HASMIN</div>
-        <!-- TEXT UNTEN HIER ÄNDERN -->
-        <div class="description">
-            Premium Long Grain Aromatic.<br>
-            Pinakamataas na kalidad na mahabang butil.<br>
-            Well-Milled, High Quality.
+      <!-- LAYOUT 2: Food Pairing Focus -->
+      <div class="col-span-12 lg:col-span-6">
+        <div class="bg-white rounded-[20px] border shadow-sm p-4">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="font-semibold text-sm">Layout 2: Food Pairing • 1080x1080 (Passt zu Essen)</h3>
+            <button onclick="downloadLayout('layout2')" class="text-[11px] border px-3 py-1 rounded-full">📥 PNG Export</button>
+          </div>
+          <div id="layout2" class="aspect-square bg-[#fef9ec] border-2 border-zinc-100 rounded-[20px] overflow-hidden relative">
+          </div>
+          <p class="text-[11px] text-zinc-500 mt-2">Fokus auf "Passt gut zu" - ideal für Engagement: Leute taggen was sie dazu essen.</p>
         </div>
+      </div>
+
+      <!-- LAYOUT 3: Story 9:16 -->
+      <div class="col-span-12 lg:col-span-4">
+        <div class="bg-white rounded-[20px] border shadow-sm p-4">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="font-semibold text-sm">Layout 3: Story • 1080x1920</h3>
+            <button onclick="downloadLayout('layout3')" class="text-[11px] border px-3 py-1 rounded-full">📥 Export</button>
+          </div>
+          <div id="layout3" class="aspect-[9/16] bg-zinc-900 border-2 border-zinc-100 rounded-[20px] overflow-hidden relative max-h-[600px] mx-auto w-full">
+          </div>
+        </div>
+      </div>
+
+      <!-- LAYOUT 4: Minimal Premium Ad -->
+      <div class="col-span-12 lg:col-span-8">
+        <div class="bg-white rounded-[20px] border shadow-sm p-4">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="font-semibold text-sm">Layout 4: Minimal Premium Ad • 1200x628 (Facebook Ads)</h3>
+            <button onclick="downloadLayout('layout4')" class="text-[11px] border px-3 py-1 rounded-full">📥 PNG Export</button>
+          </div>
+          <div id="layout4" class="aspect-[1200/628] bg-white border-2 border-zinc-100 rounded-[20px] overflow-hidden relative">
+          </div>
+          <p class="text-[11px] text-zinc-500 mt-2">Für bezahlte Facebook Ads optimiert - wenig Text (20% Regel), großer Slogan.</p>
+        </div>
+        
+        <!-- TECH INFO -->
+        <div class="bg-white rounded-[20px] border shadow-sm p-4 mt-4">
+          <h3 class="font-semibold text-sm mb-2">🔧 Umsetzung - So funktioniert es:</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-[12px]">
+            <div class="bg-zinc-50 p-3 rounded-xl">
+              <b>1. Daten kommen aus Supabase</b><br>
+              Tabelle <code>stammdaten</code> • Feld <code>marketing</code> JSONB enthält EN/TL/DE<br>
+              Bild URLs: <code>bild_sack_url</code> + <code>bild_reis_url</code> echte https:// links
+            </div>
+            <div class="bg-zinc-50 p-3 rounded-xl">
+              <b>2. Dropdown füllt Layouts</b><br>
+              JS: <code>supabase.from('stammdaten').select('*')</code> -> füllt Select<br>
+              Bei Auswahl: alle 4 Layouts werden mit <code>artikel.marketing[lang]</code> befüllt
+            </div>
+            <div class="bg-zinc-50 p-3 rounded-xl">
+              <b>3. Facebook Ready Export</b><br>
+              Button "PNG Export" nutzt html2canvas -> 1080px PNG<br>
+              Direkt hochladen zu Facebook Page / Ads Manager. Kein Photoshop nötig.
+            </div>
+          </div>
+          <div class="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-[11px]">
+            <b>Dein nächster Schritt:</b> Du hast jetzt Stammdatenpflege (Eingabe) + diese Seite (Ausgabe). Beide nutzen gleiche Supabase Tabelle. Tablet für Eingabe, diese Seite für Facebook Erstellung. Willst du dass ich den PNG Export (html2canvas) gleich fest einbaue + automatischen Upload zu Facebook Page?
+          </div>
+        </div>
+      </div>
+
     </div>
+  </div>
 
 </div>
 
+<script>
+let lang = localStorage.getItem('lang') || 'EN'
+let articles = []
+let current = null
+let sbClient = null
+
+const savedConf = JSON.parse(localStorage.getItem('supabase_config')||'{}')
+if(savedConf.url) document.getElementById('sb-url').value=savedConf.url
+if(savedConf.key) document.getElementById('sb-key').value=savedConf.key
+if(savedConf.url && savedConf.key) initSupabase(savedConf.url, savedConf.key)
+else loadLocal()
+
+function initSupabase(url,key){
+  try{ sbClient=supabase.createClient(url,key); document.getElementById('sb-status').textContent='✅ Connected'; loadFromSupabase() }catch(e){ document.getElementById('sb-status').textContent='❌ '+e.message; loadLocal() }
+}
+function saveSB(){ const u=document.getElementById('sb-url').value.trim(), k=document.getElementById('sb-key').value.trim(); if(!u||!k) return; localStorage.setItem('supabase_config', JSON.stringify({url:u,key:k})); initSupabase(u,k) }
+
+function loadLocal(){
+  const local = JSON.parse(localStorage.getItem('kingfields_full_v3')||'[]')
+  if(local.length===0) return
+  articles=local
+  fillSelect()
+}
+
+async function loadFromSupabase(){
+  if(!sbClient){ loadLocal(); return }
+  const {data, error} = await sbClient.from('stammdaten').select('*').order('artikelnummer')
+  if(error){ console.error(error); loadLocal(); return }
+  // Map supabase to local format
+  articles=data.map(d=>{
+    const m=d.marketing||{}
+    return {
+      id:d.artikelnummer,
+      artikelnummer:d.artikelnummer,
+      nameKurz:d.name_kurz||'',
+      nameLang:d.name_lang||'',
+      marke:d.marke||'',
+      sorte:d.sorte||'',
+      qualitaet:d.qualitaet||'Premium',
+      herkunft:d.herkunft||'Thailand',
+      erntejahr:d.erntejahr||'2024',
+      gewicht:d.gewicht||'5',
+      einheit:d.einheit||'kg',
+      bildSackUrl:d.bild_sack_url||'',
+      bildReisUrl:d.bild_reis_url||'',
+      geschmackEn:m.en?.geschmack||'', geschmackTl:m.tl?.geschmack||'', geschmackDe:m.de?.geschmack||'',
+      aromaEn:m.en?.aroma||'', aromaTl:m.tl?.aroma||'', aromaDe:m.de?.aroma||'',
+      texturEn:m.en?.textur||'', texturTl:m.tl?.textur||'', texturDe:m.de?.textur||'',
+      passtZuEn:m.en?.passtZu||'', passtZuTl:m.tl?.passtZu||'', passtZuDe:m.de?.passtZu||'',
+      kochmethodeEn:m.en?.kochmethode||'', kochmethodeTl:m.tl?.kochmethode||'', kochmethodeDe:m.de?.kochmethode||'',
+      sloganEn:m.en?.slogan||'', sloganTl:m.tl?.slogan||'', sloganDe:m.de?.slogan||'',
+      shortEn:m.en?.short||'', shortTl:m.tl?.short||'', shortDe:m.de?.short||'',
+      storyEn:m.en?.story||'', storyTl:m.tl?.story||'', storyDe:m.de?.story||'',
+    }
+  })
+  fillSelect()
+}
+
+function fillSelect(){
+  const sel=document.getElementById('articleSelect')
+  sel.innerHTML='<option value="">-- Artikel wählen (DR Menü) --</option>' + articles.map(a=>`<option value="${a.artikelnummer}">${a.artikelnummer} • ${a.nameKurz||a.sorte} • ${a.marke}</option>`).join('')
+  if(articles.length>0){
+    document.getElementById('no-data').classList.add('hidden')
+    document.getElementById('layouts').classList.remove('hidden')
+    if(!current) selectArticle(articles[0].artikelnummer)
+  }
+}
+
+function loadDemo(){
+  articles=[
+    {artikelnummer:'001', nameKurz:'Hasmin 5kg', marke:'Kingfields', sorte:'Hasmin', qualitaet:'Premium', herkunft:'Thailand', erntejahr:'2024', gewicht:'5', einheit:'kg', bildSackUrl:'', bildReisUrl:'', geschmackEn:'Soft, fluffy, fragrant', geschmackDe:'Weich, fluffig, duftend', geschmackTl:'Malambot, mabango', aromaEn:'Natural jasmine aroma', aromaDe:'Natürliches Jasmin', aromaTl:'Natural jasmine', texturEn:'Soft & slightly sticky', texturDe:'Weich & leicht klebrig', texturTl:'Malambot at medyo malagkit', passtZuEn:'Curry, grilled meat, vegetables, adobo, fish', passtZuDe:'Curry, Grillfleisch, Gemüse, Adobo, Fisch', passtZuTl:'Curry, inihaw, gulay, adobo', kochmethodeEn:'1 cup rice : 1.2 water, 15 min', kochmethodeDe:'1 Tasse : 1,2 Wasser, 15 Min', kochmethodeTl:'1 tasa : 1.2 tubig, 15 min', sloganEn:'Thai Soft Rice - Premium Quality', sloganDe:'Thai Duftreis - Premium Qualität', sloganTl:'De Kalidad na Bigas', shortEn:'Sweet aroma, soft texture', shortDe:'Süßes Aroma, weiche Textur', shortTl:'Mabango at malambot'},
+    {artikelnummer:'002', nameKurz:'Jasmin 10kg', marke:'Kingfields', sorte:'Jasmin', qualitaet:'Premium', herkunft:'Thailand', erntejahr:'2024', gewicht:'10', einheit:'kg', bildSackUrl:'', bildReisUrl:'', geschmackEn:'Extra fragrant', geschmackDe:'Extra duftend', geschmackTl:'Sobrang mabango', aromaEn:'Strong jasmine', aromaDe:'Starkes Jasmin', aromaTl:'Matapang na jasmine', texturEn:'Fluffy', texturDe:'Fluffig', texturTl:'Malambot', passtZuEn:'Fried rice, curry, stir fry', passtZuDe:'Bratreis, Curry, Wok', passtZuTl:'Sinangag, curry', kochmethodeEn:'1:1.2 ratio', kochmethodeDe:'1:1,2 Verhältnis', kochmethodeTl:'1:1.2', sloganEn:'Everyday Jasmine', sloganDe:'Alltags Jasmin', sloganTl:'Araw-araw na Jasmine', shortEn:'Daily premium rice', shortDe:'Täglicher Premium Reis', shortTl:'Araw-araw na premium'},
+    {artikelnummer:'003', nameKurz:'Bio Hasmin 5kg', marke:'Kingfields Bio', sorte:'Hasmin', qualitaet:'Organic', herkunft:'Thailand', erntejahr:'2024', gewicht:'5', einheit:'kg', bildSackUrl:'', bildReisUrl:'', geschmackEn:'Natural, soft', geschmackDe:'Natürlich, weich', geschmackTl:'Natural, malambot', aromaEn:'Organic natural', aromaDe:'Bio natürlich', aromaTl:'Organic', texturEn:'Soft natural', texturDe:'Weich natürlich', texturTl:'Malambot', passtZuEn:'Healthy bowls, vegetables, fish', passtZuDe:'Healthy Bowls, Gemüse, Fisch', passtZuTl:'Healthy, gulay, isda', kochmethodeEn:'Rinse well, 1:1.2', kochmethodeDe:'Gut waschen, 1:1,2', kochmethodeTl:'Hugasang mabuti', sloganEn:'Organic Choice', sloganDe:'Bio Wahl', sloganTl:'Organic na pagpipilian', shortEn:'100% organic', shortDe:'100% Bio', shortTl:'100% organic'},
+  ]
+  fillSelect()
+}
+
+function selectArticle(artNr){
+  current=articles.find(a=>a.artikelnummer===artNr)
+  if(!current) return
+  document.getElementById('articleSelect').value=artNr
+  renderLayouts()
+}
+
+function val(field){
+  if(lang==='EN') return current[field+'En']||''
+  if(lang==='TL') return current[field+'Tl']||''
+  return current[field+'De']||''
+}
+
+function setLang(l){
+  lang=l; localStorage.setItem('lang',l)
+  document.querySelectorAll('[id^=btn-]').forEach(b=>b.className='px-4 py-1.5 rounded-full text-xs text-zinc-600')
+  document.getElementById('btn-'+l.toLowerCase()).className='px-4 py-1.5 rounded-full text-xs bg-black text-white'
+  if(current) renderLayouts()
+}
+
+function renderLayouts(){
+  if(!current) return
+  const sack = current.bildSackUrl ? `<img src="${current.bildSackUrl}" class="w-full h-full object-contain">` : `<div class="w-full h-full chessboard flex items-center justify-center text-[10px] text-zinc-400">Sack ${current.artikelnummer}</div>`
+  const reis = current.bildReisUrl ? `<img src="${current.bildReisUrl}" class="w-full h-full object-cover rounded-full">` : `<div class="w-full h-full bg-amber-100 rounded-full flex items-center justify-center text-[10px]">Reis Detail</div>`
+
+  // LAYOUT 1 Classic
+  document.getElementById('layout1').innerHTML=`
+    <div class="flex w-full h-full">
+      <div class="w-[48%] bg-[#f9f8f6] p-6 flex flex-col justify-between">
+        <div>
+          <div class="text-[10px] tracking-widest text-zinc-400 font-bold">${current.marke} • ${current.sorte} • ${current.qualitaet}</div>
+          <div class="font-display text-[28px] leading-[0.9] font-bold mt-2">${val('slogan')}</div>
+          <div class="text-[13px] mt-3 text-zinc-600">${val('short')}</div>
+        </div>
+        <div class="w-full h-[62%] mt-4">${sack}</div>
+        <div class="text-[10px] text-zinc-400 mt-2">${current.artikelnummer} • ${current.gewicht}${current.einheit} • ${current.herkunft} ${current.erntejahr}</div>
+      </div>
+      <div class="w-[52%] p-6 flex flex-col justify-between bg-white">
+        <div>
+          <div class="flex gap-3 items-center">
+            <div class="w-20 h-20 rounded-full overflow-hidden border">${reis}</div>
+            <div>
+              <div class="text-[11px] font-bold uppercase tracking-widest text-zinc-400">Taste & Aroma</div>
+              <div class="text-[13px] font-semibold">${val('geschmack')}</div>
+              <div class="text-[12px] text-zinc-500">${val('aroma')}</div>
+            </div>
+          </div>
+          <div class="mt-6 space-y-3">
+            <div class="bg-zinc-50 rounded-xl p-3">
+              <div class="text-[10px] font-bold tracking-widest text-zinc-400">TEXTURE</div>
+              <div class="text-[12px]">${val('textur')}</div>
+            </div>
+            <div class="bg-amber-50 border border-amber-100 rounded-xl p-3">
+              <div class="text-[10px] font-bold tracking-widest text-amber-800">PAIRS WELL WITH / PASST ZU</div>
+              <div class="text-[13px] font-semibold text-amber-900">${val('passtZu')}</div>
+            </div>
+            <div class="bg-zinc-900 text-white rounded-xl p-3">
+              <div class="text-[10px] tracking-widest text-zinc-400">COOKING</div>
+              <div class="text-[12px]">${val('kochmethode')}</div>
+            </div>
+          </div>
+        </div>
+        <div class="text-[10px] text-zinc-400">Kingfields Trade • ${current.herkunft}</div>
+      </div>
+    </div>
+  `
+
+  // LAYOUT 2 Food Pairing
+  document.getElementById('layout2').innerHTML=`
+    <div class="w-full h-full p-6 flex flex-col">
+      <div class="text-center">
+        <div class="text-[10px] tracking-[0.2em] font-bold text-zinc-400">${current.marke.toUpperCase()} • ${current.artikelnummer}</div>
+        <div class="font-display text-[36px] font-bold leading-[0.9] mt-1">${val('geschmack')}</div>
+        <div class="text-[13px] text-zinc-600 mt-2">${val('short')}</div>
+      </div>
+      <div class="flex-1 flex items-center justify-center gap-6 mt-6">
+        <div class="w-[38%] aspect-[3/4] rounded-[20px] overflow-hidden border bg-white shadow-sm p-2">${sack}</div>
+        <div class="w-[38%] aspect-square rounded-full overflow-hidden border-4 border-white shadow-lg">${reis}</div>
+      </div>
+      <div class="mt-6 bg-white rounded-[16px] p-4 border shadow-sm">
+        <div class="text-[11px] font-bold tracking-widest text-center mb-2">🍚 ${lang==='DE'?'PASST PERFEKT ZU': lang==='TL'?'BAGAY SA':'PERFECT WITH'}</div>
+        <div class="flex flex-wrap justify-center gap-2">
+          ${val('passtZu').split(',').map(p=>`<span class="bg-zinc-900 text-white px-3 py-1 rounded-full text-[11px]">${p.trim()}</span>`).join('')}
+        </div>
+        <div class="text-center text-[11px] text-zinc-500 mt-3">${val('aroma')} • ${val('textur')} • ${current.gewicht}${current.einheit}</div>
+      </div>
+    </div>
+  `
+
+  // LAYOUT 3 Story 9:16
+  document.getElementById('layout3').innerHTML=`
+    <div class="w-full h-full flex flex-col p-5 text-white relative">
+      <div class="absolute inset-0 bg-gradient-to-b from-zinc-800 to-zinc-900"></div>
+      <div class="relative z-10 flex flex-col h-full">
+        <div class="text-[10px] tracking-widest opacity-60">${current.marke} • ${current.sorte} • ${current.artikelnummer}</div>
+        <div class="font-display text-[32px] font-bold leading-[0.9] mt-4">${val('slogan')}</div>
+        <div class="mt-4 w-full h-[42%] rounded-[20px] overflow-hidden bg-white p-2">${sack}</div>
+        <div class="mt-4 flex gap-3">
+          <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-white/20 flex-shrink-0">${reis}</div>
+          <div class="text-[12px] leading-snug">
+            <div class="font-bold">${val('geschmack')}</div>
+            <div class="opacity-70 text-[11px] mt-1">${val('aroma')}<br>${val('textur')}</div>
+          </div>
+        </div>
+        <div class="mt-auto bg-white text-zinc-900 rounded-[16px] p-4">
+          <div class="text-[10px] font-bold tracking-widest">PASST ZU</div>
+          <div class="text-[13px] font-semibold mt-1">${val('passtZu')}</div>
+          <div class="text-[11px] text-zinc-500 mt-2">${val('kochmethode')}</div>
+          <div class="mt-3 text-[10px] text-zinc-400">${current.gewicht}${current.einheit} • ${current.herkunft} • ${current.qualitaet}</div>
+        </div>
+      </div>
+    </div>
+  `
+
+  // LAYOUT 4 Minimal Ad
+  document.getElementById('layout4').innerHTML=`
+    <div class="w-full h-full flex">
+      <div class="w-[35%] p-6 flex flex-col justify-center bg-[#f9f8f6]">
+        <div class="w-full aspect-[3/4] rounded-xl overflow-hidden bg-white border p-1">${sack}</div>
+      </div>
+      <div class="flex-1 p-8 flex flex-col justify-center">
+        <div class="text-[10px] tracking-widest font-bold text-zinc-400">${current.marke} • ${current.artikelnummer} • ${current.gewicht}${current.einheit}</div>
+        <div class="font-display text-[32px] font-bold leading-[0.9] mt-2">${val('slogan')}</div>
+        <div class="text-[14px] text-zinc-600 mt-3">${val('short')}</div>
+        <div class="flex gap-2 mt-4">
+          <span class="bg-zinc-900 text-white px-3 py-1 rounded-full text-[11px]">${val('geschmack')}</span>
+          <span class="border px-3 py-1 rounded-full text-[11px]">${current.qualitaet}</span>
+        </div>
+        <div class="text-[11px] text-zinc-500 mt-4">✓ ${val('passtZu').substring(0,60)}...</div>
+      </div>
+      <div class="w-[18%] bg-zinc-900 text-white p-4 flex flex-col justify-between">
+        <div class="w-16 h-16 rounded-full overflow-hidden mx-auto border border-white/20">${reis}</div>
+        <div class="text-[10px] text-center opacity-60">${val('kochmethode')}</div>
+      </div>
+    </div>
+  `
+}
+
+function downloadLayout(id){
+  alert('PNG Export: In finaler Version nutze ich html2canvas. Für jetzt Screenshot machen (Rechtsklick > Screenshot). Soll ich html2canvas gleich einbauen für 1-Klick Download 1080x1080?')
+}
+
+// Init
+setLang(lang)
+</script>
 </body>
 </html>
