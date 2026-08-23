@@ -99,7 +99,11 @@ footer{background:#0d5cb6;color:#fff;text-align:center;padding:14px;margin-top:2
 
 <div class="fb-box"><div style="display:flex;justify-content:space-between"><h3 data-i18n="fbTitle">📋 FÜR FACEBOOK KOPIEREN</h3><button class="btn btn-black" onclick="copyFB()" data-i18n="copy">Kopieren</button></div><textarea id="fbText"></textarea></div>
 </div>
-<footer><div id="footWarn" style="color:#ffeb3b;font-weight:900;font-size:12px">⚠️ HINDI 20KG, HINDI 10KG - 25KG SAKTO PO!</div><div style="font-size:12px;margin-top:4px">✅ GCash ONLY | FREE DELIVERY Wood Town</div></footer>
+<footer>
+<div id="footWarn" style="color:#ffeb3b;font-weight:900;font-size:12px; text-transform:uppercase"></div>
+<div id="footMid" style="font-size:12px;margin-top:6px;font-weight:800"></div>
+<div style="font-size:11px;margin-top:4px;opacity:.9">✉️ https://m.me/marygrace.rangas | Pa-reserve na po!</div>
+</footer>
 
 <script>
 const SUPABASE_URL="https://crdtuptjybxbsezxtksp.supabase.co";
@@ -262,11 +266,23 @@ function render(){
     `}
    </div>
   </div>`).join('');
- // make top fields editable
+ // make top fields editable + sync footer from top
  document.getElementById('hTitle').contentEditable=edit;
+ // Footer wird aus oberem Bereich übernommen
+ const topWarn = document.getElementById('warnLeft').textContent || '⚠️ HINDI 20KG, HINDI 10KG - 25KG SAKTO PO!';
+ const badgeText = badges.map(b=>b.label).join(' | ') || 'GCash ONLY | FREE DELIVERY Wood Town';
+ document.getElementById('footWarn').textContent = topWarn + ' LAHAT NG SAKO SAKTO!';
+ document.getElementById('footMid').textContent = '✅ ' + badgeText;
+
  document.getElementById('hAddr').contentEditable=edit;
+ document.getElementById('hAddr').onblur = function(){buildFB();};
  document.getElementById('mainTitle').contentEditable=edit;
  document.getElementById('warnLeft').contentEditable=edit;
+ document.getElementById('warnLeft').onblur = function(){{
+   document.getElementById('footWarn').textContent = this.textContent + ' LAHAT NG SAKO SAKTO!';
+   buildFB();
+ }};
+
  document.getElementById('warnRight').contentEditable=edit;
  document.getElementById('footWarn').contentEditable=edit;
  buildFB();
@@ -290,13 +306,17 @@ function buildFB(){
 }
 window.editName=(id,el)=>{items=items.map(i=>i.id===id?{...i,name:el.textContent.toUpperCase().trim()}:i);buildFB()}
 window.editItemBadge=(id,el)=>{items=items.map(i=>i.id===id?{...i,badge:el.textContent.toUpperCase().trim()}:i);buildFB()}
-window.editBadge=function(el){const id=el.getAttribute('data-bid'); badges=badges.map(b=>b.id===id?{...b,label:el.textContent.trim()}:b);buildFB()}
+window.editBadge=function(el){const id=el.getAttribute('data-bid'); badges=badges.map(b=>b.id===id?{...b,label:el.textContent.trim()}:b); 
+  // Footer aus Badges übernehmen
+  document.getElementById('footMid').textContent = '✅ ' + badges.map(b=>b.label).join(' | ');
+  buildFB(); render();
+}
 window.editPrice=(id,v)=>{items=items.map(i=>i.id===id?{...i,price:parseInt(v,10)||0}:i);buildFB()}
 window.editKg=(id,v)=>{items=items.map(i=>i.id===id?{...i,kg:parseInt(v,10)}:i);render()}
 window.toggleKg=(id)=>{const it=items.find(i=>i.id===id); if(!it) return; const order=[1,5,10,25]; let idx=order.indexOf(it.kg); let next=order[(idx+1)%order.length]; editKg(id,next);}
 window.delItem=id=>{items=items.filter(i=>i.id!==id);render()}
-window.delBadge=id=>{badges=badges.filter(b=>b.id!==id);render()}
-window.addBadge=()=>{const n=prompt('Badge Text:','Cash'); if(!n) return; badges.push({id:'id_'+Date.now(),label:n,color:'#1e88e5'}); render()}
+window.delBadge=id=>{badges=badges.filter(b=>b.id!==id); document.getElementById('footMid').textContent = '✅ ' + badges.map(b=>b.label).join(' | '); render()}
+window.addBadge=()=>{const n=prompt('Badge Text:','Cash'); if(!n) return; badges.push({id:'id_'+Date.now(),label:n,color:'#1e88e5'}); document.getElementById('footMid').textContent = '✅ ' + badges.map(b=>b.label).join(' | '); render()}
 window.quickAdd=()=>{
  const n=document.getElementById('qaName').value.trim();
  const p=document.getElementById('qaPrice').value.trim();
