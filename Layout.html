@@ -39,10 +39,10 @@
     <!-- 5 NAV BUTTONS -->
     <div class="flex flex-wrap gap-2 border-t pt-3 mt-3">
       <button onclick="openNavLink(0)" class="bg-zinc-900 text-white px-4 py-2 rounded-full text-[13px] font-medium hover:bg-black">📋 <span id="nav-label-0">Preisliste</span></button>
-      <button onclick="openNavLink(1)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">🛒 <span id="nav-label-1">Shop</span></button>
+      <button onclick="openNavLink(1)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">🛒 <span id="nav-label-1">Stammdaten</span></button>
       <button onclick="openNavLink(2)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">📦 <span id="nav-label-2">Katalog</span></button>
       <button onclick="openNavLink(3)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">🌐 <span id="nav-label-3">Website</span></button>
-      <button onclick="window.open('https://sakeun72-cloud.github.io/MaryGraceCalcutlator/' ,'_blank')" class="bg-amber-100 border border-amber-300 px-4 py-2 rounded-full text-[13px] font-medium hover:bg-amber-200">⬅ Zurück zu Stammdaten</button>
+      <button onclick="openNavLink(4)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">📊 <span id="nav-label-4">Facebook Page</span></button>
       <button onclick="toggleNavEdit()" class="ml-auto text-[11px] border px-3 py-1 rounded-full bg-white">⚙️ Edit Links</button>
     </div>
     <div id="nav-edit" class="hidden mt-3 bg-zinc-50 p-3 rounded-xl grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -50,10 +50,15 @@
       <div class="flex gap-2"><input id="nav-name-1" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-1" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
       <div class="flex gap-2"><input id="nav-name-2" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-2" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
       <div class="flex gap-2"><input id="nav-name-3" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-3" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
-      
+      <div class="flex gap-2"><input id="nav-name-4" class="border p-1.5 rounded text-xs flex-1"><input id="nav-url-4" placeholder="https://..." class="border p-1.5 rounded text-xs flex-[2]"></div>
       <button onclick="saveNavLinks()" class="bg-black text-white px-4 py-1.5 rounded-full text-xs w-fit">Save Links</button>
     </div>
-    <!-- Supabase moved to bottom -->
+    <div class="mt-3 flex flex-wrap gap-2 text-[11px] text-zinc-600 border-t pt-3">
+      <span>Supabase URL:</span><input id="sb-url" class="border rounded-full px-2 py-1 text-[11px] min-w-[200px]" placeholder="https://xyz.supabase.co">
+      <input id="sb-key" type="password" class="border rounded-full px-2 py-1 text-[11px] min-w-[200px]" placeholder="anon key">
+      <button onclick="saveSB()" class="bg-black text-white px-3 py-1 rounded-full text-[11px]">Connect</button>
+      <span id="sb-status" class="text-[11px]">Lokal: nutzt letzte Stammdaten</span>
+    </div>
   </div>
 
   <!-- NO DATA HINT -->
@@ -167,9 +172,9 @@ let current = null
 let sbClient = null
 
 function openNavLink(i){ const l=navLinks[i]; if(l&&l.url) window.open(l.url,'_blank'); else { alert('Kein Link für '+l.name+' - klick auf Edit Links'); toggleNavEdit() } }
-function toggleNavEdit(){ const el=document.getElementById('nav-edit'); el.classList.toggle('hidden'); for(let i=0;i<4;i++){ document.getElementById('nav-name-'+i).value=navLinks[i]?.name||''; document.getElementById('nav-url-'+i).value=navLinks[i]?.url||'' } }
-function saveNavLinks(){ for(let i=0;i<4;i++){ navLinks[i]={name:document.getElementById('nav-name-'+i).value||('Button '+(i+1)), url:document.getElementById('nav-url-'+i).value||''}; document.getElementById('nav-label-'+i).textContent=navLinks[i].name } localStorage.setItem('navLinks_fb', JSON.stringify(navLinks)); document.getElementById('nav-edit').classList.add('hidden') }
-function loadNavLabels(){ for(let i=0;i<4;i++){ const lbl=document.getElementById('nav-label-'+i); if(lbl&&navLinks[i]) lbl.textContent=navLinks[i].name } }
+function toggleNavEdit(){ const el=document.getElementById('nav-edit'); el.classList.toggle('hidden'); for(let i=0;i<5;i++){ document.getElementById('nav-name-'+i).value=navLinks[i]?.name||''; document.getElementById('nav-url-'+i).value=navLinks[i]?.url||'' } }
+function saveNavLinks(){ for(let i=0;i<5;i++){ navLinks[i]={name:document.getElementById('nav-name-'+i).value||('Button '+(i+1)), url:document.getElementById('nav-url-'+i).value||''}; document.getElementById('nav-label-'+i).textContent=navLinks[i].name } localStorage.setItem('navLinks_fb', JSON.stringify(navLinks)); document.getElementById('nav-edit').classList.add('hidden') }
+function loadNavLabels(){ for(let i=0;i<5;i++){ const lbl=document.getElementById('nav-label-'+i); if(lbl&&navLinks[i]) lbl.textContent=navLinks[i].name } }
 
 const savedConf = JSON.parse(localStorage.getItem('supabase_config')||'{}')
 if(savedConf.url) document.getElementById('sb-url').value=savedConf.url
@@ -184,7 +189,7 @@ function saveSB(){ const u=document.getElementById('sb-url').value.trim(), k=doc
 
 function loadLocal(){
   // Try all possible localStorage keys
-  let local = JSON.parse(localStorage.getItem('kingfields_full_v3')||'[]')
+  let local = JSON.parse(localStorage.getItem('kingfields_full_v3')||localStorage.getItem('kingfields_full_v2')||localStorage.getItem('kingfields')||localStorage.getItem('stammdaten_v2')||'[]')
   if(local.length===0) local = JSON.parse(localStorage.getItem('kingfields_full_v2')||'[]')
   if(local.length===0) local = JSON.parse(localStorage.getItem('kingfields')||'[]')
   if(local.length===0) {
@@ -204,30 +209,6 @@ function loadLocal(){
 }
 
 async function loadFromSupabase(){
-  // Try localStorage first to show your 5 immediately
-  const local = JSON.parse(localStorage.getItem('kingfields_full_v3')||localStorage.getItem('kingfields_full_v2')||'[]');
-  if(local.length>0){
-    console.log('LocalStorage has', local.length);
-    // Convert local to articles format
-    const localArticles = local.map(d=>({
-      artikelnummer:d.artikelnummer||d.id, name_kurz:d.nameKurz, marke:d.marke, sorte:d.sorte, qualitaet:d.qualitaet,
-      gewicht:d.gewicht, einheit:d.einheit, herkunft:d.herkunft, erntejahr:d.erntejahr,
-      marketing:{
-        en:{geschmack:d.geschmackEn, aroma:d.aromaEn, textur:d.texturEn, passtZu:d.passtZuEn, kochmethode:d.kochmethodeEn, slogan:d.sloganEn, short:d.shortEn, story:d.storyEn},
-        tl:{geschmack:d.geschmackTl, aroma:d.aromaTl, textur:d.texturTl, passtZu:d.passtZuTl, kochmethode:d.kochmethodeTl, slogan:d.sloganTl, short:d.shortTl, story:d.storyTl},
-        de:{geschmack:d.geschmackDe, aroma:d.aromaDe, textur:d.texturDe, passtZu:d.passtZuDe, kochmethode:d.kochmethodeDe, slogan:d.sloganDe, short:d.shortDe, story:d.storyDe}
-      },
-      bild_sack_url:d.bildSackUrl||d.bildSack, bild_reis_url:d.bildReisUrl||d.bildReis
-    }));
-    // Merge or use local if supabase fails
-    if(!sbClient){
-      articles = localArticles.map(x=>({id:x.artikelnummer, artikelnummer:x.artikelnummer, nameKurz:x.name_kurz, marke:x.marke, sorte:x.sorte, qualitaet:x.qualitaet, gewicht:x.gewicht, einheit:x.einheit, herkunft:x.herkunft, geschmackEn:x.marketing.en.geschmack, geschmackDe:x.marketing.de.geschmack, aromaEn:x.marketing.en.aroma, aromaDe:x.marketing.de.aroma, texturEn:x.marketing.en.textur, texturDe:x.marketing.de.textur, passtZuEn:x.marketing.en.passtZu, passtZuDe:x.marketing.de.passtZu, kochmethodeEn:x.marketing.en.kochmethode, kochmethodeDe:x.marketing.de.kochmethode, sloganEn:x.marketing.en.slogan, sloganDe:x.marketing.de.slogan, shortEn:x.marketing.en.short, shortDe:x.marketing.de.short, storyEn:x.marketing.en.story, storyDe:x.marketing.de.story, bildSackUrl:x.bild_sack_url, bildReisUrl:x.bild_reis_url}));
-      document.getElementById('sb-status').textContent='⚠️ Supabase kein Client - zeige '+articles.length+' aus Browser (localStorage)';
-      fillSelect(); return;
-    }
-  }
-  // Original supabase load follows
-  const _origLoad = async ()=>{
   if(!sbClient){ loadLocal(); return }
   const {data, error} = await sbClient.from('stammdaten').select('*').order('artikelnummer')
   if(error){ console.error(error); loadLocal(); return }
@@ -295,11 +276,7 @@ function selectArticle(artNr){
   renderLayouts()
 }
 
-function val(field){
-  if(lang==='EN') return current[field+'En']||''
-  if(lang==='TL') return current[field+'Tl']||''
-  return current[field+'De']||''
-}
+function val(f){ let v=''; if(lang==='EN') v=current[f+'En']||''; else if(lang==='TL') v=current[f+'Tl']||''; else v=current[f+'De']||''; return v.trim(); }
 
 function setLang(l){
   lang=l; localStorage.setItem('lang',l)
@@ -308,131 +285,125 @@ function setLang(l){
   if(current) renderLayouts()
 }
 
-
 function renderLayouts(){
-  const has = (k)=>{ let v=''; if(lang==='EN') v=current[k+'En']||''; else if(lang==='TL') v=current[k+'Tl']||''; else v=current[k+'De']||''; return v.trim()!==''; }
-  const valClean = (k)=>{ let v=''; if(lang==='EN') v=current[k+'En']||''; else if(lang==='TL') v=current[k+'Tl']||''; else v=current[k+'De']||''; return v.trim(); }
-  
-  // Original val kept for compatibility but no fallback
-  window.valClean = valClean;
+  if(!current) return
+  console.log('Current article:', current)
+  // Sack: try URL first, then base64 (bildSack, bild_sack, Sack Base64)
+  const sackSrc = current.bildSackUrl || current.bild_sack_url || current.bildSack || current.bild_sack || current.sackBase64 || ''
+  const reisSrc = current.bildReisUrl || current.bild_reis_url || current.bildReis || current.bild_reis || current.reisBase64 || ''
+  const sack = sackSrc ? `<img src="${sackSrc}" class="w-full h-full object-contain" onerror="this.parentElement.innerHTML='<div class=\'text-[10px] text-red-500 p-2\'>Bild Fehler: URL ungültig</div>'">` : `<div class="w-full h-full chessboard flex items-center justify-center text-[10px] text-zinc-400">Kein Sack Bild<br>${current.artikelnummer}</div>`
+  const reis = reisSrc ? `<img src="${reisSrc}" class="w-full h-full object-cover rounded-full" onerror="this.parentElement.innerHTML='<div class=\'w-full h-full bg-amber-100 rounded-full flex items-center justify-center text-[10px]\'>Fehler</div>'">` : `<div class="w-full h-full bg-amber-100 rounded-full flex items-center justify-center text-[10px]">Kein Reis Bild</div>`
 
-  // Sack and Reis images
-  const sack = current.bildSackUrl ? `<img src="${current.bildSackUrl}" class="w-full h-full object-contain">` : (current.bildSack ? `<img src="${current.bildSack}" class="w-full h-full object-contain">` : `<div class="text-xs text-zinc-400">No image</div>`);
-  const reis = current.bildReisUrl ? `<img src="${current.bildReisUrl}" class="w-full h-full object-cover">` : (current.bildReis ? `<img src="${current.bildReis}" class="w-full h-full object-cover">` : `<div class="text-xs text-zinc-400">No image</div>`);
-  const sackImg = sack;
-  const reisImgSimple = reis;
-  const reisImg = reis;
-
-  // LAYOUT 1: Classic Product Card
+  // LAYOUT 1 Classic
   document.getElementById('layout1').innerHTML=`
-    <div class="w-full h-full p-5 flex flex-col bg-white">
-      <div class="flex justify-between items-start">
-        <div class="w-[55%]">
-          <div class="text-[10px] tracking-[0.2em] text-zinc-500">• ${current.marke||''} • ${current.qualitaet||''}</div>
-          <div class="font-display text-[28px] font-bold leading-[1.1] mt-1">${current.nameKurz||current.sorte||''}</div>
-          ${has('slogan') ? `<div class="text-[12px] text-zinc-600 mt-2">${valClean('slogan')}</div>` : ''}
-          ${has('short') ? `<div class="text-[11px] text-zinc-500 mt-1">${valClean('short')}</div>` : ''}
-          <div class="mt-6 w-[85%] aspect-[3/4] rounded-[20px] overflow-hidden border bg-zinc-50 p-2 flex items-center justify-center">${sack}</div>
+    <div class="flex w-full h-full">
+      <div class="w-[48%] bg-[#f9f8f6] p-6 flex flex-col justify-between">
+        <div>
+          <div class="text-[10px] tracking-widest text-zinc-400 font-bold">${current.marke} • ${current.sorte} • ${current.qualitaet}</div>
+          <div class="font-display text-[28px] leading-[0.9] font-bold mt-2">${val('slogan')}</div>
+          <div class="text-[13px] mt-3 text-zinc-600">${val('short')}</div>
         </div>
-        <div class="w-[42%] flex flex-col gap-3">
-          ${(has('geschmack') || has('aroma') || has('textur')) ? `
-          <div class="flex gap-3 items-start">
-            ${current.bildReisUrl ? `<div class="w-14 h-14 rounded-full overflow-hidden border flex-shrink-0">${reis}</div>` : ''}
-            <div class="flex-1">
-              ${(has('geschmack') || has('aroma')) ? `<div class="text-[9px] tracking-widest text-zinc-400 font-bold">TASTE & AROMA</div><div class="text-[12px] font-semibold mt-1 leading-tight">${[valClean('geschmack'), valClean('aroma')].filter(Boolean).join(' | ')}</div>` : ''}
-              ${has('textur') ? `<div class="text-[9px] tracking-widest text-zinc-400 font-bold mt-3">TEXTURE</div><div class="text-[11px] mt-1">${valClean('textur')}</div>` : ''}
-            </div>
-          </div>` : ''}
-
-          ${has('passtZu') ? `
-          <div class="bg-amber-50 border border-amber-100 rounded-xl p-3">
-            <div class="text-[9px] font-bold tracking-widest text-amber-800">PAIRS WELL WITH / PASST ZU</div>
-            <div class="text-[12px] font-semibold text-amber-900 mt-1 leading-tight">${valClean('passtZu')}</div>
-          </div>` : ''}
-
-          ${has('kochmethode') ? `
-          <div class="bg-zinc-900 text-white rounded-xl p-3">
-            <div class="text-[9px] tracking-widest text-zinc-400">COOKING</div>
-            <div class="text-[11px] mt-1 leading-tight">${valClean('kochmethode')}</div>
-          </div>` : ''}
-
-          ${current.herkunft ? `<div class="text-[10px] text-zinc-400 mt-2">From ${current.herkunft}</div>` : ''}
-        </div>
+        <div class="w-full h-[62%] mt-4">${sack}</div>
+        <div class="text-[10px] text-zinc-400 mt-2">${current.artikelnummer} • ${current.gewicht}${current.einheit} • ${current.herkunft} ${current.erntejahr}</div>
       </div>
-      <div class="mt-auto text-[9px] text-zinc-400">Kingfields Trade • ${current.gewicht||''}${current.einheit||''} • ${current.qualitaet||''}</div>
+      <div class="w-[52%] p-6 flex flex-col justify-between bg-white">
+        <div>
+          <div class="flex gap-3 items-center">
+            <div class="w-20 h-20 rounded-full overflow-hidden border">${reis}</div>
+            <div>
+              <div class="text-[11px] font-bold uppercase tracking-widest text-zinc-400">${(val('geschmack')||val('aroma')) ? 'Taste & Aroma' : ''}</div>
+              <div class="text-[13px] font-semibold">${val('geschmack')}</div>
+              <div class="text-[12px] text-zinc-500">${val('aroma')}</div>
+            </div>
+          </div>
+          <div class="mt-6 space-y-3" id="details-box">
+            <div class="bg-zinc-50 rounded-xl p-3">
+              ${val('textur') ? `<div class="text-[10px] font-bold tracking-widest text-zinc-400">TEXTURE</div><div class="text-[12px]">${val('textur')}</div>` : ``}
+            </div>
+            <div class="bg-amber-50 border border-amber-100 rounded-xl p-3">
+              ${val('passtZu') ? `<div class="text-[10px] font-bold tracking-widest text-amber-800">PAIRS WELL WITH / PASST ZU</div><div class="text-[13px] font-semibold text-amber-900">${val('passtZu')}</div>` : ``}
+            </div>
+            <div class="bg-zinc-900 text-white rounded-xl p-3">
+              ${val('kochmethode') ? `<div class="text-[10px] tracking-widest text-zinc-400">COOKING</div><div class="text-[12px]">${val('kochmethode')}</div>` : ``}
+            </div>
+          </div>
+        </div>
+        <div class="text-[10px] text-zinc-400">Kingfields Trade • ${current.herkunft}</div>
+      </div>
     </div>
-  `;
+  `
 
-  // LAYOUT 2: Split Square - NUR TEXT MIT PUNKT, KEINE PILLEN
+  // LAYOUT 2 Food Pairing
   document.getElementById('layout2').innerHTML=`
     <div class="w-full h-full p-8 flex flex-col bg-[#fffaf0]">
       <div class="text-center">
-        <div class="font-display text-[42px] font-black leading-[1.05]">${valClean('geschmack') || valClean('slogan') || current.sorte || ''}</div>
-        ${has('short') ? `<div class="text-[16px] text-zinc-600 mt-4 font-medium">${valClean('short')}</div>` : ''}
+        <div class="font-display text-[42px] font-black leading-[1.05]">${val('geschmack') || val('slogan')}</div>
+        <div class="text-[16px] text-zinc-600 mt-4 font-medium">${val('short')}</div>
       </div>
       <div class="flex-1 flex items-center justify-center gap-10 mt-10">
-        <div class="w-[38%] aspect-[3/4] rounded-[24px] overflow-hidden border-2 border-zinc-200 bg-white shadow-sm p-4 flex items-center justify-center">${sackImg}</div>
-        <div class="w-[42%] aspect-square rounded-full overflow-hidden border-4 border-white shadow-xl bg-white">${reisImgSimple}</div>
+        <div class="w-[38%] aspect-[3/4] rounded-[24px] overflow-hidden border-2 border-zinc-200 bg-white shadow-sm p-4 flex items-center justify-center">${typeof sackImg !== 'undefined' ? sackImg : sack}</div>
+        <div class="w-[42%] aspect-square rounded-full overflow-hidden border-4 border-white shadow-xl bg-white">${typeof reisImgSimple !== 'undefined' ? reisImgSimple : reis}</div>
       </div>
       <div class="mt-auto bg-white rounded-[24px] p-8 border-2 border-zinc-100 shadow-sm">
-        ${has('passtZu') ? `
-        <div>
-          <div class="text-[14px] font-black tracking-[0.18em] text-center mb-4 text-zinc-900 uppercase">Passt perfekt zu</div>
-          <div class="text-center text-[22px] font-bold leading-[1.4] text-zinc-900">
-            ${valClean('passtZu').split(',').map(s=>s.trim()).filter(Boolean).join(' <span style="color:#bbb; margin:0 10px;">•</span> ')}
-          </div>
-        </div>` : ''}
-        ${(has('aroma') || has('textur') || current.gewicht) ? `
+        <div class="text-[14px] font-black tracking-[0.18em] text-center mb-4 text-zinc-900 uppercase">Passt perfekt zu</div>
+        <div class="text-center text-[22px] font-bold leading-[1.4] text-zinc-900">
+          ${val('passtZu').split(',').map(s=>s.trim()).filter(Boolean).join(' <span style="color:#bbb; margin:0 10px;">•</span> ')}
+        </div>
         <div class="text-center text-[16px] text-zinc-600 mt-6 font-medium">
-          ${[valClean('aroma'), valClean('textur'), (current.gewicht ? current.gewicht+current.einheit : '')].filter(Boolean).join(' <span style="color:#bbb; margin:0 10px;">•</span> ')}
-        </div>` : ''}
+          ${[val('aroma'), val('textur')].filter(Boolean).join(' <span style="color:#bbb; margin:0 10px;">•</span> ')} <span style="color:#bbb; margin:0 10px;">•</span> ${current.gewicht}${current.einheit}
+        </div>
       </div>
     </div>
-  `;
+  `
 
-  // LAYOUT 3: Story Vertical
+  // LAYOUT 3 Story 9:16
   document.getElementById('layout3').innerHTML=`
-    <div class="w-full h-full p-8 flex flex-col bg-zinc-900 text-white">
-      <div class="text-[10px] tracking-[0.3em] text-zinc-500 font-bold">${current.marke||''} • ${current.qualitaet||''}</div>
-      <div class="font-display text-[36px] font-bold leading-[0.9] mt-3">${current.nameKurz||''}</div>
-      ${has('slogan') ? `<div class="text-[16px] text-zinc-300 mt-3">${valClean('slogan')}</div>` : ''}
-      ${has('story') ? `<div class="text-[13px] text-zinc-400 mt-4 leading-relaxed">${valClean('story')}</div>` : ''}
-      <div class="mt-6 w-full aspect-[4/3] rounded-[20px] overflow-hidden bg-white p-3 flex items-center justify-center">${sack}</div>
-      <div class="mt-6 grid grid-cols-2 gap-3">
-        ${has('geschmack') ? `<div class="bg-white/10 rounded-xl p-3"><div class="text-[9px] tracking-widest text-zinc-500">TASTE</div><div class="text-[12px] font-bold mt-1">${valClean('geschmack')}</div></div>` : ''}
-        ${has('aroma') ? `<div class="bg-white/10 rounded-xl p-3"><div class="text-[9px] tracking-widest text-zinc-500">AROMA</div><div class="text-[12px] font-bold mt-1">${valClean('aroma')}</div></div>` : ''}
-        ${has('textur') ? `<div class="bg-white/10 rounded-xl p-3"><div class="text-[9px] tracking-widest text-zinc-500">TEXTURE</div><div class="text-[12px] font-bold mt-1">${valClean('textur')}</div></div>` : ''}
-        ${has('passtZu') ? `<div class="bg-amber-100 text-zinc-900 rounded-xl p-3"><div class="text-[9px] tracking-widest font-bold">PAIRS WELL</div><div class="text-[12px] font-bold mt-1">${valClean('passtZu')}</div></div>` : ''}
+    <div class="w-full h-full flex flex-col p-5 text-white relative">
+      <div class="absolute inset-0 bg-gradient-to-b from-zinc-800 to-zinc-900"></div>
+      <div class="relative z-10 flex flex-col h-full">
+        <div class="text-[10px] tracking-widest opacity-60">${current.marke} • ${current.sorte} • ${current.artikelnummer}</div>
+        <div class="font-display text-[32px] font-bold leading-[0.9] mt-4">${val('slogan')}</div>
+        <div class="mt-4 w-full h-[42%] rounded-[20px] overflow-hidden bg-white p-2">${sack}</div>
+        <div class="mt-4 flex gap-3">
+          <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-white/20 flex-shrink-0">${reis}</div>
+          <div class="text-[12px] leading-snug">
+            <div class="font-bold">${val('geschmack')}</div>
+            <div class="opacity-70 text-[11px] mt-1">${val('aroma')}<br>${val('textur')}</div>
+          </div>
+        </div>
+        <div class="mt-auto bg-white text-zinc-900 rounded-[16px] p-4">
+          <div class="text-[10px] font-bold tracking-widest">PASST ZU</div>
+          <div class="text-[13px] font-semibold mt-1">${val('passtZu')}</div>
+          <div class="text-[11px] text-zinc-500 mt-2">${val('kochmethode')}</div>
+          <div class="mt-3 text-[10px] text-zinc-400">${current.gewicht}${current.einheit} • ${current.herkunft} • ${current.qualitaet}</div>
+        </div>
       </div>
-      ${has('kochmethode') ? `<div class="mt-3 bg-white text-zinc-900 rounded-xl p-3"><div class="text-[9px] tracking-widest text-zinc-500">COOKING</div><div class="text-[12px] mt-1">${valClean('kochmethode')}</div></div>` : ''}
-      <div class="mt-auto text-[9px] text-zinc-600">${current.gewicht||''}${current.einheit||''} • ${current.herkunft||''} • ${current.qualitaet||''}</div>
     </div>
-  `;
+  `
 
-  // LAYOUT 4: Minimal Ad
+  // LAYOUT 4 Minimal Ad
   document.getElementById('layout4').innerHTML=`
     <div class="w-full h-full flex">
       <div class="w-[35%] p-6 flex flex-col justify-center bg-[#f9f8f6]">
         <div class="w-full aspect-[3/4] rounded-xl overflow-hidden bg-white border p-1">${sack}</div>
       </div>
       <div class="flex-1 p-8 flex flex-col justify-center">
-        <div class="text-[10px] tracking-widest font-bold text-zinc-400">${current.marke||''} • ${current.artikelnummer||''} • ${current.gewicht||''}${current.einheit||''}</div>
-        <div class="font-display text-[32px] font-bold leading-[0.9] mt-2">${valClean('slogan') || current.nameKurz || ''}</div>
-        ${has('short') ? `<div class="text-[14px] text-zinc-600 mt-3">${valClean('short')}</div>` : ''}
+        <div class="text-[10px] tracking-widest font-bold text-zinc-400">${current.marke} • ${current.artikelnummer} • ${current.gewicht}${current.einheit}</div>
+        <div class="font-display text-[32px] font-bold leading-[0.9] mt-2">${val('slogan')}</div>
+        <div class="text-[14px] text-zinc-600 mt-3">${val('short')}</div>
         <div class="flex gap-2 mt-4">
-          ${has('geschmack') ? `<span class="bg-zinc-900 text-white px-3 py-1 rounded-full text-[11px]">${valClean('geschmack')}</span>` : ''}
-          <span class="border px-3 py-1 rounded-full text-[11px]">${current.qualitaet||''}</span>
+          <span class="bg-zinc-900 text-white px-3 py-1 rounded-full text-[11px]">${val('geschmack')}</span>
+          <span class="border px-3 py-1 rounded-full text-[11px]">${current.qualitaet}</span>
         </div>
-        ${has('passtZu') ? `<div class="text-[11px] text-zinc-500 mt-4">✓ ${valClean('passtZu').substring(0,60)}...</div>` : ''}
+        <div class="text-[11px] text-zinc-500 mt-4">✓ ${val('passtZu').substring(0,60)}...</div>
       </div>
       <div class="w-[18%] bg-zinc-900 text-white p-4 flex flex-col justify-between">
         <div class="w-16 h-16 rounded-full overflow-hidden mx-auto border border-white/20">${reis}</div>
-        ${has('kochmethode') ? `<div class="text-[10px] text-center opacity-60">${valClean('kochmethode')}</div>` : ''}
+        <div class="text-[10px] text-center opacity-60">${val('kochmethode')}</div>
       </div>
     </div>
-  `;
+  `
 }
-
 
 async function downloadLayout(id){
   const el = document.getElementById(id)
@@ -548,5 +519,20 @@ window.addEventListener('load', () => {
 });
 </script>
 
+
+<script>
+setTimeout(()=>{
+  const orig = window.renderLayouts;
+  if(orig){
+    window.renderLayouts = function(){
+      orig();
+      document.querySelectorAll('#details-box > div').forEach(div=>{
+        const txt = div.innerText.trim();
+        if(txt === '' || txt === 'TEXTURE' || txt === 'PAIRS WELL WITH / PASST ZU' || txt === 'COOKING') div.style.display='none';
+      });
+    }
+  }
+},500);
+</script>
 </body>
 </html>
