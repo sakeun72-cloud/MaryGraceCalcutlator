@@ -145,14 +145,30 @@ function renderForm(){
     <div class="mb-4"><label class="text-xs">Short • ${lang}</label><textarea id="f-short" class="w-full border rounded-xl px-3 py-2 text-sm">${val('short')}</textarea></div>
     <div class="mb-4"><label class="text-xs">Story • ${lang}</label><textarea id="f-story" class="w-full border rounded-xl px-3 py-2 text-sm">${val('story')}</textarea></div>
     <div class="grid grid-cols-2 gap-3 mb-4">
-      <div><label class="text-xs">Bild Sack URL</label><input id="f-bildSack" value="${current.bildSackUrl||''}" class="w-full border rounded-full px-3 py-2 text-xs"><input type="file" onchange="handleSack(this)" class="text-xs mt-1"></div>
-      <div><label class="text-xs">Bild Reis URL</label><input id="f-bildReis" value="${current.bildReisUrl||''}" class="w-full border rounded-full px-3 py-2 text-xs"><input type="file" onchange="handleReis(this)" class="text-xs mt-1"></div>
+      <div class="border rounded-xl p-3">
+        <label class="text-xs font-bold">Bild Sack</label>
+        <div class="mt-2 w-full h-[150px] border rounded-xl bg-zinc-50 flex items-center justify-center overflow-hidden">
+          ${current.bildSackUrl?`<img src="${current.bildSackUrl}" class="max-h-[140px] object-contain">`:`<span class="text-xs text-zinc-400">Kein Bild</span>`}
+        </div>
+        <div id="preview-sack" class="mt-2 hidden"><div class="text-[10px] font-bold">Neue Vorschau:</div><img id="preview-sack-img" class="max-h-[100px] border rounded"></div>
+        <input id="f-bildSack" value="${current.bildSackUrl||''}" class="w-full border rounded-full px-2 py-1 text-[10px] mt-2" placeholder="URL oder leer lassen">
+        <input type="file" accept="image/*" onchange="handleSack(this)" class="text-xs mt-2 w-full">
+      </div>
+      <div class="border rounded-xl p-3">
+        <label class="text-xs font-bold">Bild Reis (rund)</label>
+        <div class="mt-2 w-full h-[150px] border rounded-xl bg-zinc-50 flex items-center justify-center overflow-hidden">
+          ${current.bildReisUrl?`<img src="${current.bildReisUrl}" class="max-h-[140px] object-contain">`:`<span class="text-xs text-zinc-400">Kein Bild</span>`}
+        </div>
+        <div id="preview-reis" class="mt-2 hidden"><div class="text-[10px] font-bold">Neue Vorschau:</div><img id="preview-reis-img" class="max-h-[100px] border rounded"></div>
+        <input id="f-bildReis" value="${current.bildReisUrl||''}" class="w-full border rounded-full px-2 py-1 text-[10px] mt-2" placeholder="URL oder leer lassen">
+        <input type="file" accept="image/*" onchange="handleReis(this)" class="text-xs mt-2 w-full">
+      </div>
     </div>
     <div class="flex gap-2"><button onclick="saveCurrent()" class="flex-1 bg-black text-white py-3 rounded-full font-bold">💾 SAVE / SPEICHERN</button><button onclick="deleteCurrent()" class="bg-red-50 border px-4 py-2 rounded-full text-xs">Delete</button></div>
   `;
 }
-function handleSack(inp){ const f=inp.files[0]; if(!f) return; const r=new FileReader(); r.onload=e=>{ bildSackBase64=e.target.result; }; r.readAsDataURL(f); }
-function handleReis(inp){ const f=inp.files[0]; if(!f) return; const r=new FileReader(); r.onload=e=>{ bildReisBase64=e.target.result; }; r.readAsDataURL(f); }
+function handleSack(inp){ const f=inp.files[0]; if(!f) return; const r=new FileReader(); r.onload=e=>{ bildSackBase64=e.target.result; document.getElementById('preview-sack').classList.remove('hidden'); document.getElementById('preview-sack-img').src=e.target.result; document.getElementById('sb-status').textContent='📸 Neues Sack Bild bereit - klick SAVE'; }; r.readAsDataURL(f); }
+function handleReis(inp){ const f=inp.files[0]; if(!f) return; const r=new FileReader(); r.onload=e=>{ bildReisBase64=e.target.result; document.getElementById('preview-reis').classList.remove('hidden'); document.getElementById('preview-reis-img').src=e.target.result; document.getElementById('sb-status').textContent='📸 Neues Reis Bild bereit - klick SAVE'; }; r.readAsDataURL(f); }
 async function saveCurrent(){
   if(!current) { alert('Kein Artikel'); return; }
   const fields=['artikelnummer','nameKurz','marke','sorte','herkunft','gewicht'];
@@ -169,8 +185,42 @@ async function saveCurrent(){
   document.getElementById('sb-status').textContent='⏳ Speichere auf Server...';
   try{
     let sackUrl=current.bildSackUrl||''; let reisUrl=current.bildReisUrl||'';
-    if(bildSackBase64){ const blob=await (await fetch(bildSackBase64)).blob(); const ext='jpg'; const path=`${current.artikelnummer}_sack_${Date.now()}.${ext}`; const {error}=await sbClient.storage.from('produktbilder').upload(path, blob, {upsert:true}); if(!error){ const {data}=sbClient.storage.from('produktbilder').getPublicUrl(path); sackUrl=data.publicUrl; } }
-    if(bildReisBase64){ const blob=await (await fetch(bildReisBase64)).blob(); const ext='jpg'; const path=`${current.artikelnummer}_reis_${Date.now()}.${ext}`; const {error}=await sbClient.storage.from('produktbilder').upload(path, blob, {upsert:true}); if(!error){ const {data}=sbClient.storage.from('produktbilder').getPublicUrl(path); reisUrl=data.publicUrl; } }
+    // Fester Dateiname nach Artikelnummer - überschreibt immer! Erkennt PNG/JPG
+    if(bildSackBase64){
+      const blob=await (await fetch(bildSackBase64)).blob();
+      let ext='jpg';
+      if(blob.type.includes('png')) ext='png';
+      else if(blob.type.includes('webp')) ext='webp';
+      else if(blob.type.includes('jpeg')||blob.type.includes('jpg')) ext='jpg';
+      // Immer als jpg speichern - konvertiert automatisch durch Blob, aber behalte ext für URL
+      // Wir speichern beide Varianten löschend: erst alte Varianten löschen, dann neue hochladen
+      const basePath=`${current.artikelnummer}_sack`;
+      // Versuche alte Dateien zu überschreiben - speichere immer als jpg für Einheitlichkeit
+      const path=`${basePath}.jpg`;
+      const {error}=await sbClient.storage.from('produktbilder').upload(path, blob, {upsert:true, contentType: 'image/jpeg'});
+      if(!error){
+        const {data}=sbClient.storage.from('produktbilder').getPublicUrl(path);
+        sackUrl=data.publicUrl.split('?')[0] + '?t=' + Date.now();
+        document.getElementById('sb-status').textContent='✅ Sack Bild '+path+' (Artikel '+current.artikelnummer+' Hauptbild) gespeichert!';
+      } else {
+        document.getElementById('sb-status').textContent='❌ Sack Upload: '+error.message;
+        console.error(error);
+      }
+    }
+    if(bildReisBase64){
+      const blob=await (await fetch(bildReisBase64)).blob();
+      const basePath=`${current.artikelnummer}_reis`;
+      const path=`${basePath}.jpg`;
+      const {error}=await sbClient.storage.from('produktbilder').upload(path, blob, {upsert:true, contentType: 'image/jpeg'});
+      if(!error){
+        const {data}=sbClient.storage.from('produktbilder').getPublicUrl(path);
+        reisUrl=data.publicUrl.split('?')[0] + '?t=' + Date.now();
+        document.getElementById('sb-status').textContent='✅ Reis Bild '+path+' (Artikel '+current.artikelnummer+' Detailbild) gespeichert!';
+      } else {
+        document.getElementById('sb-status').textContent='❌ Reis Upload: '+error.message;
+        console.error(error);
+      }
+    }
     const payload={
       artikelnummer:current.artikelnummer, name_kurz:current.nameKurz, marke:current.marke, sorte:current.sorte, herkunft:current.herkunft, gewicht:current.gewicht, einheit:current.einheit, qualitaet:current.qualitaet, erntejahr:current.erntejahr,
       bild_sack_url:sackUrl, bild_reis_url:reisUrl,
