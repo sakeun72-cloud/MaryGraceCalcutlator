@@ -5,7 +5,7 @@
 <title>Product Data</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<style>.hidden{display:none!important}</style>
+<style>.hidden{display:none!important} input,textarea{color:#000!important; font-weight:600} input::placeholder{color:#999; font-weight:400} </style>
 </head>
 <body class="bg-[#f6f5f2] p-4">
 <div class="bg-white rounded-xl p-4 mb-4">
@@ -119,12 +119,12 @@ function renderForm(){
   if(!current){ document.getElementById('form').innerHTML='Kein Artikel'; return; }
   document.getElementById('form').innerHTML=`
     <div class="grid grid-cols-2 gap-3 mb-4">
-      <div><label class="text-xs">Artikelnummer</label><input id="f-artikelnummer" value="${current.artikelnummer||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-      <div><label class="text-xs">Name Kurz</label><input id="f-nameKurz" value="${current.nameKurz||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-      <div><label class="text-xs">Marke</label><input id="f-marke" value="${current.marke||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-      <div><label class="text-xs">Sorte</label><input id="f-sorte" value="${current.sorte||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-      <div><label class="text-xs">Herkunft</label><input id="f-herkunft" value="${current.herkunft||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-      <div><label class="text-xs">Gewicht</label><input id="f-gewicht" value="${current.gewicht||''}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
+      <div><label class="text-xs">Artikelnummer</label><input id="f-artikelnummer" value="${current.artikelnummer||''}" class="w-full border border-zinc-900 rounded-full px-3 py-2 text-sm font-bold text-black bg-white"></div>
+      <div><label class="text-xs">Name Kurz</label><input id="f-nameKurz" value="${current.nameKurz||''}" class="w-full border border-zinc-900 rounded-full px-3 py-2 text-sm font-bold text-black bg-white"></div>
+      <div><label class="text-xs">Marke</label><input id="f-marke" value="${current.marke||''}" class="w-full border border-zinc-900 rounded-full px-3 py-2 text-sm font-bold text-black bg-white"></div>
+      <div><label class="text-xs">Sorte</label><input id="f-sorte" value="${current.sorte||''}" class="w-full border border-zinc-900 rounded-full px-3 py-2 text-sm font-bold text-black bg-white"></div>
+      <div><label class="text-xs">Herkunft</label><input id="f-herkunft" value="${current.herkunft||''}" class="w-full border border-zinc-900 rounded-full px-3 py-2 text-sm font-bold text-black bg-white"></div>
+      <div><label class="text-xs">Gewicht</label><input id="f-gewicht" value="${current.gewicht||''}" class="w-full border border-zinc-900 rounded-full px-3 py-2 text-sm font-bold text-black bg-white"></div>
     </div>
     <div class="bg-green-50 border-2 border-green-300 rounded-xl p-4 mb-4">
       <h3 class="font-bold text-sm mb-2">Bullets • ${lang} • 5 Stück</h3>
@@ -132,26 +132,26 @@ function renderForm(){
       <input id="f-bullet2" value="${val('bullet2')}" placeholder="Bullet 2" class="w-full border rounded-full px-3 py-2 text-sm mb-2">
       <input id="f-bullet3" value="${val('bullet3')}" placeholder="Bullet 3" class="w-full border rounded-full px-3 py-2 text-sm mb-2">
       <input id="f-bullet4" value="${val('bullet4')}" placeholder="Bullet 4" class="w-full border rounded-full px-3 py-2 text-sm mb-2">
-      <input id="f-bullet5" value="${val('bullet5')}" placeholder="Bullet 5" class="w-full border rounded-full px-3 py-2 text-sm">
+      <input id="f-bullet5" value="${val('bullet5')}" placeholder="Bullet 5" class="w-full border border-zinc-900 rounded-full px-3 py-2 text-sm font-bold text-black bg-white">
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-      <div><label class="text-xs">Geschmack • ${lang}</label><input id="f-geschmack" value="${val('geschmack')}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-      <div><label class="text-xs">Aroma • ${lang}</label><input id="f-aroma" value="${val('aroma')}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-      <div><label class="text-xs">Textur • ${lang}</label><input id="f-textur" value="${val('textur')}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-      <div><label class="text-xs">Passt zu • ${lang}</label><input id="f-passtZu" value="${val('passtZu')}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-      <div><label class="text-xs">Slogan • ${lang}</label><input id="f-slogan" value="${val('slogan')}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
-      <div><label class="text-xs">Kochmethode • ${lang}</label><input id="f-kochmethode" value="${val('kochmethode')}" class="w-full border rounded-full px-3 py-2 text-sm"></div>
+      <div><label class="text-xs">Geschmack • ${lang}</label><input id="f-geschmack" value="${val('geschmack')}" class="w-full border border-zinc-900 rounded-full px-3 py-2 text-sm font-bold text-black bg-white"></div>
+      <div><label class="text-xs">Aroma • ${lang}</label><input id="f-aroma" value="${val('aroma')}" class="w-full border border-zinc-900 rounded-full px-3 py-2 text-sm font-bold text-black bg-white"></div>
+      <div><label class="text-xs">Textur • ${lang}</label><input id="f-textur" value="${val('textur')}" class="w-full border border-zinc-900 rounded-full px-3 py-2 text-sm font-bold text-black bg-white"></div>
+      <div><label class="text-xs">Passt zu • ${lang}</label><input id="f-passtZu" value="${val('passtZu')}" class="w-full border border-zinc-900 rounded-full px-3 py-2 text-sm font-bold text-black bg-white"></div>
+      <div><label class="text-xs">Slogan • ${lang}</label><input id="f-slogan" value="${val('slogan')}" class="w-full border border-zinc-900 rounded-full px-3 py-2 text-sm font-bold text-black bg-white"></div>
+      <div><label class="text-xs">Kochmethode • ${lang}</label><input id="f-kochmethode" value="${val('kochmethode')}" class="w-full border border-zinc-900 rounded-full px-3 py-2 text-sm font-bold text-black bg-white"></div>
     </div>
-    <div class="mb-4"><label class="text-xs">Short • ${lang}</label><textarea id="f-short" class="w-full border rounded-xl px-3 py-2 text-sm">${val('short')}</textarea></div>
-    <div class="mb-4"><label class="text-xs">Story • ${lang}</label><textarea id="f-story" class="w-full border rounded-xl px-3 py-2 text-sm">${val('story')}</textarea></div>
+    <div class="mb-4"><label class="text-xs">Short • ${lang}</label><textarea id="f-short" class="w-full border border-zinc-900 rounded-xl px-3 py-2 text-sm font-bold text-black bg-white">${val('short')}</textarea></div>
+    <div class="mb-4"><label class="text-xs">Story • ${lang}</label><textarea id="f-story" class="w-full border border-zinc-900 rounded-xl px-3 py-2 text-sm font-bold text-black bg-white">${val('story')}</textarea></div>
     <div class="grid grid-cols-2 gap-3 mb-4">
       <div class="border rounded-xl p-3">
         <label class="text-xs font-bold">Bild Sack</label>
         <div class="mt-2 w-full h-[150px] border rounded-xl bg-zinc-50 flex items-center justify-center overflow-hidden">
           ${current.bildSackUrl?`<img src="${current.bildSackUrl}" class="max-h-[140px] object-contain">`:`<span class="text-xs text-zinc-400">Kein Bild</span>`}
         </div>
-        <div id="preview-sack" class="mt-2 hidden"><div class="text-[10px] font-bold">Neue Vorschau:</div><img id="preview-sack-img" class="max-h-[100px] border rounded"></div>
-        <input id="f-bildSack" value="${current.bildSackUrl||''}" class="w-full border rounded-full px-2 py-1 text-[10px] mt-2" placeholder="URL oder leer lassen">
+        <div id="preview-sack" class="mt-2 hidden"><div class="text-xs font-bold">Neue Vorschau:</div><img id="preview-sack-img" class="max-h-[100px] border rounded"></div>
+        <input id="f-bildSack" value="${current.bildSackUrl||''}" class="w-full border rounded-full px-2 py-1 text-xs mt-2" placeholder="URL oder leer lassen">
         <input type="file" accept="image/*" onchange="handleSack(this)" class="text-xs mt-2 w-full">
       </div>
       <div class="border rounded-xl p-3">
@@ -159,8 +159,8 @@ function renderForm(){
         <div class="mt-2 w-full h-[150px] border rounded-xl bg-zinc-50 flex items-center justify-center overflow-hidden">
           ${current.bildReisUrl?`<img src="${current.bildReisUrl}" class="max-h-[140px] object-contain">`:`<span class="text-xs text-zinc-400">Kein Bild</span>`}
         </div>
-        <div id="preview-reis" class="mt-2 hidden"><div class="text-[10px] font-bold">Neue Vorschau:</div><img id="preview-reis-img" class="max-h-[100px] border rounded"></div>
-        <input id="f-bildReis" value="${current.bildReisUrl||''}" class="w-full border rounded-full px-2 py-1 text-[10px] mt-2" placeholder="URL oder leer lassen">
+        <div id="preview-reis" class="mt-2 hidden"><div class="text-xs font-bold">Neue Vorschau:</div><img id="preview-reis-img" class="max-h-[100px] border rounded"></div>
+        <input id="f-bildReis" value="${current.bildReisUrl||''}" class="w-full border rounded-full px-2 py-1 text-xs mt-2" placeholder="URL oder leer lassen">
         <input type="file" accept="image/*" onchange="handleReis(this)" class="text-xs mt-2 w-full">
       </div>
     </div>
