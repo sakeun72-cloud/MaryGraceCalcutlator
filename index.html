@@ -4,40 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kingfields Trade - Vollständige Stammdaten - FIXED</title>
-<script src="https://cdn.tailwindcss.com">
-<script>
-// Beim Laden immer vom Server holen
-document.addEventListener('DOMContentLoaded', ()=>{
-  console.log('Lade vom Server...');
-  if(typeof loadFromSupabase==='function'){
-    loadFromSupabase();
-  }
-});
-</script>
-
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js">
-<script>
-// Beim Laden immer vom Server holen
-document.addEventListener('DOMContentLoaded', ()=>{
-  console.log('Lade vom Server...');
-  if(typeof loadFromSupabase==='function'){
-    loadFromSupabase();
-  }
-});
-</script>
-
-
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   .font-display{font-family:"Fraunces",serif}
   .font-body{font-family:"Plus Jakarta Sans",sans-serif}
   .chessboard{background-image:linear-gradient(45deg,#e5e7eb 25%,transparent 25%),linear-gradient(-45deg,#e5e7eb 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#e5e7eb 75%),linear-gradient(-45deg,transparent 75%,#e5e7eb 75%);background-size:20px 20px;background-position:0 0,0 10px,10px -10px,-10px 0px}
-</style>
-
-<style>
-.lang-en, .lang-tl, .lang-de{display:inline}
-.hidden{display:none!important}
 </style>
 </head>
 <body class="bg-[#f6f5f2] font-body min-h-screen">
@@ -46,7 +19,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   <div class="bg-white rounded-[20px] shadow-sm border p-4 mb-4">
     <div class="flex flex-wrap justify-between items-center gap-3 mb-3">
       <div>
-        <h1 class="font-display text-2xl font-semibold">Kingfields Trade - <span class="lang-en">Product Data</span><span class="lang-tl hidden">Data ng Produkto</span><span class="lang-de hidden">Artikel Daten</span> - FIXED</h1>
+        <h1 class="font-display text-2xl font-semibold">Kingfields Trade - Product Master - FIXED</h1>
         <p class="text-xs text-zinc-500">Mit festen Supabase Keys - https://crdtuptjybxbsezxtksp.supabase.co - publishable key aktiv</p>
       </div>
       <div class="flex gap-2 items-center">
@@ -80,8 +53,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
       <span id="sb-url-display" class="text-xs bg-white border px-3 py-1 rounded-full">https://crdtuptjybxbsezxtksp.supabase.co</span>
       <span class="text-xs bg-white border px-3 py-1 rounded-full">sb_publishable_GU6AAlF... fest eingebaut</span>
       <button onclick="testConnection()" class="bg-black text-white px-4 py-1.5 rounded-full text-xs">Test Connection</button>
-      <!-- MIGRATE entfernt - immer Server speichern -->
-      <button onclick="saveCurrent()" class="bg-green-500 text-black px-6 py-2 rounded-full text-sm font-black border-2 border-black"><span class="lang-en"><span class="lang-en">💾 SAVE TO SERVER</span><span class="lang-tl hidden">💾 I-SAVE SA SERVER</span><span class="lang-de hidden">💾 AUF SERVER SPEICHERN</span></span><span class="lang-tl hidden">💾 I-SAVE SA SERVER</span><span class="lang-de hidden">💾 AUF SERVER SPEICHERN</span></button>
+      <button onclick="migrateLocalToSupabase()" class="bg-amber-500 text-black px-4 py-1.5 rounded-full text-xs font-bold">⬆ MIGRATE</button>
+      <button onclick="cleanDemo()" class="bg-red-100 border border-red-300 px-4 py-1.5 rounded-full text-xs font-bold">🧹 DEMO löschen</button>
       <button onclick="loadFromSupabase()" class="bg-white border px-4 py-1.5 rounded-full text-xs">🔄 Reload Supabase</button>
       <span id="sb-status" class="text-[11px] text-zinc-600">⏳ Verbinde...</span>
     </div>
@@ -109,23 +82,7 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_GU6AAlF0zc3LB4hFlKK0fw_TNxo9z7q
 
 let navLinks = JSON.parse(localStorage.getItem('navLinks') || '[{"name":"Preisliste","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Pricelist.html"},{"name":"Shop","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Shop.html"},{"name":"Katalog","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Layout.html?v=1787766554"},{"name":"Website","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/"}]')
 let lang = localStorage.getItem('lang') || 'EN'
-let articles = (()=>{ 
-  const oldData = JSON.parse(localStorage.getItem('kingfields_full_v3') || '[]');
-  const newData = JSON.parse(localStorage.getItem('marygrace_server_cache') || '[]');
-  // Nimm alle, bevorzuge neue aber behalte alte wenn neu leer
-  if(oldData.length>0 && newData.length===0){
-    console.log('Alte Artikel gefunden:', oldData.length, 'stelle wieder her!');
-    localStorage.setItem('marygrace_server_cache', JSON.stringify(oldData));
-    return oldData;
-  }
-  if(oldData.length>0 && newData.length>0){
-    // Merge, vermeide doppelte
-    const merged = [...newData];
-    oldData.forEach(o=>{ if(!merged.find(n=>n.id===o.id||n.artikelnummer===o.artikelnummer)) merged.push(o); });
-    return merged;
-  }
-  return newData.length>0?newData:oldData;
-})()
+let articles = JSON.parse(localStorage.getItem('kingfields_full_v3') || '[]')
 let current = null
 let sbClient = null
 let bildSackFile=null, bildSackBase64=null, bildReisBase64=null
@@ -167,7 +124,7 @@ async function loadFromSupabase(){
           geschmackEn: d.geschmack||'', aromaEn: d.aroma||'', texturEn: d.textur||'', passtZuEn: d.passt_zu||'', kochmethodeEn: d.kochmethode||''
         };
       });
-      localStorage.setItem('marygrace_server_cache', JSON.stringify(articles));
+      localStorage.setItem('kingfields_full_v3', JSON.stringify(articles));
       document.getElementById('sb-status').textContent = "✅ " + articles.length + " Artikel aus Supabase (nur stammdaten)";
       document.getElementById('sb-status').className = "text-[11px] text-green-600 font-bold";
     } else {
@@ -209,25 +166,7 @@ function loadNavLabels(){ for(let i=0;i<4;i++){ const lbl=document.getElementByI
 function t(en,tl,de){ if(lang==='EN') return en; if(lang==='TL') return tl; return de }
 function showToast(msg){ const el=document.getElementById('toast'); el.textContent=msg; el.classList.remove('hidden'); setTimeout(()=>el.classList.add('hidden'),3500) }
 function getNextArtNr(){ let max=0; articles.forEach(a=>{ const n=parseInt((a.artikelnummer||'').replace(/\D/g,''))||0; if(n>max) max=n }); return String(max+1).padStart(3,'0') }
-
-function restoreOldArticles(){
-  const oldData = JSON.parse(localStorage.getItem('kingfields_full_v3') || '[]');
-  const oldData2 = JSON.parse(localStorage.getItem('marygrace_server_cache') || '[]');
-  const toRestore = oldData.length>0?oldData:oldData2;
-  if(toRestore.length===0){ 
-    alert('Keine alten Artikel in Browser gefunden! Schau in Supabase: klick Reload Supabase'); 
-    loadFromSupabase();
-    return; 
-  }
-  articles = toRestore;
-  localStorage.setItem('marygrace_server_cache', JSON.stringify(articles));
-  localStorage.setItem('kingfields_full_v3', JSON.stringify(articles));
-  renderList();
-  if(articles.length>0) openArticle(articles[0].id);
-  showToast('✅ '+articles.length+' Artikel wiederhergestellt!');
-}
-
-function newArticle(){ setTimeout(updateFixedBar,200);
+function newArticle(){
   const nr=getNextArtNr()
   current={ id:Date.now().toString(), artikelnummer:nr, nameKurz:'', nameLang:'', marke:'', sorte:'Hasmin', qualitaet:'Premium', herkunft:'Thailand', erntejahr:new Date().getFullYear(), gewicht:'5', einheit:'kg', distributor:'Kingfields Trade', bullet1En:'', bullet1Tl:'', bullet1De:'', bullet2En:'', bullet2Tl:'', bullet2De:'', bullet3En:'', bullet3Tl:'', bullet3De:'', bullet4En:'', bullet4Tl:'', bullet4De:'', bullet5En:'', bullet5Tl:'', bullet5De:'', geschmackEn:'', geschmackTl:'', geschmackDe:'', aromaEn:'', aromaTl:'', aromaDe:'', texturEn:'', texturTl:'', texturDe:'', passtZuEn:'', passtZuTl:'', passtZuDe:'', kochmethodeEn:'', kochmethodeTl:'', kochmethodeDe:'', sloganEn:'', sloganTl:'', sloganDe:'', shortEn:'', shortTl:'', shortDe:'', storyEn:'', storyTl:'', storyDe:'', tasteEn:'', tasteTl:'', tasteDe:'', originEn:'', originTl:'', originDe:'', cookingEn:'', cookingTl:'', cookingDe:'', status:'Draft', bildSackUrl:'', bildReisUrl:'', bildSack:'', bildReis:'' }
   bildSackBase64=null; bildReisBase64=null; bildSackFile=null; zoom=1; panX=0; panY=0; renderForm(); showToast('New article '+nr)
@@ -236,7 +175,7 @@ function renderList(){
   const q=document.getElementById('search').value.toLowerCase()
   const list=document.getElementById('list')
   const filtered = articles.filter(a=>(a.artikelnummer+' '+a.nameKurz+' '+a.marke).toLowerCase().includes(q))
-  if(filtered.length===0){ list.innerHTML = '<div class="text-center py-20"><div class="text-lg font-bold mb-2">Keine Artikel gefunden</div><div class="text-xs text-zinc-500 mb-4">Alte Artikel aus Browser laden oder neuen erstellen</div><button onclick="newArticle()" class="bg-black text-white px-8 py-3 rounded-full font-bold text-sm">+ ERSTEN ARTIKEL ERSTELLEN</button><br><br><button onclick="restoreOldArticles()" class="bg-amber-400 text-black px-6 py-2 rounded-full font-bold text-xs">♻️ ALTE ARTIKEL WIEDERHERSTELLEN</button></div>'; return; }
+  if(filtered.length===0){ list.innerHTML = '<div class="text-center text-xs text-zinc-400 py-10">Keine Artikel<br><button onclick="newArticle()" class="mt-2 bg-black text-white px-3 py-1 rounded-full">+ Ersten erstellen</button></div>'; return; }
   list.innerHTML=filtered.map(a=>`
     <div onclick="openArticle('${a.id}')" class="border rounded-[12px] p-2 cursor-pointer hover:bg-zinc-50 ${current&&current.id===a.id?'bg-zinc-100 border-zinc-900':''}">
       <div class="flex gap-2">
@@ -244,13 +183,13 @@ function renderList(){
         <div class="flex-1 min-w-0">
           <div class="font-bold text-[13px] truncate">${a.artikelnummer||'???'} ${a.status==='Active'?'<span class="bg-green-100 text-green-700 text-[10px] px-1.5 py-0.5 rounded-full">Active</span>':'<span class="bg-zinc-200 text-[10px] px-1.5 py-0.5 rounded-full">Draft</span>'}</div>
           <div class="text-[11px] truncate">${a.nameKurz||a.sorte||''} • ${a.marke||''}</div>
-          ${a.bildSackUrl?'<div class="text-[9px] text-green-600 font-bold">✓ Auf Server</div>':''}
+          ${a.bildSackUrl?'<div class="text-[9px] text-green-600">✓ Supabase</div>':''}
         </div>
       </div>
     </div>
   `).join('')
 }
-function openArticle(id){ setTimeout(updateFixedBar,100); 
+function openArticle(id){ 
   current=articles.find(a=>a.id===id); 
   // Wenn nur Url aus Supabase da, nutze Url als Base64 preview
   if(current.bildSack && !current.bildSack.startsWith('data:') && current.bildSackUrl){
@@ -274,111 +213,46 @@ async function uploadToSupabase(artNr){
   let sackUrl=current.bildSackUrl||null, reisUrl=current.bildReisUrl||null
   try{
     if(bildSackFile||bildSackBase64){
-      let blob=bildSackFile; 
-      if(!blob&&bildSackBase64){
-        // Wenn bildSackBase64 ist Url (http), nicht nochmal uploaden
-        if(bildSackBase64.startsWith('http')){
-          sackUrl = bildSackBase64;
-        } else {
-          blob=base64ToBlob(bildSackBase64)
-        }
-      }
-      if(blob){
-        const path=`${artNr}/sack.png`
-        console.log('Upload sack', path, blob.size);
-        const {error}=await sbClient.storage.from('sack-bilder').upload(path, blob, {upsert:true, contentType:'image/png'}); 
-        if(error){
-          console.error('Sack upload error', error);
-          if(error.message.includes('not found')||error.message.includes('Bucket')){
-            throw new Error('Bucket sack-bilder nicht gefunden! Bitte in Supabase Storage Bucket anlegen und auf public stellen!');
-          }
-          throw error;
-        }
-        sackUrl=sbClient.storage.from('sack-bilder').getPublicUrl(path).data.publicUrl
-      }
+      let blob=bildSackFile; if(!blob&&bildSackBase64) blob=base64ToBlob(bildSackBase64)
+      const path=`${artNr}/sack.png`
+      const {error}=await sbClient.storage.from('sack-bilder').upload(path, blob, {upsert:true, contentType:'image/png'}); if(error) throw error
+      sackUrl=sbClient.storage.from('sack-bilder').getPublicUrl(path).data.publicUrl
     }
     if(bildReisBase64){
-      if(bildReisBase64.startsWith('http')){
-        reisUrl = bildReisBase64;
-      } else {
-        const cropped=await getCroppedBlob()
-        if(cropped){ 
-          const path=`${artNr}/reis-detail.png`; 
-          console.log('Upload reis', path, cropped.size);
-          const {error}=await sbClient.storage.from('reis-detail-bilder').upload(path,cropped,{upsert:true, contentType:'image/png'}); 
-          if(error){
-            console.error('Reis upload error', error);
-            if(error.message.includes('not found')||error.message.includes('Bucket')){
-              throw new Error('Bucket reis-detail-bilder nicht gefunden! Bitte in Supabase Storage Bucket anlegen und auf public stellen!');
-            }
-            throw error;
-          }
-          reisUrl=sbClient.storage.from('reis-detail-bilder').getPublicUrl(path).data.publicUrl 
-        }
-      }
+      const cropped=await getCroppedBlob()
+      if(cropped){ const path=`${artNr}/reis-detail.png`; const {error}=await sbClient.storage.from('reis-detail-bilder').upload(path,cropped,{upsert:true, contentType:'image/png'}); if(error) throw error; reisUrl=sbClient.storage.from('reis-detail-bilder').getPublicUrl(path).data.publicUrl }
     }
     return {sackUrl, reisUrl}
-  }catch(e){ 
-    console.error('Upload Fehler', e);
-    showToast('Upload Fehler: '+e.message+' - speichere ohne Bilder Upload');
-    // Fallback: behalte alte Urls
-    return {sackUrl: current.bildSackUrl||sackUrl, reisUrl: current.bildReisUrl||reisUrl, error:e.message} 
-  }
+  }catch(e){ showToast('Upload error: '+e.message); return {sackUrl, reisUrl} }
 }
-
-
 async function saveCurrent(){
   if(!current) return
   const artNr=document.getElementById('f-artnr').value.trim()
-  if(!artNr){ showToast('Artikelnr fehlt!'); return; }
-  current.artikelnummer=artNr;
-  current.nameKurz=document.getElementById('f-namekurz').value;
-  current.nameLang=document.getElementById('f-namelang').value;
-  current.marke=document.getElementById('f-marke').value;
-  current.sorte=document.getElementById('f-sorte').value;
-  current.qualitaet=document.getElementById('f-qualitaet').value;
-  current.herkunft=document.getElementById('f-herkunft').value;
-  current.erntejahr=document.getElementById('f-erntejahr').value;
-  current.gewicht=document.getElementById('f-gewicht').value;
-  current.einheit=document.getElementById('f-einheit').value;
-  current.status=artNr?'Active':'Draft'
-  current.bullet1=document.getElementById('f-bullet1')?.value||'';
-  current.bullet2=document.getElementById('f-bullet2')?.value||'';
-  current.bullet3=document.getElementById('f-bullet3')?.value||'';
-  current.bullet4=document.getElementById('f-bullet4')?.value||'';
-  current.bullet5=document.getElementById('f-bullet5')?.value||'';
-  current.sloganDe=document.getElementById('f-slogan')?.value||'';
-  current.shortDe=document.getElementById('f-short')?.value||'';
-  current.storyDe=document.getElementById('f-story')?.value||'';
+  if(!artNr){ showToast('Artikelnummer nötig'); return }
+  const fields=['nameKurz','nameLang','marke','sorte','qualitaet','herkunft','erntejahr','gewicht','einheit','distributor','bullet1','bullet2','bullet3','bullet4','bullet5','geschmack','aroma','textur','passtZu','kochmethode','slogan','short','story','taste','origin','cooking']
+  fields.forEach(f=>{
+    const el=document.getElementById('f-'+f)
+    if(el){
+      if(lang==='EN') current[f+'En']=el.value
+      else if(lang==='TL') current[f+'Tl']=el.value
+      else current[f+'De']=el.value
+      if(['nameKurz','marke','sorte','gewicht'].includes(f)) current[f]=el.value
+    }
+  })
+  current.artikelnummer=artNr; current.nameKurz=document.getElementById('f-nameKurz').value; current.nameLang=document.getElementById('f-nameLang').value; current.marke=document.getElementById('f-marke').value; current.sorte=document.getElementById('f-sorte').value; current.qualitaet=document.getElementById('f-qualitaet').value; current.herkunft=document.getElementById('f-herkunft').value; current.erntejahr=document.getElementById('f-erntejahr').value; current.gewicht=document.getElementById('f-gewicht').value; current.einheit=document.getElementById('f-einheit').value; current.status=artNr?'Active':'Draft'
   current.bildSack=bildSackBase64; current.bildReis=bildReisBase64; current.bildReisZoom=zoom; current.bildReisPanX=panX; current.bildReisPanY=panY; current.bildReisRund=isRound
-  const idx=articles.findIndex(a=>a.id===current.id);
-  if(idx>=0) articles[idx]={...current};
-  localStorage.setItem('marygrace_server_cache', JSON.stringify(articles));
   if(sbClient){
-    try{
-      const urls=await uploadToSupabase(artNr); 
-      if(urls.sackUrl) current.bildSackUrl=urls.sackUrl; 
-      if(urls.reisUrl) current.bildReisUrl=urls.reisUrl;
-      if(!urls.sackUrl && current.bildSackUrl) urls.sackUrl=current.bildSackUrl;
-      if(!urls.reisUrl && current.bildReisUrl) urls.reisUrl=current.bildReisUrl;
-      const payload={ artikelnummer:artNr, name_kurz:current.nameKurz, name_lang:current.nameLang, marke:current.marke, sorte:current.sorte, qualitaet:current.qualitaet, herkunft:current.herkunft, erntejahr:current.erntejahr, gewicht:current.gewicht, einheit:current.einheit, bullet1:current.bullet1, bullet2:current.bullet2, bullet3:current.bullet3, bullet4:current.bullet4, bullet5:current.bullet5, marketing:{de:{bullet1:current.bullet1, bullet2:current.bullet2, bullet3:current.bullet3, bullet4:current.bullet4, bullet5:current.bullet5, slogan:current.sloganDe, short:current.shortDe, story:current.storyDe}}, bild_sack_url:current.bildSackUrl||'', bild_reis_url:current.bildReisUrl||'', status:'Active' };
-      const {error}=await sbClient.from('stammdaten').upsert(payload,{onConflict:'artikelnummer'})
-      if(error) throw error;
-      showToast('✅ AUF SERVER GESPEICHERT: '+artNr+' → Facebook Studio kann es jetzt laden!');
-    }catch(e){ showToast('❌ Server Fehler: '+e.message+' - Prüfe Supabase!'); console.error(e); }
-  } else { showToast('⚠️ Nur lokal - Kein Server! Bitte Supabase verbinden'); }
-  renderList();
+    const urls=await uploadToSupabase(artNr); if(urls.sackUrl) current.bildSackUrl=urls.sackUrl; if(urls.reisUrl) current.bildReisUrl=urls.reisUrl; // behalte alte urls wenn keine neuen
+    if(!urls.sackUrl && current.bildSackUrl) urls.sackUrl=current.bildSackUrl;
+    if(!urls.reisUrl && current.bildReisUrl) urls.reisUrl=current.bildReisUrl
+    const payload={ artikelnummer:artNr, name_kurz:current.nameKurz, name_lang:current.nameLang, marke:current.marke, sorte:current.sorte, qualitaet:current.qualitaet, herkunft:current.herkunft, erntejahr:current.erntejahr, gewicht:current.gewicht, einheit:current.einheit, marketing:{ en:{bullet1:current.bullet1En, bullet2:current.bullet2En, bullet3:current.bullet3En, bullet4:current.bullet4En, bullet5:current.bullet5En, geschmack:current.geschmackEn, aroma:current.aromaEn, textur:current.texturEn, passtZu:current.passtZuEn, kochmethode:current.kochmethodeEn, slogan:current.sloganEn, short:current.shortEn, story:current.storyEn, taste:current.tasteEn, origin:current.originEn, cooking:current.cookingEn}, tl:{bullet1:current.bullet1Tl, bullet2:current.bullet2Tl, bullet3:current.bullet3Tl, bullet4:current.bullet4Tl, bullet5:current.bullet5Tl, geschmack:current.geschmackTl, aroma:current.aromaTl, textur:current.texturTl, passtZu:current.passtZuTl, kochmethode:current.kochmethodeTl, slogan:current.sloganTl, short:current.shortTl, story:current.storyTl, taste:current.tasteTl, origin:current.originTl, cooking:current.cookingTl}, de:{bullet1:current.bullet1De, bullet2:current.bullet2De, bullet3:current.bullet3De, bullet4:current.bullet4De, bullet5:current.bullet5De, geschmack:current.geschmackDe, aroma:current.aromaDe, textur:current.texturDe, passtZu:current.passtZuDe, kochmethode:current.kochmethodeDe, slogan:current.sloganDe, short:current.shortDe, story:current.storyDe, taste:current.tasteDe, origin:current.originDe, cooking:current.cookingDe} }, bild_sack_url:current.bildSackUrl, bild_reis_url:current.bildReisUrl, status:'Active' }
+    const {error}=await sbClient.from('stammdaten').upsert(payload,{onConflict:'artikelnummer'})
+    if(error) showToast('DB error: '+error.message); else showToast('✅ Gespeichert: '+artNr)
+  }
+  const idx=articles.findIndex(a=>a.id===current.id); if(idx>=0) articles[idx]=current; else articles.push(current)
+  localStorage.setItem('kingfields_full_v3', JSON.stringify(articles)); renderList()
 }
-
-}
-function updateFixedBar(){
-  const el=document.getElementById('fixed-save-status');
-  const btn=document.getElementById('fixed-save-btn');
-  if(!current){ if(el) el.textContent='Kein Artikel - erst + NEU klicken'; if(btn) btn.className='bg-zinc-600 text-zinc-400 px-8 py-3 rounded-full font-black text-sm cursor-not-allowed'; return; }
-  if(el) el.textContent='Bereit zum Speichern: '+(current.artikelnummer||'ohne Nr');
-  if(btn) btn.className='bg-green-500 text-black px-8 py-3 rounded-full font-black text-sm animate-pulse';
-}
-function renderForm(){ updateFixedBar();
+function renderForm(){
   if(!current){ document.getElementById('form').innerHTML=`<div class="text-center py-20 text-zinc-400"><div class="font-display text-xl mb-2">${t('Select article','Pumili ng article','Artikel wählen')}</div><button onclick="newArticle()" class="bg-black text-white px-6 py-2 rounded-full text-sm">+ New ${getNextArtNr()}</button></div>`; return }
   const val = (fieldBase) => { if(lang==='EN') return current[fieldBase+'En']||''; if(lang==='TL') return current[fieldBase+'Tl']||''; return current[fieldBase+'De']||'' }
   document.getElementById('form').innerHTML=`
@@ -404,7 +278,7 @@ function renderForm(){ updateFixedBar();
       </div>
       <div class="bg-green-50 border-2 border-green-300 rounded-[16px] p-4"><h3 class="font-display font-semibold text-[14px] mb-3">⭐ Verkaufsargumente / Bullet Points • ${lang} • An oberster Stelle!</h3><p class="text-[11px] text-zinc-600 mb-3">5 Felder für Vorteile, USPs, Fuji Apple süß & knackig etc. Wenn leer, wird Feld nicht angezeigt und andere rutschen hoch.</p><div class="grid grid-cols-1 gap-2"><div class="flex gap-2"><span class="text-xs font-bold w-6">1.</span><input id="f-bullet1" value="${val('bullet1')}" placeholder="${t('z.B. Fuji - Süß & Knackig','e.g. Fuji - Sweet & Crunchy','z.B. Fuji - Süß & Knackig')}" class="flex-1 border rounded-full px-3 py-2 text-sm bg-white"></div><div class="flex gap-2"><span class="text-xs font-bold w-6">2.</span><input id="f-bullet2" value="${val('bullet2')}" placeholder="${t('z.B. 100% Premium Qualität','e.g. 100% Premium Quality','z.B. 100% Premium')}" class="flex-1 border rounded-full px-3 py-2 text-sm bg-white"></div><div class="flex gap-2"><span class="text-xs font-bold w-6">3.</span><input id="f-bullet3" value="${val('bullet3')}" class="flex-1 border rounded-full px-3 py-2 text-sm bg-white"></div><div class="flex gap-2"><span class="text-xs font-bold w-6">4.</span><input id="f-bullet4" value="${val('bullet4')}" class="flex-1 border rounded-full px-3 py-2 text-sm bg-white"></div><div class="flex gap-2"><span class="text-xs font-bold w-6">5.</span><input id="f-bullet5" value="${val('bullet5')}" class="flex-1 border rounded-full px-3 py-2 text-sm bg-white"></div></div></div>
       <div class="bg-amber-50 border border-amber-200 rounded-[16px] p-4"><h3 class="font-display font-semibold text-[14px] mb-3">🍚 Food Properties • ${lang}</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-3"><div><label class="text-[11px] font-medium">Geschmack</label><input id="f-geschmack" value="${val('geschmack')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div><div><label class="text-[11px] font-medium">Aroma</label><input id="f-aroma" value="${val('aroma')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div><div><label class="text-[11px] font-medium">Textur</label><input id="f-textur" value="${val('textur')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div><div><label class="text-[11px] font-medium">Kochmethode</label><input id="f-kochmethode" value="${val('kochmethode')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div><div class="md:col-span-2"><label class="text-[11px] font-medium">Passt gut zu</label><input id="f-passtZu" value="${val('passtZu')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div></div></div>
-      <div class="flex gap-2"><button onclick="saveCurrent()" class="flex-1 bg-black text-white py-4 rounded-full font-black text-[16px] tracking-wide"><span class="lang-en"><span class="lang-en">💾 SAVE TO SERVER</span><span class="lang-tl hidden">💾 I-SAVE SA SERVER</span><span class="lang-de hidden">💾 AUF SERVER SPEICHERN</span> → Facebook Studio</span><span class="lang-tl hidden">💾 I-SAVE SA SERVER → Facebook Studio</span><span class="lang-de hidden">💾 AUF SERVER SPEICHERN → Facebook Studio</span></button><button onclick="deleteCurrent()" class="bg-red-50 text-red-600 border border-red-200 px-6 py-3 rounded-full text-sm">Delete</button></div>
+      <div class="flex gap-2"><button onclick="saveCurrent()" class="flex-1 bg-black text-white py-3 rounded-full font-bold text-sm">💾 In Supabase speichern ✅</button><button onclick="deleteCurrent()" class="bg-red-50 text-red-600 border border-red-200 px-6 py-3 rounded-full text-sm">Delete</button></div>
     </div>
   `
   document.getElementById('f-qualitaet').value=current.qualitaet||'Premium'
@@ -416,40 +290,13 @@ function cleanDemo(){
   if(toDelete.length===0){ showToast('Kein Demo'); return; }
   if(!confirm(toDelete.length+' Demo löschen: '+toDelete.map(a=>a.artikelnummer).join(', ')+' ?')) return;
   articles = articles.filter(a=> !toDelete.includes(a));
-  localStorage.setItem('marygrace_server_cache', JSON.stringify(articles));
+  localStorage.setItem('kingfields_full_v3', JSON.stringify(articles));
   renderList(); showToast('✅ '+toDelete.length+' Demo gelöscht');
   if(sbClient){ toDelete.forEach(async a=>{ await sbClient.from('stammdaten').delete().eq('artikelnummer', a.artikelnummer); }); }
 }
-function deleteCurrent(){ if(!confirm('Delete '+current.artikelnummer+'?')) return; articles=articles.filter(a=>a.id!==current.id); localStorage.setItem('marygrace_server_cache', JSON.stringify(articles)); current=null; renderList(); renderForm(); }
-function setLang(l){
-  document.querySelectorAll('.lang-en').forEach(e=>e.classList.toggle('hidden', l!=='EN'));
-  document.querySelectorAll('.lang-tl').forEach(e=>e.classList.toggle('hidden', l!=='TL'));
-  document.querySelectorAll('.lang-de').forEach(e=>e.classList.toggle('hidden', l!=='DE'));
- if(current){ const fields=['bullet1','bullet2','bullet3','bullet4','bullet5','geschmack','aroma','textur','passtZu','kochmethode','slogan','short','story','taste','origin','cooking']; fields.forEach(f=>{ const el=document.getElementById('f-'+f); if(el){ if(lang==='EN') current[f+'En']=el.value; else if(lang==='TL') current[f+'Tl']=el.value; else current[f+'De']=el.value; } }) } lang=l; localStorage.setItem('lang',l); document.querySelectorAll('[id^=btn-]').forEach(b=>{ b.className='px-4 py-1.5 rounded-full text-sm text-zinc-600' }); document.getElementById('btn-'+l.toLowerCase()).className='px-4 py-1.5 rounded-full text-sm bg-black text-white font-medium'; if(current) renderForm() }
+function deleteCurrent(){ if(!confirm('Delete '+current.artikelnummer+'?')) return; articles=articles.filter(a=>a.id!==current.id); localStorage.setItem('kingfields_full_v3', JSON.stringify(articles)); current=null; renderList(); renderForm(); }
+function setLang(l){ if(current){ const fields=['bullet1','bullet2','bullet3','bullet4','bullet5','geschmack','aroma','textur','passtZu','kochmethode','slogan','short','story','taste','origin','cooking']; fields.forEach(f=>{ const el=document.getElementById('f-'+f); if(el){ if(lang==='EN') current[f+'En']=el.value; else if(lang==='TL') current[f+'Tl']=el.value; else current[f+'De']=el.value; } }) } lang=l; localStorage.setItem('lang',l); document.querySelectorAll('[id^=btn-]').forEach(b=>{ b.className='px-4 py-1.5 rounded-full text-sm text-zinc-600' }); document.getElementById('btn-'+l.toLowerCase()).className='px-4 py-1.5 rounded-full text-sm bg-black text-white font-medium'; if(current) renderForm() }
 setLang(lang); renderList(); loadNavLabels();
-
-<script>
-// Beim Laden immer vom Server holen
-document.addEventListener('DOMContentLoaded', ()=>{
-  console.log('Lade vom Server...');
-  if(typeof loadFromSupabase==='function'){
-    loadFromSupabase();
-  }
-});
 </script>
-
-
-
-<div style="display:none" class="fixed bottom-0 left-0 right-0 bg-black text-white p-4 flex gap-3 items-center justify-between z-50 shadow-2xl">
-  <div class="text-sm">
-    <div id="fixed-save-status" class="font-bold">Kein Artikel ausgewählt</div>
-    <div class="text-[11px] text-zinc-400">Wird auf Server gespeichert für Facebook Studio</div>
-  </div>
-  <div class="flex gap-2">
-    <button onclick="newArticle()" class="bg-white text-black px-5 py-3 rounded-full font-bold text-sm">+ NEU</button>
-    <button onclick="saveCurrent()" id="fixed-save-btn" class="bg-green-500 text-black px-8 py-3 rounded-full font-black text-sm"><span class="lang-en">💾 SAVE TO SERVER</span><span class="lang-tl hidden">💾 I-SAVE SA SERVER</span><span class="lang-de hidden">💾 AUF SERVER SPEICHERN</span></button>
-  </div>
-</div>
-<div class="h-[80px]"></div>
 </body>
 </html>
