@@ -35,7 +35,7 @@
       <button onclick="openLink(1)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">🛒 <span id="nav-label-1">Shop</span></button>
       <button onclick="openLink(2)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">📦 <span id="nav-label-2">Katalog</span></button>
       <button onclick="openLink(3)" class="bg-white border px-4 py-2 rounded-full text-[13px] font-medium hover:bg-zinc-50">🌐 <span id="nav-label-3">Website</span></button>
-      <button onclick="window.open('https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Layout.html','_blank')" class="bg-zinc-900 text-white border-2 border-amber-300 px-4 py-2 rounded-full text-[13px] font-medium hover:bg-black">📘 Facebook Studio</button>
+      <button onclick="window.open('https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Layout.html?v=1787766554','_blank')" class="bg-zinc-900 text-white border-2 border-amber-300 px-4 py-2 rounded-full text-[13px] font-medium hover:bg-black">📘 Facebook Studio</button>
       <button onclick="toggleNavEdit()" class="ml-auto text-[11px] border px-3 py-1 rounded-full bg-white">⚙ Edit Links</button>
     </div>
     <div id="nav-edit" class="hidden mt-3 bg-zinc-50 p-3 rounded-xl grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -80,7 +80,7 @@
 const SUPABASE_URL = "https://crdtuptjybxbsezxtksp.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_GU6AAlF0zc3LB4hFlKK0fw_TNxo9z7q";
 
-let navLinks = JSON.parse(localStorage.getItem('navLinks') || '[{"name":"Preisliste","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Pricelist.html"},{"name":"Shop","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Shop.html"},{"name":"Katalog","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Layout.html"},{"name":"Website","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/"}]')
+let navLinks = JSON.parse(localStorage.getItem('navLinks') || '[{"name":"Preisliste","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Pricelist.html"},{"name":"Shop","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Shop.html"},{"name":"Katalog","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Layout.html?v=1787766554"},{"name":"Website","url":"https://sakeun72-cloud.github.io/MaryGraceCalcutlator/"}]')
 let lang = localStorage.getItem('lang') || 'EN'
 let articles = JSON.parse(localStorage.getItem('kingfields_full_v3') || '[]')
 let current = null
@@ -100,44 +100,43 @@ try{
 async function loadFromSupabase(){
   if(!sbClient) return;
   document.getElementById('sb-status').textContent = "⏳ Lade stammdaten...";
-  const {data, error} = await sbClient.from('stammdaten').select('*').order('artikelnummer');
-  if(error){
-    document.getElementById('sb-status').innerHTML = "❌ " + error.message;
-    document.getElementById('sb-status').className = "text-[11px] text-red-600 font-bold";
-    renderList(); return;
+  try{
+    const {data, error} = await sbClient.from('stammdaten').select('*').order('artikelnummer');
+    if(error) throw error;
+    if(data && data.length>0){
+      articles = data.map(d=>{
+        return {
+          id: d.artikelnummer, artikelnummer: d.artikelnummer, 
+          nameKurz: d.name_kurz||'', nameLang: d.name_lang||'', marke: d.marke||'', sorte: d.sorte||'', qualitaet: d.qualitaet||'Premium', 
+          herkunft: d.herkunft||'', erntejahr: d.erntejahr||'', gewicht: d.gewicht||'', einheit: d.einheit||'kg',
+          distributor: d.distributor||'Kingfields Trade',
+          geschmack: d.geschmack||'', aroma: d.aroma||'', textur: d.textur||'', passt_zu: d.passt_zu||'', kochmethode: d.kochmethode||'',
+          bullet1: d.bullet1||'', bullet2: d.bullet2||'', bullet3: d.bullet3||'', bullet4: d.bullet4||'', bullet5: d.bullet5||'',
+          status: d.status||'Active',
+          bildSackUrl: d.bild_sack_url||'', bildReisUrl: d.bild_reis_url||'', bildSack: '', bildReis: '',
+          // leere marketing felder für kompatibilität
+          sloganDe:'', shortDe:'', sloganTl:'', shortTl:'', sloganEn:'', shortEn:'',
+          bullet1De: d.bullet1||'', bullet1Tl: d.bullet1||'', bullet1En: d.bullet1||'',
+          bullet2De: d.bullet2||'', bullet2Tl: d.bullet2||'', bullet2En: d.bullet2||'',
+          bullet3De: d.bullet3||'', bullet3Tl: d.bullet3||'', bullet3En: d.bullet3||'',
+          geschmackDe: d.geschmack||'', aromaDe: d.aroma||'', texturDe: d.textur||'', passtZuDe: d.passt_zu||'', kochmethodeDe: d.kochmethode||'',
+          geschmackTl: d.geschmack||'', aromaTl: d.aroma||'', texturTl: d.textur||'', passtZuTl: d.passt_zu||'', kochmethodeTl: d.kochmethode||'',
+          geschmackEn: d.geschmack||'', aromaEn: d.aroma||'', texturEn: d.textur||'', passtZuEn: d.passt_zu||'', kochmethodeEn: d.kochmethode||''
+        };
+      });
+      localStorage.setItem('kingfields_full_v3', JSON.stringify(articles));
+      document.getElementById('sb-status').textContent = "✅ " + articles.length + " Artikel aus Supabase (nur stammdaten)";
+      document.getElementById('sb-status').className = "text-[11px] text-green-600 font-bold";
+    } else {
+      document.getElementById('sb-status').textContent = "⚠ Supabase leer";
+    }
+    renderList();
+  }catch(e){
+    document.getElementById('sb-status').textContent = "❌ " + e.message;
+    console.error(e);
   }
-  if(data && data.length>0){
-    articles = data.map(d=>{
-      const m=d.marketing||{}; const en=m.en||{}, tl=m.tl||{}, de=m.de||{};
-      return {
-        id: d.artikelnummer, artikelnummer: d.artikelnummer, nameKurz: d.name_kurz||'', nameLang: d.name_lang||'', marke: d.marke||'', sorte: d.sorte||'', qualitaet: d.qualitaet||'Premium', herkunft: d.herkunft||'', erntejahr: d.erntejahr||'', gewicht: d.gewicht||'', einheit: d.einheit||'kg', distributor: 'Kingfields Trade',
-        bullet1En: en.bullet1||'', bullet1Tl: tl.bullet1||'', bullet1De: de.bullet1||'',
-        bullet2En: en.bullet2||'', bullet2Tl: tl.bullet2||'', bullet2De: de.bullet2||'',
-        bullet3En: en.bullet3||'', bullet3Tl: tl.bullet3||'', bullet3De: de.bullet3||'',
-        bullet4En: en.bullet4||'', bullet4Tl: tl.bullet4||'', bullet4De: de.bullet4||'',
-        bullet5En: en.bullet5||'', bullet5Tl: tl.bullet5||'', bullet5De: de.bullet5||'',
-        geschmackEn: en.geschmack||'', geschmackTl: tl.geschmack||'', geschmackDe: de.geschmack||'',
-        aromaEn: en.aroma||'', aromaTl: tl.aroma||'', aromaDe: de.aroma||'',
-        texturEn: en.textur||'', texturTl: tl.textur||'', texturDe: de.textur||'',
-        passtZuEn: en.passtZu||'', passtZuTl: tl.passtZu||'', passtZuDe: de.passtZu||'',
-        kochmethodeEn: en.kochmethode||'', kochmethodeTl: tl.kochmethode||'', kochmethodeDe: de.kochmethode||'',
-        sloganEn: en.slogan||'', sloganTl: tl.slogan||'', sloganDe: de.slogan||'',
-        shortEn: en.short||'', shortTl: tl.short||'', shortDe: de.short||'',
-        storyEn: en.story||'', storyTl: tl.story||'', storyDe: de.story||'',
-        tasteEn: en.taste||'', tasteTl: tl.taste||'', tasteDe: de.taste||'',
-        originEn: en.origin||'', originTl: tl.origin||'', originDe: de.origin||'',
-        cookingEn: en.cooking||'', cookingTl: tl.cooking||'', cookingDe: de.cooking||'',
-        bildSackUrl: d.bild_sack_url||'', bildReisUrl: d.bild_reis_url||'', status: 'Active'
-      }
-    });
-    localStorage.setItem('kingfields_full_v3', JSON.stringify(articles));
-    document.getElementById('sb-status').textContent = "✅ " + articles.length + " Artikel aus Supabase geladen";
-    document.getElementById('sb-status').className = "text-[11px] text-green-600 font-bold";
-  } else {
-    document.getElementById('sb-status').textContent = "⚠ Supabase leer - nutze " + articles.length + " aus localStorage";
-  }
-  renderList();
 }
+
 
 async function migrateLocalToSupabase(){
   if(!sbClient){ showToast('❌ Kein Supabase'); return; }
@@ -190,7 +189,23 @@ function renderList(){
     </div>
   `).join('')
 }
-function openArticle(id){ current=articles.find(a=>a.id===id); bildSackBase64=current.bildSack||null; bildReisBase64=current.bildReis||null; zoom=current.bildReisZoom||1; panX=current.bildReisPanX||0; panY=current.bildReisPanY||0; isRound=current.bildReisRund||false; renderForm() }
+function openArticle(id){ 
+  current=articles.find(a=>a.id===id); 
+  // Wenn nur Url aus Supabase da, nutze Url als Base64 preview
+  if(current.bildSack && !current.bildSack.startsWith('data:') && current.bildSackUrl){
+    bildSackBase64 = current.bildSackUrl;
+  } else {
+    bildSackBase64=current.bildSack||current.bildSackUrl||null;
+  }
+  if(current.bildReis && !current.bildReis.startsWith('data:') && current.bildReisUrl){
+    bildReisBase64 = current.bildReisUrl;
+  } else {
+    bildReisBase64=current.bildReis||current.bildReisUrl||null;
+  }
+  zoom=current.bildReisZoom||1; panX=current.bildReisPanX||0; panY=current.bildReisPanY||0; isRound=current.bildReisRund||false; 
+  console.log('Open article', id, 'Sack:', !!bildSackBase64, 'Reis:', !!bildReisBase64, current.bildSackUrl);
+  renderForm() 
+}
 function base64ToBlob(b64){ const arr=b64.split(','), mime=arr[0].match(/:(.*?);/)[1], bstr=atob(arr[1]); let n=bstr.length; const u8=new Uint8Array(n); while(n--) u8[n]=bstr.charCodeAt(n); return new Blob([u8],{type:mime}) }
 function getCroppedBlob(){ return new Promise(res=>{ if(!bildReisBase64) return res(null); const c=document.createElement('canvas'); c.width=800; c.height=800; const ctx=c.getContext('2d'); if(isRound){ ctx.beginPath(); ctx.arc(400,400,400,0,Math.PI*2); ctx.clip() } const img=new Image(); img.onload=()=>{ const w=img.width*zoom, h=img.height*zoom, x=(800-w)/2+panX, y=(800-h)/2+panY; ctx.drawImage(img,x,y,w,h); c.toBlob(b=>res(b),'image/png',0.9) }; img.src=bildReisBase64 }) }
 async function uploadToSupabase(artNr){
@@ -227,7 +242,9 @@ async function saveCurrent(){
   current.artikelnummer=artNr; current.nameKurz=document.getElementById('f-nameKurz').value; current.nameLang=document.getElementById('f-nameLang').value; current.marke=document.getElementById('f-marke').value; current.sorte=document.getElementById('f-sorte').value; current.qualitaet=document.getElementById('f-qualitaet').value; current.herkunft=document.getElementById('f-herkunft').value; current.erntejahr=document.getElementById('f-erntejahr').value; current.gewicht=document.getElementById('f-gewicht').value; current.einheit=document.getElementById('f-einheit').value; current.status=artNr?'Active':'Draft'
   current.bildSack=bildSackBase64; current.bildReis=bildReisBase64; current.bildReisZoom=zoom; current.bildReisPanX=panX; current.bildReisPanY=panY; current.bildReisRund=isRound
   if(sbClient){
-    const urls=await uploadToSupabase(artNr); if(urls.sackUrl) current.bildSackUrl=urls.sackUrl; if(urls.reisUrl) current.bildReisUrl=urls.reisUrl
+    const urls=await uploadToSupabase(artNr); if(urls.sackUrl) current.bildSackUrl=urls.sackUrl; if(urls.reisUrl) current.bildReisUrl=urls.reisUrl; // behalte alte urls wenn keine neuen
+    if(!urls.sackUrl && current.bildSackUrl) urls.sackUrl=current.bildSackUrl;
+    if(!urls.reisUrl && current.bildReisUrl) urls.reisUrl=current.bildReisUrl
     const payload={ artikelnummer:artNr, name_kurz:current.nameKurz, name_lang:current.nameLang, marke:current.marke, sorte:current.sorte, qualitaet:current.qualitaet, herkunft:current.herkunft, erntejahr:current.erntejahr, gewicht:current.gewicht, einheit:current.einheit, marketing:{ en:{bullet1:current.bullet1En, bullet2:current.bullet2En, bullet3:current.bullet3En, bullet4:current.bullet4En, bullet5:current.bullet5En, geschmack:current.geschmackEn, aroma:current.aromaEn, textur:current.texturEn, passtZu:current.passtZuEn, kochmethode:current.kochmethodeEn, slogan:current.sloganEn, short:current.shortEn, story:current.storyEn, taste:current.tasteEn, origin:current.originEn, cooking:current.cookingEn}, tl:{bullet1:current.bullet1Tl, bullet2:current.bullet2Tl, bullet3:current.bullet3Tl, bullet4:current.bullet4Tl, bullet5:current.bullet5Tl, geschmack:current.geschmackTl, aroma:current.aromaTl, textur:current.texturTl, passtZu:current.passtZuTl, kochmethode:current.kochmethodeTl, slogan:current.sloganTl, short:current.shortTl, story:current.storyTl, taste:current.tasteTl, origin:current.originTl, cooking:current.cookingTl}, de:{bullet1:current.bullet1De, bullet2:current.bullet2De, bullet3:current.bullet3De, bullet4:current.bullet4De, bullet5:current.bullet5De, geschmack:current.geschmackDe, aroma:current.aromaDe, textur:current.texturDe, passtZu:current.passtZuDe, kochmethode:current.kochmethodeDe, slogan:current.sloganDe, short:current.shortDe, story:current.storyDe, taste:current.tasteDe, origin:current.originDe, cooking:current.cookingDe} }, bild_sack_url:current.bildSackUrl, bild_reis_url:current.bildReisUrl, status:'Active' }
     const {error}=await sbClient.from('stammdaten').upsert(payload,{onConflict:'artikelnummer'})
     if(error) showToast('DB error: '+error.message); else showToast('✅ Gespeichert: '+artNr)
@@ -256,7 +273,7 @@ function renderForm(){
         </div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div><label class="text-xs font-bold">1. Sack Bild (transparent)</label><div id="drop-sack" class="chessboard border-2 border-dashed rounded-[16px] h-[320px] flex items-center justify-center relative overflow-hidden cursor-pointer mt-1" onclick="document.getElementById('file-sack').click()">${bildSackBase64?`<img src="${bildSackBase64}" class="max-w-full max-h-full object-contain">`:`<div class="bg-white px-3 py-1 rounded-full text-xs shadow">Click / Drop sack image</div>`}</div><input id="file-sack" type="file" accept="image/*" class="hidden" onchange="handleSackFile(this)"></div>
+        <div><label class="text-xs font-bold">1. Sack Bild (transparent)</label><div id="drop-sack" class="chessboard border-2 border-dashed rounded-[16px] h-[320px] flex items-center justify-center relative overflow-hidden cursor-pointer mt-1" onclick="document.getElementById('file-sack').click()">${bildSackBase64?`<img src="${bildSackBase64}" class="max-w-full max-h-full object-contain" crossorigin="anonymous">`:`<div class="bg-white px-3 py-1 rounded-full text-xs shadow">Click / Drop sack image</div>`}</div><input id="file-sack" type="file" accept="image/*" class="hidden" onchange="handleSackFile(this)"></div>
         <div><label class="text-xs font-bold">2. Loser Reis Detail (Zuschneiden)</label><div id="drop-reis" class="border-2 border-dashed rounded-[16px] h-[320px] flex items-center justify-center relative overflow-hidden bg-zinc-100 cursor-pointer mt-1" onclick="document.getElementById('file-reis').click()">${bildReisBase64?`<img id="reis-img" src="${bildReisBase64}" style="transform: translate(${panX}px, ${panY}px) scale(${zoom}); ${isRound?'border-radius:50%':''}" class="max-w-full max-h-full object-contain">`:`<div class="bg-white px-3 py-1 rounded-full text-xs shadow">Click Reis Bild</div>`}</div><input id="file-reis" type="file" accept="image/*" class="hidden" onchange="handleReisFile(this)"></div>
       </div>
       <div class="bg-green-50 border-2 border-green-300 rounded-[16px] p-4"><h3 class="font-display font-semibold text-[14px] mb-3">⭐ Verkaufsargumente / Bullet Points • ${lang} • An oberster Stelle!</h3><p class="text-[11px] text-zinc-600 mb-3">5 Felder für Vorteile, USPs, Fuji Apple süß & knackig etc. Wenn leer, wird Feld nicht angezeigt und andere rutschen hoch.</p><div class="grid grid-cols-1 gap-2"><div class="flex gap-2"><span class="text-xs font-bold w-6">1.</span><input id="f-bullet1" value="${val('bullet1')}" placeholder="${t('z.B. Fuji - Süß & Knackig','e.g. Fuji - Sweet & Crunchy','z.B. Fuji - Süß & Knackig')}" class="flex-1 border rounded-full px-3 py-2 text-sm bg-white"></div><div class="flex gap-2"><span class="text-xs font-bold w-6">2.</span><input id="f-bullet2" value="${val('bullet2')}" placeholder="${t('z.B. 100% Premium Qualität','e.g. 100% Premium Quality','z.B. 100% Premium')}" class="flex-1 border rounded-full px-3 py-2 text-sm bg-white"></div><div class="flex gap-2"><span class="text-xs font-bold w-6">3.</span><input id="f-bullet3" value="${val('bullet3')}" class="flex-1 border rounded-full px-3 py-2 text-sm bg-white"></div><div class="flex gap-2"><span class="text-xs font-bold w-6">4.</span><input id="f-bullet4" value="${val('bullet4')}" class="flex-1 border rounded-full px-3 py-2 text-sm bg-white"></div><div class="flex gap-2"><span class="text-xs font-bold w-6">5.</span><input id="f-bullet5" value="${val('bullet5')}" class="flex-1 border rounded-full px-3 py-2 text-sm bg-white"></div></div></div>
