@@ -219,34 +219,59 @@ function openArticle(id){
   console.log('Open article', id, 'Sack:', !!bildSackBase64, 'Reis:', !!bildReisBase64, current.bildSackUrl);
   renderForm() 
 }
-function base64ToBlob(b64){ const arr=b64.split(','), mime=arr[0].match(/:(.*?);/)[1], bstr=atob(arr[1]); let n=bstr.length; const u8=new Uint8Array(n); while(n--) u8[n]=bstr.charCodeAt(n); return new Blob([u8],{type:mime}) }
+function base64ToBlob(b64){ 
+  try{
+    if(!b64) return null;
+    if(b64.startsWith('http')) return null; // Already URL, no blob needed
+    if(!b64.startsWith('data:')) return null;
+    const arr=b64.split(','), mimeMatch=arr[0].match(/:(.*?);/);
+    if(!mimeMatch) return null;
+    const mime=mimeMatch[1], bstr=atob(arr[1]); 
+    let n=bstr.length; const u8=new Uint8Array(n); while(n--) u8[n]=bstr.charCodeAt(n); 
+    return new Blob([u8],{type:mime});
+  }catch(e){ console.error('base64ToBlob error', e, b64.substring(0,100)); return null; }
+}
 function getCroppedBlob(){ return new Promise(res=>{ if(!bildReisBase64) return res(null); const c=document.createElement('canvas'); c.width=800; c.height=800; const ctx=c.getContext('2d'); if(isRound){ ctx.beginPath(); ctx.arc(400,400,400,0,Math.PI*2); ctx.clip() } const img=new Image(); img.onload=()=>{ const w=img.width*zoom, h=img.height*zoom, x=(800-w)/2+panX, y=(800-h)/2+panY; ctx.drawImage(img,x,y,w,h); c.toBlob(b=>res(b),'image/png',0.9) }; img.src=bildReisBase64 }) }
 async function uploadToSupabase(artNr){
   if(!sbClient) return {sackUrl: current.bildSackUrl||null, reisUrl: current.bildReisUrl||null, sackVideoUrl: current.bildSackVideoUrl||null, reisVideoUrl: current.bildReisVideoUrl||null}
   let sackUrl=current.bildSackUrl||null, reisUrl=current.bildReisUrl||null, sackVideoUrl=current.bildSackVideoUrl||null, reisVideoUrl=current.bildReisVideoUrl||null
   try{
-    // Sack Bild
-    if(bildSackFile||bildSackBase64){
-      let blob=bildSackFile; if(!blob&&bildSackBase64) blob=base64ToBlob(bildSackBase64)
-      if(blob && !blob.type.startsWith('video/')){
+    // Sack Bild - nur wenn neues File oder data URL
+    if(bildSackFile){
+      const path=`${artNr}/sack.png`
+      console.log('Uploading sack file', bildSackFile.name, bildSackFile.size);
+      const {error}=await sbClient.storage.from('sack-bilder').upload(path, bildSackFile, {upsert:true, contentType: bildSackFile.type||'image/png'}); 
+      if(error) throw error
+      sackUrl=sbClient.storage.from('sack-bilder').getPublicUrl(path).data.publicUrl
+      console.log('Sack URL:', sackUrl);
+    } else if(bildSackBase64 && bildSackBase64.startsWith('data:')){
+      const blob=base64ToBlob(bildSackBase64)
+      if(blob){
         const path=`${artNr}/sack.png`
-        const {error}=await sbClient.storage.from('sack-bilder').upload(path, blob, {upsert:true, contentType:'image/png'}); if(error) throw error
+        const {error}=await sbClient.storage.from('sack-bilder').upload(path, blob, {upsert:true, contentType:'image/png'}); 
+        if(error) throw error
         sackUrl=sbClient.storage.from('sack-bilder').getPublicUrl(path).data.publicUrl
       }
     }
     // Sack VIDEO
     if(bildSackVideoFile){
       const path=`${artNr}/sack-video.mp4`
+      console.log('Uploading sack video', bildSackVideoFile.name);
       const {error}=await sbClient.storage.from('sack-bilder').upload(path, bildSackVideoFile, {upsert:true, contentType:'video/mp4'}); 
       if(error) throw error
       sackVideoUrl=sbClient.storage.from('sack-bilder').getPublicUrl(path).data.publicUrl
-      reisUrl=null; // keep
-      showToast('✅ Video hochgeladen: '+sackVideoUrl.substring(0,40)+'...')
+      console.log('Sack Video URL:', sackVideoUrl);
     }
-    // Reis Bild
-    if(bildReisBase64 && !bildReisVideoFile){
+    // Reis Bild - nur wenn data URL (cropped)
+    if(bildReisBase64 && bildReisBase64.startsWith('data:') && !bildReisVideoFile){
       const cropped=await getCroppedBlob()
-      if(cropped){ const path=`${artNr}/reis-detail.png`; const {error}=await sbClient.storage.from('reis-detail-bilder').upload(path,cropped,{upsert:true, contentType:'image/png'}); if(error) throw error; reisUrl=sbClient.storage.from('reis-detail-bilder').getPublicUrl(path).data.publicUrl }
+      if(cropped){ 
+        const path=`${artNr}/reis-detail.png`; 
+        const {error}=await sbClient.storage.from('reis-detail-bilder').upload(path,cropped,{upsert:true, contentType:'image/png'}); 
+        if(error) throw error; 
+        reisUrl=sbClient.storage.from('reis-detail-bilder').getPublicUrl(path).data.publicUrl 
+        console.log('Reis URL:', reisUrl);
+      }
     }
     // Reis VIDEO
     if(bildReisVideoFile){
@@ -256,7 +281,11 @@ async function uploadToSupabase(artNr){
       reisVideoUrl=sbClient.storage.from('reis-detail-bilder').getPublicUrl(path).data.publicUrl
     }
     return {sackUrl, reisUrl, sackVideoUrl, reisVideoUrl}
-  }catch(e){ showToast('Upload error: '+e.message); console.error(e); return {sackUrl, reisUrl, sackVideoUrl, reisVideoUrl} }
+  }catch(e){ 
+    console.error('Upload error', e); 
+    showToast('Upload error: '+e.message); 
+    return {sackUrl, reisUrl, sackVideoUrl, reisVideoUrl} 
+  }
 }
 
 async function saveCurrent(){
