@@ -20,7 +20,7 @@
     <div class="flex flex-wrap justify-between items-center gap-3 mb-3">
       <div>
         <h1 id="mg-title" class="font-display text-2xl font-semibold">MG Data - Stammdaten</h1>
-        <p class="text-xs text-zinc-400">Server verbunden</p>
+        <p class="text-xs text-zinc-500">Supabase: crdtuptjybxbsezxtksp - video support .mp4 accept all</p>
       </div>
       <div class="flex gap-2 items-center">
         <div class="flex bg-zinc-100 rounded-full p-1">
@@ -49,9 +49,9 @@
 
   <div class="bg-green-50 border border-green-300 rounded-[16px] p-3 mb-4">
     <div class="flex flex-wrap gap-2 items-center">
-      <span class="text-xs font-bold">✅ Supabase FIXED (hardcoded):</span>
+      <span class="text-xs font-bold">✅ MG Data ():</span>
       <span id="sb-url-display" class="text-xs bg-white border px-3 py-1 rounded-full">https://crdtuptjybxbsezxtksp.supabase.co</span>
-      <span class="text-xs bg-white border px-3 py-1 rounded-full">sb_publishable_GU6AAlF... fest eingebaut</span>
+      <span class="text-xs bg-white border px-3 py-1 rounded-full">sb_publishable_GU6AAlF... </span>
       <button onclick="testConnection()" class="bg-black text-white px-4 py-1.5 rounded-full text-xs">Test Connection</button>
       
       <button onclick="saveCurrent()" class="bg-green-500 text-black px-6 py-2 rounded-full text-sm font-black border-2 border-black">💾 SPEICHERN AUF SERVER</button>
@@ -73,7 +73,7 @@
       <div id="form"></div>
     </div>
   </div>
-  <div class="max-w-[1600px] mx-auto p-3"><div class="text-center mt-6 pt-4 border-t"><button onclick="migrateLocalToSupabase()" class="text-[11px] text-zinc-400 hover:text-zinc-600 border border-zinc-200 hover:border-zinc-400 px-4 py-1.5 rounded-full bg-zinc-50">⬆ Alle lokalen Artikel zu Supabase migrieren (selten)</button><span class="text-[10px] text-zinc-400 ml-2">Nur bei Server-Wechsel nötig</span></div></div><span id="sb-status" class="hidden">⏳</span><div id="toast" class="fixed bottom-4 right-4 bg-zinc-900 text-white px-4 py-2 rounded-full text-sm hidden shadow-lg z-50"></div>
+  <div class="max-w-[1600px] mx-auto p-3"><div class="text-center mt-6 pt-4 border-t"><button onclick="migrateLocalToSupabase()" class="text-[11px] text-zinc-400 hover:text-zinc-600 border border-zinc-200 hover:border-zinc-400 px-4 py-1.5 rounded-full bg-zinc-50">⬆ Alle lokalen Artikel zu Supabase migrieren (selten)</button><span class="text-[10px] text-zinc-400 ml-2">Nur bei Server-Wechsel nötig</span></div></div><div id="toast" class="fixed bottom-4 right-4 bg-zinc-900 text-white px-4 py-2 rounded-full text-sm hidden shadow-lg z-50"></div>
 </div>
 
 <script>
@@ -202,7 +202,19 @@ function openArticle(id){
   } else {
     bildReisBase64=current.bildReis||current.bildReisUrl||null;
   }
-  bildSackVideoUrl=current.bildSackVideoUrl||current.bildSackVideo||null; bildReisVideoUrl=current.bildReisVideoUrl||current.bildReisVideo||null;
+  // Video URLs können in marketing JSON oder direkt in Spalten sein
+  let sackVid = current.bildSackVideoUrl||current.bildSackVideo||current.bild_sack_video_url||null;
+  let reisVid = current.bildReisVideoUrl||current.bildReisVideo||current.bild_reis_video_url||null;
+  // Falls in marketing JSON gespeichert
+  if(!sackVid && current.marketing){
+    try{
+      const mk = typeof current.marketing === 'string' ? JSON.parse(current.marketing) : current.marketing;
+      if(mk.de && mk.de.bildSackVideoUrl) sackVid = mk.de.bildSackVideoUrl;
+      if(mk.en && mk.en.bildSackVideoUrl && !sackVid) sackVid = mk.en.bildSackVideoUrl;
+    }catch(e){}
+  }
+  bildSackVideoUrl=sackVid; bildReisVideoUrl=reisVid;
+
   zoom=current.bildReisZoom||1; panX=current.bildReisPanX||0; panY=current.bildReisPanY||0; isRound=current.bildReisRund||false; 
   console.log('Open article', id, 'Sack:', !!bildSackBase64, 'Reis:', !!bildReisBase64, current.bildSackUrl);
   renderForm() 
@@ -210,22 +222,43 @@ function openArticle(id){
 function base64ToBlob(b64){ const arr=b64.split(','), mime=arr[0].match(/:(.*?);/)[1], bstr=atob(arr[1]); let n=bstr.length; const u8=new Uint8Array(n); while(n--) u8[n]=bstr.charCodeAt(n); return new Blob([u8],{type:mime}) }
 function getCroppedBlob(){ return new Promise(res=>{ if(!bildReisBase64) return res(null); const c=document.createElement('canvas'); c.width=800; c.height=800; const ctx=c.getContext('2d'); if(isRound){ ctx.beginPath(); ctx.arc(400,400,400,0,Math.PI*2); ctx.clip() } const img=new Image(); img.onload=()=>{ const w=img.width*zoom, h=img.height*zoom, x=(800-w)/2+panX, y=(800-h)/2+panY; ctx.drawImage(img,x,y,w,h); c.toBlob(b=>res(b),'image/png',0.9) }; img.src=bildReisBase64 }) }
 async function uploadToSupabase(artNr){
-  if(!sbClient) return {sackUrl: current.bildSackUrl||null, reisUrl: current.bildReisUrl||null}
-  let sackUrl=current.bildSackUrl||null, reisUrl=current.bildReisUrl||null
+  if(!sbClient) return {sackUrl: current.bildSackUrl||null, reisUrl: current.bildReisUrl||null, sackVideoUrl: current.bildSackVideoUrl||null, reisVideoUrl: current.bildReisVideoUrl||null}
+  let sackUrl=current.bildSackUrl||null, reisUrl=current.bildReisUrl||null, sackVideoUrl=current.bildSackVideoUrl||null, reisVideoUrl=current.bildReisVideoUrl||null
   try{
+    // Sack Bild
     if(bildSackFile||bildSackBase64){
       let blob=bildSackFile; if(!blob&&bildSackBase64) blob=base64ToBlob(bildSackBase64)
-      const path=`${artNr}/sack.png`
-      const {error}=await sbClient.storage.from('sack-bilder').upload(path, blob, {upsert:true, contentType:'image/png'}); if(error) throw error
-      sackUrl=sbClient.storage.from('sack-bilder').getPublicUrl(path).data.publicUrl
+      if(blob && !blob.type.startsWith('video/')){
+        const path=`${artNr}/sack.png`
+        const {error}=await sbClient.storage.from('sack-bilder').upload(path, blob, {upsert:true, contentType:'image/png'}); if(error) throw error
+        sackUrl=sbClient.storage.from('sack-bilder').getPublicUrl(path).data.publicUrl
+      }
     }
-    if(bildReisBase64){
+    // Sack VIDEO
+    if(bildSackVideoFile){
+      const path=`${artNr}/sack-video.mp4`
+      const {error}=await sbClient.storage.from('sack-bilder').upload(path, bildSackVideoFile, {upsert:true, contentType:'video/mp4'}); 
+      if(error) throw error
+      sackVideoUrl=sbClient.storage.from('sack-bilder').getPublicUrl(path).data.publicUrl
+      reisUrl=null; // keep
+      showToast('✅ Video hochgeladen: '+sackVideoUrl.substring(0,40)+'...')
+    }
+    // Reis Bild
+    if(bildReisBase64 && !bildReisVideoFile){
       const cropped=await getCroppedBlob()
       if(cropped){ const path=`${artNr}/reis-detail.png`; const {error}=await sbClient.storage.from('reis-detail-bilder').upload(path,cropped,{upsert:true, contentType:'image/png'}); if(error) throw error; reisUrl=sbClient.storage.from('reis-detail-bilder').getPublicUrl(path).data.publicUrl }
     }
-    return {sackUrl, reisUrl}
-  }catch(e){ showToast('Upload error: '+e.message); return {sackUrl, reisUrl} }
+    // Reis VIDEO
+    if(bildReisVideoFile){
+      const path=`${artNr}/reis-video.mp4`
+      const {error}=await sbClient.storage.from('reis-detail-bilder').upload(path, bildReisVideoFile, {upsert:true, contentType:'video/mp4'}); 
+      if(error) throw error
+      reisVideoUrl=sbClient.storage.from('reis-detail-bilder').getPublicUrl(path).data.publicUrl
+    }
+    return {sackUrl, reisUrl, sackVideoUrl, reisVideoUrl}
+  }catch(e){ showToast('Upload error: '+e.message); console.error(e); return {sackUrl, reisUrl, sackVideoUrl, reisVideoUrl} }
 }
+
 async function saveCurrent(){
   if(!current) return
   const artNr=document.getElementById('f-artnr').value.trim()
@@ -242,17 +275,68 @@ async function saveCurrent(){
   })
   current.artikelnummer=artNr; current.nameKurz=document.getElementById('f-nameKurz').value; current.nameLang=document.getElementById('f-nameLang').value; current.marke=document.getElementById('f-marke').value; current.sorte=document.getElementById('f-sorte').value; current.qualitaet=document.getElementById('f-qualitaet').value; current.herkunft=document.getElementById('f-herkunft').value; current.erntejahr=document.getElementById('f-erntejahr').value; current.gewicht=document.getElementById('f-gewicht').value; current.einheit=document.getElementById('f-einheit').value; current.status=artNr?'Active':'Draft'
   current.bildSack=bildSackBase64; current.bildReis=bildReisBase64; current.bildSackVideoUrl=bildSackVideoUrl; current.bildReisVideoUrl=bildReisVideoUrl; current.bildSackVideo=bildSackVideoUrl; current.bildReisVideo=bildReisVideoUrl; current.bildReisZoom=zoom; current.bildReisPanX=panX; current.bildReisPanY=panY; current.bildReisRund=isRound
-  if(sbClient){
-    const urls=await uploadToSupabase(artNr); if(urls.sackUrl) current.bildSackUrl=urls.sackUrl; if(urls.reisUrl) current.bildReisUrl=urls.reisUrl; // behalte alte urls wenn keine neuen
-    if(!urls.sackUrl && current.bildSackUrl) urls.sackUrl=current.bildSackUrl;
-    if(!urls.reisUrl && current.bildReisUrl) urls.reisUrl=current.bildReisUrl
-    const payload={ artikelnummer:artNr, name_kurz:current.nameKurz, name_lang:current.nameLang, marke:current.marke, sorte:current.sorte, qualitaet:current.qualitaet, herkunft:current.herkunft, erntejahr:current.erntejahr, gewicht:current.gewicht, einheit:current.einheit, marketing:{ en:{bullet1:current.bullet1En, bullet2:current.bullet2En, bullet3:current.bullet3En, bullet4:current.bullet4En, bullet5:current.bullet5En, geschmack:current.geschmackEn, aroma:current.aromaEn, textur:current.texturEn, passtZu:current.passtZuEn, kochmethode:current.kochmethodeEn, slogan:current.sloganEn, short:current.shortEn, story:current.storyEn, taste:current.tasteEn, origin:current.originEn, cooking:current.cookingEn}, tl:{bullet1:current.bullet1Tl, bullet2:current.bullet2Tl, bullet3:current.bullet3Tl, bullet4:current.bullet4Tl, bullet5:current.bullet5Tl, geschmack:current.geschmackTl, aroma:current.aromaTl, textur:current.texturTl, passtZu:current.passtZuTl, kochmethode:current.kochmethodeTl, slogan:current.sloganTl, short:current.shortTl, story:current.storyTl, taste:current.tasteTl, origin:current.originTl, cooking:current.cookingTl}, de:{bullet1:current.bullet1De, bullet2:current.bullet2De, bullet3:current.bullet3De, bullet4:current.bullet4De, bullet5:current.bullet5De, geschmack:current.geschmackDe, aroma:current.aromaDe, textur:current.texturDe, passtZu:current.passtZuDe, kochmethode:current.kochmethodeDe, slogan:current.sloganDe, short:current.shortDe, story:current.storyDe, taste:current.tasteDe, origin:current.originDe, cooking:current.cookingDe} }, bild_sack_url:current.bildSackUrl, bild_reis_url:current.bildReisUrl, status:'Active' }
-    const {error}=await sbClient.from('stammdaten').upsert(payload,{onConflict:'artikelnummer'})
-    if(error) showToast('DB error: '+error.message); else showToast('✅ Gespeichert: '+artNr)
-  }
-  const idx=articles.findIndex(a=>a.id===current.id); if(idx>=0) articles[idx]=current; else articles.push(current)
+  
+  // Lokal immer speichern - geht immer!
+  const idx=articles.findIndex(a=>a.id===current.id); if(idx>=0) articles[idx]=JSON.parse(JSON.stringify(current)); else articles.push(JSON.parse(JSON.stringify(current)))
   localStorage.setItem('kingfields_full_v3', JSON.stringify(articles)); renderList()
+  showToast('💾 Lokal gespeichert: '+artNr+' - versuche Server...');
+
+  if(sbClient){
+    try{
+      const urls=await uploadToSupabase(artNr); 
+      if(urls.sackUrl) current.bildSackUrl=urls.sackUrl; 
+      if(urls.reisUrl) current.bildReisUrl=urls.reisUrl; 
+      if(urls.sackVideoUrl) current.bildSackVideoUrl=urls.sackVideoUrl; 
+      if(urls.reisVideoUrl) current.bildReisVideoUrl=urls.reisVideoUrl; 
+      if(urls.sackVideoUrl) current.bildSackVideo=urls.sackVideoUrl; 
+      if(urls.reisVideoUrl) current.bildReisVideo=urls.reisVideoUrl;
+      
+      // Payload OHNE neue Spalten - nur bewährte Spalten + marketing JSON enthält Video URLs
+      const marketingWithVideo = {
+        en:{bullet1:current.bullet1En, bullet2:current.bullet2En, bullet3:current.bullet3En, bullet4:current.bullet4En, bullet5:current.bullet5En, geschmack:current.geschmackEn, aroma:current.aromaEn, textur:current.texturEn, passtZu:current.passtZuEn, kochmethode:current.kochmethodeEn, slogan:current.sloganEn, short:current.shortEn, story:current.storyEn, taste:current.tasteEn, origin:current.originEn, cooking:current.cookingEn, bildSackVideoUrl: current.bildSackVideoUrl||current.bildSackVideo||null, bildReisVideoUrl: current.bildReisVideoUrl||current.bildReisVideo||null},
+        tl:{bullet1:current.bullet1Tl, bullet2:current.bullet2Tl, bullet3:current.bullet3Tl, bullet4:current.bullet4Tl, bullet5:current.bullet5Tl, geschmack:current.geschmackTl, aroma:current.aromaTl, textur:current.texturTl, passtZu:current.passtZuTl, kochmethode:current.kochmethodeTl, slogan:current.sloganTl, short:current.shortTl, story:current.storyTl, taste:current.tasteTl, origin:current.originTl, cooking:current.cookingTl, bildSackVideoUrl: current.bildSackVideoUrl||current.bildSackVideo||null, bildReisVideoUrl: current.bildReisVideoUrl||current.bildReisVideo||null},
+        de:{bullet1:current.bullet1De, bullet2:current.bullet2De, bullet3:current.bullet3De, bullet4:current.bullet4De, bullet5:current.bullet5De, geschmack:current.geschmackDe, aroma:current.aromaDe, textur:current.texturDe, passtZu:current.passtZuDe, kochmethode:current.kochmethodeDe, slogan:current.sloganDe, short:current.shortDe, story:current.storyDe, taste:current.tasteDe, origin:current.originDe, cooking:current.cookingDe, bildSackVideoUrl: current.bildSackVideoUrl||current.bildSackVideo||null, bildReisVideoUrl: current.bildReisVideoUrl||current.bildReisVideo||null}
+      };
+      
+      const payload={ 
+        artikelnummer:artNr, 
+        name_kurz:current.nameKurz, 
+        name_lang:current.nameLang, 
+        marke:current.marke, 
+        sorte:current.sorte, 
+        qualitaet:current.qualitaet, 
+        herkunft:current.herkunft, 
+        erntejahr:current.erntejahr, 
+        gewicht:current.gewicht, 
+        einheit:current.einheit, 
+        marketing: marketingWithVideo, 
+        bild_sack_url: current.bildSackUrl||null, 
+        bild_reis_url: current.bildReisUrl||null, 
+        status:'Active' 
+      };
+      
+      console.log('Saving payload:', payload);
+      const {data, error}=await sbClient.from('stammdaten').upsert(payload,{onConflict:'artikelnummer'}).select()
+      if(error){
+        console.error('Supabase error:', error);
+        showToast('⚠️ Lokal ok, Server Fehler: '+error.message+' - Code: '+error.code);
+        // Versuche ohne marketing mit video urls nochmal
+        if(error.message.includes('bild_sack_video_url') || error.code==='PGRST204'){
+          showToast('Video Spalten existieren nicht - speichere ohne Video Spalten (Video in marketing JSON)');
+        }
+      } else {
+        showToast('✅ Auf Server gespeichert: '+artNr+' - Video URL: '+(current.bildSackVideoUrl?'JA':'nein'));
+        // Lokal auch mit neuen URLs updaten
+        const idx2=articles.findIndex(a=>a.id===current.id); if(idx2>=0) articles[idx2]=JSON.parse(JSON.stringify(current));
+        localStorage.setItem('kingfields_full_v3', JSON.stringify(articles));
+      }
+    }catch(e){
+      console.error('Save exception:', e);
+      showToast('⚠️ Lokal gespeichert, Server Fehler: '+e.message);
+    }
+  }
 }
+
 function renderForm(){
   if(!current){ document.getElementById('form').innerHTML=`<div class="text-center py-20 text-zinc-400"><div class="font-display text-xl mb-2">${t('Select article','Pumili ng article','Artikel wählen')}</div><button onclick="newArticle()" class="bg-black text-white px-6 py-2 rounded-full text-sm">+ New ${getNextArtNr()}</button></div>`; return }
   const val = (fieldBase) => { if(lang==='EN') return current[fieldBase+'En']||''; if(lang==='TL') return current[fieldBase+'Tl']||''; return current[fieldBase+'De']||'' }
@@ -274,8 +358,8 @@ function renderForm(){
         </div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div><label class="text-xs font-bold">1. Sack Bild / Video (transparent) - Bild oder Video reinziehen!</label><div id="drop-sack" class="chessboard border-2 border-dashed rounded-[16px] h-[320px] flex items-center justify-center relative overflow-hidden cursor-pointer mt-1" onclick="document.getElementById('file-sack').click()" ondrop="handleSackDrop(event)" ondragover="event.preventDefault()">${bildSackVideoUrl?`<video src="${bildSackVideoUrl}" class="max-w-full max-h-full object-contain" autoplay muted loop controls></video><button onclick="event.stopPropagation(); clearSackMedia()" class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 text-xs">✕</button>`:bildSackBase64?`<img src="${bildSackBase64}" class="max-w-full max-h-full object-contain" crossorigin="anonymous"><button onclick="event.stopPropagation(); clearSackMedia()" class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 text-xs">✕</button>`:`<div class="bg-white px-3 py-1 rounded-full text-xs shadow">Click / Drop Bild ODER Video (mp4)</div>`}</div><input id="file-sack" type="file" accept="image/*,video/*,.mp4,.mov,.webm" class="hidden" onchange="handleSackFile(this)"></div>
-        <div><label class="text-xs font-bold">2. Loser Reis Detail (Bild/Video + Zuschneiden)</label><div id="drop-reis" class="border-2 border-dashed rounded-[16px] h-[320px] flex items-center justify-center relative overflow-hidden bg-zinc-100 cursor-pointer mt-1" onclick="document.getElementById('file-reis').click()" ondrop="handleReisDrop(event)" ondragover="event.preventDefault()">${bildReisVideoUrl?`<video src="${bildReisVideoUrl}" class="max-w-full max-h-full object-contain" autoplay muted loop controls></video><button onclick="event.stopPropagation(); clearReisMedia()" class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 text-xs">✕</button>`:bildReisBase64?`<img id="reis-img" src="${bildReisBase64}" style="transform: translate(${panX}px, ${panY}px) scale(${zoom}); ${isRound?'border-radius:50%':''}" class="max-w-full max-h-full object-contain"><button onclick="event.stopPropagation(); clearReisMedia()" class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 text-xs">✕</button>`:`<div class="bg-white px-3 py-1 rounded-full text-xs shadow">Click / Drop Bild ODER Video</div>`}</div><input id="file-reis" type="file" accept="image/*,video/*,.mp4,.mov,.webm" class="hidden" onchange="handleReisFile(this)"></div>
+        <div><label class="text-xs font-bold">1. Sack Bild / Video (Bild ODER Video reinziehen!)</label><div id="drop-sack" class="chessboard border-2 border-dashed rounded-[16px] h-[320px] flex items-center justify-center relative overflow-hidden cursor-pointer mt-1" onclick="document.getElementById('file-sack').click()" ondrop="handleSackDrop(event)" ondragover="event.preventDefault()">${bildSackVideoUrl?`<video src="${bildSackVideoUrl}" class="max-w-full max-h-full object-contain" autoplay muted loop controls></video><button onclick="event.stopPropagation(); clearSackMedia()" class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 text-xs">✕</button>`:bildSackBase64?`<img src="${bildSackBase64}" class="max-w-full max-h-full object-contain" crossorigin="anonymous"><button onclick="event.stopPropagation(); clearSackMedia()" class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 text-xs">✕</button>`:`<div class="bg-white px-3 py-1 rounded-full text-xs shadow">Click / Drop Bild ODER Video (mp4)</div>`}</div><input id="file-sack" type="file" accept="image/*,video/*,.mp4,.mov,.webm" class="hidden" onchange="handleSackFile(this)"></div>
+        <div><label class="text-xs font-bold">2. Loser Reis Detail (Bild/Video)</label><div id="drop-reis" class="border-2 border-dashed rounded-[16px] h-[320px] flex items-center justify-center relative overflow-hidden bg-zinc-100 cursor-pointer mt-1" onclick="document.getElementById('file-reis').click()" ondrop="handleReisDrop(event)" ondragover="event.preventDefault()">${bildReisVideoUrl?`<video src="${bildReisVideoUrl}" class="max-w-full max-h-full object-contain" autoplay muted loop controls></video><button onclick="event.stopPropagation(); clearReisMedia()" class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 text-xs">✕</button>`:bildReisBase64?`<img id="reis-img" src="${bildReisBase64}" style="transform: translate(${panX}px, ${panY}px) scale(${zoom}); ${isRound?'border-radius:50%':''}" class="max-w-full max-h-full object-contain"><button onclick="event.stopPropagation(); clearReisMedia()" class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 text-xs">✕</button>`:`<div class="bg-white px-3 py-1 rounded-full text-xs shadow">Click / Drop Bild ODER Video</div>`}</div><input id="file-reis" type="file" accept="image/*,video/*,.mp4,.mov,.webm" class="hidden" onchange="handleReisFile(this)"></div>
       </div>
       <div class="bg-green-50 border-2 border-green-300 rounded-[16px] p-4"><h3 class="font-display font-semibold text-[14px] mb-3">⭐ Verkaufsargumente / Bullet Points • ${lang} • An oberster Stelle!</h3><p class="text-[11px] text-zinc-600 mb-3">5 Felder für Vorteile, USPs, Fuji Apple süß & knackig etc. Wenn leer, wird Feld nicht angezeigt und andere rutschen hoch.</p><div class="grid grid-cols-1 gap-2"><div class="flex gap-2"><span class="text-xs font-bold w-6">1.</span><input id="f-bullet1" value="${val('bullet1')}" placeholder="${t('z.B. Fuji - Süß & Knackig','e.g. Fuji - Sweet & Crunchy','z.B. Fuji - Süß & Knackig')}" class="flex-1 border rounded-full px-3 py-2 text-sm bg-white"></div><div class="flex gap-2"><span class="text-xs font-bold w-6">2.</span><input id="f-bullet2" value="${val('bullet2')}" placeholder="${t('z.B. 100% Premium Qualität','e.g. 100% Premium Quality','z.B. 100% Premium')}" class="flex-1 border rounded-full px-3 py-2 text-sm bg-white"></div><div class="flex gap-2"><span class="text-xs font-bold w-6">3.</span><input id="f-bullet3" value="${val('bullet3')}" class="flex-1 border rounded-full px-3 py-2 text-sm bg-white"></div><div class="flex gap-2"><span class="text-xs font-bold w-6">4.</span><input id="f-bullet4" value="${val('bullet4')}" class="flex-1 border rounded-full px-3 py-2 text-sm bg-white"></div><div class="flex gap-2"><span class="text-xs font-bold w-6">5.</span><input id="f-bullet5" value="${val('bullet5')}" class="flex-1 border rounded-full px-3 py-2 text-sm bg-white"></div></div></div>
       <div class="bg-amber-50 border border-amber-200 rounded-[16px] p-4"><h3 class="font-display font-semibold text-[14px] mb-3">🍚 Food Properties • ${lang}</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-3"><div><label class="text-[11px] font-medium">Geschmack</label><input id="f-geschmack" value="${val('geschmack')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div><div><label class="text-[11px] font-medium">Aroma</label><input id="f-aroma" value="${val('aroma')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div><div><label class="text-[11px] font-medium">Textur</label><input id="f-textur" value="${val('textur')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div><div><label class="text-[11px] font-medium">Kochmethode</label><input id="f-kochmethode" value="${val('kochmethode')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div><div class="md:col-span-2"><label class="text-[11px] font-medium">Passt gut zu</label><input id="f-passtZu" value="${val('passtZu')}" class="w-full border rounded-full px-3 py-2 text-sm bg-white"></div></div></div>
@@ -309,20 +393,8 @@ function handleSackFile(input){
   }
   renderForm();
 }
-function handleSackDrop(e){
-  e.preventDefault();
-  const file=e.dataTransfer.files[0];
-  if(!file) return;
-  const input={files:[file]};
-  handleSackFile(input);
-}
-function clearSackMedia(){
-  bildSackBase64=null; bildSackFile=null;
-  if(bildSackVideoUrl && bildSackVideoUrl.startsWith('blob:')) URL.revokeObjectURL(bildSackVideoUrl);
-  bildSackVideoUrl=null; bildSackVideoFile=null;
-  if(current){ current.bildSackVideoUrl=null; current.bildSackVideo=null; current.bildSack=null; current.bildSackUrl=''; }
-  renderForm();
-}
+function handleSackDrop(e){ e.preventDefault(); const file=e.dataTransfer.files[0]; if(!file) return; handleSackFile({files:[file]}); }
+function clearSackMedia(){ bildSackBase64=null; bildSackFile=null; if(bildSackVideoUrl && bildSackVideoUrl.startsWith('blob:')) URL.revokeObjectURL(bildSackVideoUrl); bildSackVideoUrl=null; bildSackVideoFile=null; if(current){ current.bildSackVideoUrl=null; current.bildSackVideo=null; current.bildSack=null; current.bildSackUrl=''; } renderForm(); }
 
 function handleReisFile(input){ 
   const file=input.files[0]; if(!file) return; 
@@ -339,19 +411,8 @@ function handleReisFile(input){
     const r=new FileReader(); r.onload=e=>{ bildReisBase64=e.target.result; bildReisVideoUrl=null; bildReisVideoFile=null; renderForm() }; r.readAsDataURL(file);
   }
 }
-function handleReisDrop(e){
-  e.preventDefault();
-  const file=e.dataTransfer.files[0];
-  if(!file) return;
-  handleReisFile({files:[file]});
-}
-function clearReisMedia(){
-  bildReisBase64=null;
-  if(bildReisVideoUrl && bildReisVideoUrl.startsWith('blob:')) URL.revokeObjectURL(bildReisVideoUrl);
-  bildReisVideoUrl=null; bildReisVideoFile=null;
-  if(current){ current.bildReisVideoUrl=null; current.bildReisVideo=null; }
-  renderForm();
-}
+function handleReisDrop(e){ e.preventDefault(); const file=e.dataTransfer.files[0]; if(!file) return; handleReisFile({files:[file]}); }
+function clearReisMedia(){ bildReisBase64=null; if(bildReisVideoUrl && bildReisVideoUrl.startsWith('blob:')) URL.revokeObjectURL(bildReisVideoUrl); bildReisVideoUrl=null; bildReisVideoFile=null; if(current){ current.bildReisVideoUrl=null; current.bildReisVideo=null; } renderForm(); }
 
 
 function handleSackVideoFile(input){
