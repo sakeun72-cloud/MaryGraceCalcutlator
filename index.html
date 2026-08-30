@@ -30,6 +30,23 @@ header .text-[22px], header div[class*='MARY'] { display:none !important; }
 #top-nav .nav-btn:hover { background:#333; color:#fff; }
 #top-nav .nav-logo img { height:40px; width:170px; object-fit:contain; background:white; border-radius:8px; padding:4px 12px; }
 </style>
+
+<style>
+/* Fix Kurzname Anzeige oben rechts - nicht abschneiden */
+div[class*="Mandi Bigas"] { max-width:none !important; width:auto !important; }
+/* Allgemein: Kurzname Bubble breiter */
+div:has(> div:contains("Mandi Bigas")) { min-width:200px !important; }
+</style>
+<style>
+/* Fix für Kurzname Anzeige - Bubble oben */
+div[style*="background:white"], div.bg-white.rounded {
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+  max-width: 400px !important;
+  min-width: 150px !important;
+}
+</style>
 </head>
 <body>
 
@@ -156,6 +173,31 @@ function reuseTab(e, name) {
   }
   return false;
 }
+</script>
+
+<script>
+(function(){
+  function fixKurzname(){
+    // Find the bubble with Mandi Bigas
+    document.querySelectorAll('div').forEach(d=>{
+      if(d.textContent && d.textContent.startsWith('Mandi Bigas') && d.offsetWidth < 300 && d.offsetHeight < 50){
+        d.style.maxWidth='500px';
+        d.style.minWidth='180px';
+        d.style.width='auto';
+        d.style.overflow='visible';
+        d.style.whiteSpace='nowrap';
+        d.style.textOverflow='clip';
+        // Ensure parent not clipping
+        if(d.parentElement){
+          d.parentElement.style.overflow='visible';
+          d.parentElement.style.maxWidth='600px';
+        }
+      }
+    });
+  }
+  document.addEventListener('DOMContentLoaded', fixKurzname);
+  setInterval(fixKurzname, 800);
+})();
 </script>
 </body>
 </html>
