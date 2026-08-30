@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MARY GRACE - Preisliste - GitHub Pages</title>
+<title>MARY GRACE - Preisliste - MIT Supabase Auto-Save</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -60,10 +60,19 @@ footer{background:#0d5cb6;color:#fff;text-align:center;padding:14px;margin-top:2
 .status{margin-top:10px;font-weight:900;font-size:12px;padding:8px;border-radius:8px;text-align:center;white-space:pre-wrap;word-break:break-word}
 .status.ok{background:#e6f4ea;border:2px solid #2e7d32;color:#2e7d32}
 .status.err{background:#ffebee;border:2px solid #d32f2f;color:#d32f2f}
+.loading-screen{position:fixed;inset:0;background:#fffbe6;z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+.loading-screen.hidden{display:none}
 </style>
 </head>
 <body>
-<!-- MAIN NAVIGATION DIREKT FÜR GITHUB PAGES -->
+<!-- LOADING SCREEN - Daten werden erst geladen bevor Änderungen möglich sind -->
+<div id="loadingScreen" class="loading-screen">
+  <div style="font-weight:900;font-size:24px">🌾 MARY GRACE</div>
+  <div style="font-weight:800;font-size:14px" id="loadingText">Lade Daten aus Supabase...</div>
+  <div style="font-size:11px;color:#666" id="loadingSub">Bitte warten - Daten werden abgerufen bevor Änderungen möglich sind</div>
+  <div class="status" id="loadingStatus" style="min-width:300px"></div>
+</div>
+
 <div class="main-nav">
   <div class="nav-left">
     <span class="nav-title">GITHUB:</span>
@@ -73,7 +82,8 @@ footer{background:#0d5cb6;color:#fff;text-align:center;padding:14px;margin-top:2
     <a href="https://sakeun72-cloud.github.io/MaryGraceCalcutlator/" class="nav-btn" target="_blank">🏠 Home</a>
   </div>
   <div class="nav-right">
-    <span style="font-size:10px;opacity:.7">sakeun72-cloud.github.io/MaryGraceCalcutlator/</span>
+    <span id="saveIndicator" style="font-size:10px;background:#2e7d32;color:#fff;padding:4px 8px;border-radius:999px;display:none">✅ Auto-Saved</span>
+    <span style="font-size:10px;opacity:.7">Supabase Auto-Save</span>
   </div>
 </div>
 
@@ -122,14 +132,18 @@ footer{background:#0d5cb6;color:#fff;text-align:center;padding:14px;margin-top:2
 <div id="status" style="font-weight:900;font-size:11px;margin-top:8px"></div>
 </div>
 <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-<button class="btn btn-black" onclick="saveToSupabase()" data-i18n="save">💾 SPEICHERN (alles!)</button>
-<button class="btn btn-black" onclick="loadFromSupabase()" data-i18n="load">LADEN</button>
+<button class="btn btn-black" onclick="saveToSupabase()" data-i18n="save">💾 SPEICHERN (Supabase + lokal)</button>
+<button class="btn btn-black" onclick="loadFromSupabase()" data-i18n="load">🔄 NEU LADEN von Supabase</button>
 <button class="btn btn-black" onclick="resetToDefault()" data-i18n="reset">Reset</button>
 <button class="btn btn-black" onclick="addBadge()" data-i18n="addBadge">+ Badge</button>
 <button class="btn btn-black" style="background:#2e7d32;color:#fff" onclick="saveAndUploadPNG()" data-i18n="autoUpload">🚀 AUTO UPLOAD PNG</button>
 </div>
 <div style="margin-top:10px;background:#e3f2fd;border:2px solid #0d5cb6;border-radius:8px;padding:8px;font-size:11px" data-i18n="hint">
-<b>GitHub Pages:</b> Diese Version läuft direkt auf https://sakeun72-cloud.github.io/MaryGraceCalcutlator/Pricelist.html
+<b>Supabase Auto-Save:</b> Alle Eingaben werden automatisch in Supabase + lokal gespeichert. Beim Laden werden Daten zuerst von Supabase abgerufen bevor Änderungen möglich sind.
+</div>
+<div style="margin-top:10px;background:#000;color:#ffb900;padding:8px;border-radius:8px;font-size:11px">
+<b>💾 Speicher-Status:</b><br>
+<span id="storageStatus" style="font-family:monospace;font-size:10px;word-break:break-all">Initialisiere...</span>
 </div>
 </div>
 <div class="fb-box"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><h3 data-i18n="fbTitle">📋 FÜR FACEBOOK KOPIEREN</h3><div style="display:flex;gap:6px"><button class="btn btn-black" onclick="setFBStyle('plain')" style="background:#eee;color:#000">Ohne Emojis</button><button class="btn btn-black" onclick="setFBStyle('emoji')" style="background:#fff3e0;color:#000">🍚 Mit Emojis</button><button class="btn btn-black" onclick="copyFB()" data-i18n="copy">Kopieren</button></div></div><textarea id="fbText"></textarea><div id="fbPreview" style="margin-top:10px;background:#f5f5f5;border:1px dashed #999;border-radius:8px;padding:10px;font-size:12px;white-space:pre-wrap"></div></div>
@@ -144,20 +158,21 @@ footer{background:#0d5cb6;color:#fff;text-align:center;padding:14px;margin-top:2
 <div id="autoStatus" class="status"></div>
 </div>
 </div>
-<footer><div id="footWarn" style="color:#ffeb3b;font-weight:900;font-size:12px"></div><div id="footMid" style="font-size:12px;margin-top:6px;font-weight:800"></div><div style="font-size:11px;margin-top:4px;opacity:.9">m.me/marygrace.rangas | Pa-reserve na po! | GitHub: sakeun72-cloud.github.io/MaryGraceCalcutlator/</div></footer>
+<footer><div id="footWarn" style="color:#ffeb3b;font-weight:900;font-size:12px"></div><div id="footMid" style="font-size:12px;margin-top:6px;font-weight:800"></div><div style="font-size:11px;margin-top:4px;opacity:.9">m.me/marygrace.rangas | Pa-reserve na po! | Supabase Auto-Save aktiv</div></footer>
 <script>
 const SUPABASE_URL="https://crdtuptjybxbsezxtksp.supabase.co";
 const SUPABASE_KEY="sb_publishable_GU6AAlF0zc3LB4hFlKK0fw_TNxo9z7q";
 const TARGET_BUCKET="Pricelist";
 const TARGET_FILE="murang-bigas-mary-grace-rice-supply.png";
+const STORAGE_KEY="mg_full_backup_v2";
 
 const TRANSLATIONS={
-de:{title:"MARY GRACE RICE SUPPLY",priceTitle:"MURANG BIGAS - PREISLISTE",warnLeft:"⚠ NICHT 20KG, NICHT 10KG - 25KG SAKTO!",warnRight:"SACK",editOff:"✏ EDITIEREN - OFF",editOn:"✏ EDIT AN - ON",fbTitle:"📋 FÜR FACEBOOK KOPIEREN",copy:"Kopieren",addTitle:"Produktanlage - KG editierbar (1/5/10/25)",addNew:"➕ NEUEN ARTIKEL EINSTELLEN",addBtn:"+ HINZUFÜGEN",save:"💾 SPEICHERN (alles!)",load:"LADEN",reset:"Reset",addBadge:"+ Badge",autoUpload:"🚀 AUTO UPLOAD PNG",namePh:"Name z.B. DENORADO",pricePh:"Preis 1450",badgePh:"Badge z.B. PREMIUM",hint:"<b>GitHub:</b> Direkt auf sakeun72-cloud.github.io/MaryGraceCalcutlator/",pngTitle:"📸 PNG Vorschau",pngDesc:"PNG URL auf Supabase",pngDownload:"⬇️ PNG DOWNLOAD",pngUpload:"🚀 AUTO UPLOAD",grundLabel:"Grundpreis",grundOn:"Grundpreis: AN",grundOff:"Grundpreis: AUS",emojiOn:"🍚 Emojis: AN",emojiOff:"🍚 Emojis: AUS",perKg:"/ kg",currency:"₱",promptBadge:"Badge Text:",alertNamePrice:"Name und Preis!",sakto:"SAKTO"},
-en:{title:"MARY GRACE RICE SUPPLY",priceTitle:"CHEAP RICE - PRICE LIST",warnLeft:"⚠ NOT 20KG, NOT 10KG - 25KG EXACT!",warnRight:"SACK",editOff:"✏ EDIT - OFF",editOn:"✏ EDIT - ON",fbTitle:"📋 COPY FOR FACEBOOK",copy:"Copy",addTitle:"Product Setup - KG editable",addNew:"➕ ADD NEW PRODUCT",addBtn:"+ ADD",save:"💾 SAVE (all!)",load:"LOAD",reset:"Reset",addBadge:"+ Badge",autoUpload:"🚀 AUTO UPLOAD PNG",namePh:"Name e.g. DENORADO",pricePh:"Price 1450",badgePh:"Badge e.g. PREMIUM",hint:"<b>GitHub:</b> Direct on sakeun72-cloud.github.io",pngTitle:"📸 PNG Preview",pngDesc:"PNG URL",pngDownload:"⬇️ PNG DOWNLOAD",pngUpload:"🚀 AUTO UPLOAD",grundLabel:"Unit price",grundOn:"Unit price: ON",grundOff:"Unit price: OFF",emojiOn:"🍚 Emojis: ON",emojiOff:"🍚 Emojis: OFF",perKg:"/ kg",currency:"₱",promptBadge:"Badge text:",alertNamePrice:"Enter name and price!",sakto:"EXACT"},
-tl:{title:"MARY GRACE RICE SUPPLY",priceTitle:"MURANG BIGAS - PRESYO",warnLeft:"⚠ HINDI 20KG, HINDI 10KG - 25KG SAKTO PO!",warnRight:"SAKO",editOff:"✏ EDIT - OFF",editOn:"✏ EDIT - ON",fbTitle:"📋 KOPYAHIN PARA SA FACEBOOK",copy:"Kopyahin",addTitle:"Magdagdag ng Produkto",addNew:"➕ MAGDAGDAG NG BAGONG PRODUKTO",addBtn:"+ IDAGDAG",save:"💾 I-SAVE (lahat!)",load:"I-LOAD",reset:"I-reset",addBadge:"+ Badge",autoUpload:"🚀 AUTO UPLOAD PNG",namePh:"Pangalan hal. DENORADO",pricePh:"Presyo 1450",badgePh:"Badge hal. PREMIUM",hint:"<b>GitHub:</b> Direkt sa sakeun72-cloud.github.io",pngTitle:"📸 PNG Preview",pngDesc:"PNG URL",pngDownload:"⬇️ I-DOWNLOAD ANG PNG",pngUpload:"🚀 AUTO UPLOAD",grundLabel:"Presyo per kg",grundOn:"Presyo per kg: ON",grundOff:"Presyo per kg: OFF",emojiOn:"🍚 Emojis: ON",emojiOff:"🍚 Emojis: OFF",perKg:"/ kg",currency:"₱",promptBadge:"Text ng Badge:",alertNamePrice:"Ilagay ang pangalan at presyo!",sakto:"SAKTO"}
+de:{title:"MARY GRACE RICE SUPPLY",priceTitle:"MURANG BIGAS - PREISLISTE",warnLeft:"⚠ NICHT 20KG, NICHT 10KG - 25KG SAKTO!",warnRight:"SACK",editOff:"✏ EDITIEREN - OFF",editOn:"✏ EDIT AN - ON",fbTitle:"📋 FÜR FACEBOOK KOPIEREN",copy:"Kopieren",addTitle:"Produktanlage - KG editierbar (1/5/10/25)",addNew:"➕ NEUEN ARTIKEL EINSTELLEN",addBtn:"+ HINZUFÜGEN",save:"💾 SPEICHERN (Supabase + lokal)",load:"🔄 NEU LADEN von Supabase",reset:"Reset",addBadge:"+ Badge",autoUpload:"🚀 AUTO UPLOAD PNG",namePh:"Name z.B. DENORADO",pricePh:"Preis 1450",badgePh:"Badge z.B. PREMIUM",hint:"<b>Supabase Auto-Save:</b> Alle Eingaben werden automatisch gespeichert. Beim Laden erst von Supabase abrufen.",pngTitle:"📸 PNG Vorschau",pngDesc:"PNG URL auf Supabase",pngDownload:"⬇️ PNG DOWNLOAD",pngUpload:"🚀 AUTO UPLOAD",grundLabel:"Grundpreis",grundOn:"Grundpreis: AN",grundOff:"Grundpreis: AUS",emojiOn:"🍚 Emojis: AN",emojiOff:"🍚 Emojis: AUS",perKg:"/ kg",currency:"₱",promptBadge:"Badge Text:",alertNamePrice:"Name und Preis!",sakto:"SAKTO"},
+en:{title:"MARY GRACE RICE SUPPLY",priceTitle:"CHEAP RICE - PRICE LIST",warnLeft:"⚠ NOT 20KG, NOT 10KG - 25KG EXACT!",warnRight:"SACK",editOff:"✏ EDIT - OFF",editOn:"✏ EDIT - ON",fbTitle:"📋 COPY FOR FACEBOOK",copy:"Copy",addTitle:"Product Setup - KG editable",addNew:"➕ ADD NEW PRODUCT",addBtn:"+ ADD",save:"💾 SAVE (Supabase + local)",load:"🔄 RELOAD from Supabase",reset:"Reset",addBadge:"+ Badge",autoUpload:"🚀 AUTO UPLOAD PNG",namePh:"Name e.g. DENORADO",pricePh:"Price 1450",badgePh:"Badge e.g. PREMIUM",hint:"<b>Supabase Auto-Save:</b> All inputs auto-saved. On load, fetch from Supabase first.",pngTitle:"📸 PNG Preview",pngDesc:"PNG URL",pngDownload:"⬇️ PNG DOWNLOAD",pngUpload:"🚀 AUTO UPLOAD",grundLabel:"Unit price",grundOn:"Unit price: ON",grundOff:"Unit price: OFF",emojiOn:"🍚 Emojis: ON",emojiOff:"🍚 Emojis: OFF",perKg:"/ kg",currency:"₱",promptBadge:"Badge text:",alertNamePrice:"Enter name and price!",sakto:"EXACT"},
+tl:{title:"MARY GRACE RICE SUPPLY",priceTitle:"MURANG BIGAS - PRESYO",warnLeft:"⚠ HINDI 20KG, HINDI 10KG - 25KG SAKTO PO!",warnRight:"SAKO",editOff:"✏ EDIT - OFF",editOn:"✏ EDIT - ON",fbTitle:"📋 KOPYAHIN PARA SA FACEBOOK",copy:"Kopyahin",addTitle:"Magdagdag ng Produkto",addNew:"➕ MAGDAGDAG NG BAGONG PRODUKTO",addBtn:"+ IDAGDAG",save:"💾 I-SAVE (Supabase + lokal)",load:"🔄 I-LOAD mula Supabase",reset:"I-reset",addBadge:"+ Badge",autoUpload:"🚀 AUTO UPLOAD PNG",namePh:"Pangalan hal. DENORADO",pricePh:"Presyo 1450",badgePh:"Badge hal. PREMIUM",hint:"<b>Supabase Auto-Save:</b> Lahat auto-save. Sa pag-load, kukunin muna sa Supabase.",pngTitle:"📸 PNG Preview",pngDesc:"PNG URL",pngDownload:"⬇️ I-DOWNLOAD ANG PNG",pngUpload:"🚀 AUTO UPLOAD",grundLabel:"Presyo per kg",grundOn:"Presyo per kg: ON",grundOff:"Presyo per kg: OFF",emojiOn:"🍚 Emojis: ON",emojiOff:"🍚 Emojis: OFF",perKg:"/ kg",currency:"₱",promptBadge:"Text ng Badge:",alertNamePrice:"Ilagay ang pangalan at presyo!",sakto:"SAKTO"}
 };
 
-let currentLang='de'; let showGrundpreis=true; let emojiEnabled=true; let edit=false; let supa=null; let manualGrund=false;
+let currentLang='de'; let showGrundpreis=true; let emojiEnabled=true; let edit=false; let supa=null; let manualGrund=false; let dataLoaded=false; let autoSaveTimeout=null;
 let badges=[{id:"b1",label:"GCash Only",color:"#1e88e5"},{id:"b2",label:"FREE DELIVERY",color:"#2e7d32"},{id:"b3",label:"Wood Town",color:"#ff9800"}];
 let items=[
 {id:"master_alsa",name:"MASTER ALSA",badge:"PINAKA MURA",price:1200,variant:"master",kg:25},
@@ -188,9 +203,54 @@ function applyEditableConfig(){let hTitleEl=document.getElementById('hTitle');le
 function setLang(lang){currentLang=lang;localStorage.setItem('mg_lang',lang);let t=TRANSLATIONS[lang];document.querySelectorAll('[data-i18n]').forEach(function(el){let key=el.getAttribute('data-i18n');if(t[key]){if(key==='hint'){el.innerHTML=t[key];}else{el.textContent=t[key];}}});document.querySelectorAll('[data-i18n-ph]').forEach(function(el){let key=el.getAttribute('data-i18n-ph');if(t[key]) el.placeholder=t[key];});if(!manualGrund){showGrundpreis=true;let chk=document.getElementById('grundToggle');if(chk) chk.checked=showGrundpreis;}updateGrundLabel();updateEmojiLabel();document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.remove('active');});let activeBtn=document.getElementById('lang-'+lang);if(activeBtn) activeBtn.classList.add('active');render();}
 function updateGrundLabel(){let el=document.getElementById('grundLabel');if(!el) return;el.textContent=showGrundpreis?TRANSLATIONS[currentLang].grundOn:TRANSLATIONS[currentLang].grundOff;}
 function updateEmojiLabel(){let el=document.getElementById('emojiLabel');if(!el) return;el.textContent=emojiEnabled?TRANSLATIONS[currentLang].emojiOn:TRANSLATIONS[currentLang].emojiOff;}
-function toggleGrund(val){showGrundpreis=val;manualGrund=true;localStorage.setItem('mg_grund',val?'1':'0');localStorage.setItem('mg_grund_manual','1');updateGrundLabel();render();}
-function toggleEmoji(val){emojiEnabled=val;localStorage.setItem('mg_emoji',val?'1':'0');updateEmojiLabel();render();}
-function setFBStyle(style){emojiEnabled=(style==='emoji');localStorage.setItem('mg_emoji',emojiEnabled?'1':'0');document.getElementById('emojiToggle').checked=emojiEnabled;updateEmojiLabel();render();}
+function toggleGrund(val){showGrundpreis=val;manualGrund=true;localStorage.setItem('mg_grund',val?'1':'0');localStorage.setItem('mg_grund_manual','1');updateGrundLabel();render();scheduleAutoSave();}
+function toggleEmoji(val){emojiEnabled=val;localStorage.setItem('mg_emoji',val?'1':'0');updateEmojiLabel();render();scheduleAutoSave();}
+function setFBStyle(style){emojiEnabled=(style==='emoji');localStorage.setItem('mg_emoji',emojiEnabled?'1':'0');document.getElementById('emojiToggle').checked=emojiEnabled;updateEmojiLabel();render();scheduleAutoSave();}
+
+function saveToLocalStorage(){
+  try{
+    let data={items:items,badges:badges,editableConfig:editableConfig,showGrundpreis:showGrundpreis,currentLang:currentLang,emojiEnabled:emojiEnabled,timestamp:new Date().toISOString()};
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    updateStorageStatus('✅ Lokal gespeichert: '+new Date().toLocaleTimeString());
+  }catch(e){
+    updateStorageStatus('❌ Lokal Fehler: '+e.message);
+  }
+}
+
+function loadFromLocalStorage(){
+  try{
+    let raw=localStorage.getItem(STORAGE_KEY);
+    if(!raw) return false;
+    let data=JSON.parse(raw);
+    if(data.items && data.items.length>0) items=data.items;
+    if(data.badges) badges=data.badges;
+    if(data.editableConfig) editableConfig=data.editableConfig;
+    if(data.showGrundpreis!==undefined) showGrundpreis=data.showGrundpreis;
+    if(data.currentLang) currentLang=data.currentLang;
+    if(data.emojiEnabled!==undefined) emojiEnabled=data.emojiEnabled;
+    updateStorageStatus('📦 Aus lokalem Backup geladen: '+ (data.timestamp||''));
+    return true;
+  }catch(e){
+    updateStorageStatus('❌ Lokal Laden Fehler: '+e.message);
+    return false;
+  }
+}
+
+function updateStorageStatus(msg){
+  let el=document.getElementById('storageStatus');
+  if(el) el.textContent=msg+' | Items: '+items.length+' | Sprache: '+currentLang+' | Emojis: '+(emojiEnabled?'AN':'AUS');
+}
+
+function scheduleAutoSave(){
+  if(!dataLoaded) return; // Nicht auto-saven bevor initial geladen
+  saveToLocalStorage();
+  if(autoSaveTimeout) clearTimeout(autoSaveTimeout);
+  autoSaveTimeout=setTimeout(function(){
+    saveToSupabase(true); // Auto-save im Hintergrund
+  }, 1500);
+  let ind=document.getElementById('saveIndicator');
+  if(ind){ind.style.display='inline-block';ind.textContent='💾 Speichert...';setTimeout(function(){ind.textContent='✅ Auto-Saved';setTimeout(function(){ind.style.display='none';},2000);},800);}
+}
 
 function render(){
   autoAssignPinakaMura();applyEditableConfig();
@@ -198,7 +258,7 @@ function render(){
   let saktoText=TRANSLATIONS[currentLang].sakto;
   document.getElementById('cards').innerHTML=items.map(function(it){return '<div class="card '+it.variant+'">'+(edit?'<div style="position:absolute;top:-6px;right:-6px;background:red;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-weight:900;cursor:pointer" onclick="delItem(\''+it.id+'\')">×</div>':'')+'<div class="left"><div class="sack" onclick="toggleKg(\''+it.id+'\')"><b>'+it.kg+'KG</b><span>'+saktoText+'</span></div><div style="font-weight:900;color:#0a1a5e"><span '+(edit?'contenteditable="true" onblur="editName(\''+it.id+'\',this)"':'')+'>'+it.name+'</span> '+(it.badge||edit?'<span style="font-size:9px;background:#ffe4c4;padding:3px 7px;border-radius:999px" '+(edit?'contenteditable="true" onblur="editItemBadge(\''+it.id+'\',this)"':'')+'>'+(it.badge||'+BADGE')+'</span>':'')+'</div></div><div class="price">'+(edit?'<input type="number" value="'+it.price+'" style="width:75px;border:2px solid #000;border-radius:6px;padding:4px;font-weight:900" onchange="editPrice(\''+it.id+'\',this.value)"><select onchange="editKg(\''+it.id+'\',this.value)" style="border:2px solid #000;border-radius:6px;padding:4px;font-weight:900"><option value="1" '+(it.kg==1?'selected':'')+'>1kg</option><option value="5" '+(it.kg==5?'selected':'')+'>5kg</option><option value="10" '+(it.kg==10?'selected':'')+'>10kg</option><option value="25" '+(it.kg==25?'selected':'')+'>25kg</option></select>':'<div style="font-size:15px">'+fmt(it)+'</div>'+(showGrundpreis && it.kg!=1?'<div style="font-size:10px;color:#555;font-weight:800;margin-top:2px">'+grundpreisLabel()+': '+TRANSLATIONS[currentLang].currency+grundpreisFormatted(it)+' '+TRANSLATIONS[currentLang].perKg+'</div>':'') )+'</div></div>';}).join('');
   document.getElementById('hTitle').contentEditable=edit;document.getElementById('hAddr').contentEditable=edit;document.getElementById('mainTitle').contentEditable=edit;document.getElementById('warnLeft').contentEditable=edit;document.getElementById('warnRight').contentEditable=edit;document.getElementById('footWarn').contentEditable=edit;
-  document.getElementById('hTitle').onblur=function(){collectEditableFields();buildFB();drawAutoCanvas();};document.getElementById('hAddr').onblur=function(){collectEditableFields();buildFB();drawAutoCanvas();};document.getElementById('mainTitle').onblur=function(){collectEditableFields();buildFB();drawAutoCanvas();};document.getElementById('warnLeft').onblur=function(){collectEditableFields();let fw=document.getElementById('footWarn');if(fw) fw.textContent=this.textContent.trim()?this.textContent+' LAHAT NG SAKO SAKTO!':"";buildFB();drawAutoCanvas();render();};document.getElementById('warnRight').onblur=function(){collectEditableFields();buildFB();drawAutoCanvas();render();};
+  document.getElementById('hTitle').onblur=function(){collectEditableFields();buildFB();drawAutoCanvas();scheduleAutoSave();};document.getElementById('hAddr').onblur=function(){collectEditableFields();buildFB();drawAutoCanvas();scheduleAutoSave();};document.getElementById('mainTitle').onblur=function(){collectEditableFields();buildFB();drawAutoCanvas();scheduleAutoSave();};document.getElementById('warnLeft').onblur=function(){collectEditableFields();let fw=document.getElementById('footWarn');if(fw) fw.textContent=this.textContent.trim()?this.textContent+' LAHAT NG SAKO SAKTO!':"";buildFB();drawAutoCanvas();render();scheduleAutoSave();};document.getElementById('warnRight').onblur=function(){collectEditableFields();buildFB();drawAutoCanvas();render();scheduleAutoSave();};
   let topWarn=document.getElementById('warnLeft').textContent.trim()||"";let badgeText=badges.map(function(b){return b.label;}).join(' | ');let footWarnEl=document.getElementById('footWarn');if(footWarnEl){footWarnEl.textContent=topWarn?topWarn+' LAHAT NG SAKO SAKTO!':"";footWarnEl.style.display=topWarn?"":"none";}document.getElementById('footMid').textContent=badgeText?'✅ '+badgeText:"";document.getElementById('footMid').style.display=badgeText?"":"none";buildFB();drawAutoCanvas();
 }
 function buildFB(){
@@ -250,29 +310,155 @@ function drawAutoCanvas(){
   for(let i=0;i<ordered.length;i++){let it=ordered[i];let card_h=68;if(it.variant=="master"){ctx.fillStyle="#fff9c4";ctx.strokeStyle="#ffb900";}else if(it.variant=="fuji"){ctx.fillStyle="#e6f4ea";ctx.strokeStyle="#a3d9b1";}else{ctx.fillStyle="white";ctx.strokeStyle="#e5ddd0";}ctx.lineWidth=1.5;roundRect(ctx,20,y,W-40,card_h,12,true,true);ctx.fillStyle="black";roundRect(ctx,30,y+8,54,52,8,true);ctx.fillStyle="#ffeb3b";ctx.font="bold 11px Arial";ctx.fillText(it.kg+"KG",35,y+22);ctx.fillStyle="white";ctx.font="bold 9px Arial";ctx.fillText(TRANSLATIONS[currentLang].sakto,35,y+40);ctx.fillStyle="#0a1a5e";ctx.font="bold 15px Arial";ctx.fillText(it.name,100,y+26);if(it.badge){ctx.fillStyle=it.badge.includes("PREMIUM")?"#ffe4b5":"#ffe8cc";let bw=it.badge.length*7+14;roundRect(ctx,100+it.name.length*8+8,y+12,bw,16,6,true);ctx.fillStyle="#8a4a00";ctx.font="bold 8px Arial";ctx.fillText(it.badge,100+it.name.length*8+14,y+23);}let priceText='₱'+it.price.toLocaleString()+' / '+it.kg+'kg';ctx.fillStyle="#0d3b8c";ctx.font="bold 14px Arial";ctx.fillText(priceText,W-30-ctx.measureText(priceText).width,y+24);if(showGrundpreis && it.kg!=1){let perStr=grundpreisLabel()+': '+TRANSLATIONS[currentLang].currency+grundpreisFormatted(it)+' '+TRANSLATIONS[currentLang].perKg;ctx.fillStyle="#555";ctx.font="10px Arial";ctx.fillText(perStr,W-30-ctx.measureText(perStr).width,y+44);}y+=card_h+8;}
 }
 function roundRect(ctx,x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();if(fill)ctx.fill();if(stroke)ctx.stroke();}
-function editName(id,el){items=items.map(function(i){if(i.id===id){return {id:i.id,name:el.textContent.toUpperCase().trim(),badge:i.badge,price:i.price,variant:i.variant,kg:i.kg};}return i;});buildFB();drawAutoCanvas();}
-function editItemBadge(id,el){items=items.map(function(i){if(i.id===id){return {id:i.id,name:i.name,badge:el.textContent.toUpperCase().trim(),price:i.price,variant:i.variant,kg:i.kg};}return i;});buildFB();drawAutoCanvas();}
-function editBadge(el){let id=el.getAttribute('data-bid');badges=badges.map(function(b){if(b.id===id){return {id:b.id,label:el.textContent.trim(),color:b.color};}return b;});document.getElementById('footMid').textContent='✅ '+badges.map(function(b){return b.label;}).join(' | ');buildFB();render();}
-function editPrice(id,v){items=items.map(function(i){if(i.id===id){return {id:i.id,name:i.name,badge:i.badge,price:parseInt(v,10)||0,variant:i.variant,kg:i.kg};}return i;});render();}
-function editKg(id,v){items=items.map(function(i){if(i.id===id){return {id:i.id,name:i.name,badge:i.badge,price:i.price,variant:i.variant,kg:parseInt(v,10)};}return i;});render();}
+function editName(id,el){items=items.map(function(i){if(i.id===id){return {id:i.id,name:el.textContent.toUpperCase().trim(),badge:i.badge,price:i.price,variant:i.variant,kg:i.kg};}return i;});buildFB();drawAutoCanvas();scheduleAutoSave();}
+function editItemBadge(id,el){items=items.map(function(i){if(i.id===id){return {id:i.id,name:i.name,badge:el.textContent.toUpperCase().trim(),price:i.price,variant:i.variant,kg:i.kg};}return i;});buildFB();drawAutoCanvas();scheduleAutoSave();}
+function editBadge(el){let id=el.getAttribute('data-bid');badges=badges.map(function(b){if(b.id===id){return {id:b.id,label:el.textContent.trim(),color:b.color};}return b;});document.getElementById('footMid').textContent='✅ '+badges.map(function(b){return b.label;}).join(' | ');buildFB();render();scheduleAutoSave();}
+function editPrice(id,v){items=items.map(function(i){if(i.id===id){return {id:i.id,name:i.name,badge:i.badge,price:parseInt(v,10)||0,variant:i.variant,kg:i.kg};}return i;});render();scheduleAutoSave();}
+function editKg(id,v){items=items.map(function(i){if(i.id===id){return {id:i.id,name:i.name,badge:i.badge,price:i.price,variant:i.variant,kg:parseInt(v,10)};}return i;});render();scheduleAutoSave();}
 function toggleKg(id){let it=items.find(function(i){return i.id===id;});if(!it) return;let order=[1,5,10,25];let idx=order.indexOf(it.kg);let next=order[(idx+1)%order.length];editKg(id,next);}
-function delItem(id){items=items.filter(function(i){return i.id!==id;});render();}
-function delBadge(id){badges=badges.filter(function(b){return b.id!==id;});document.getElementById('footMid').textContent='✅ '+badges.map(function(b){return b.label;}).join(' | ');render();}
-function addBadge(){let promptText=TRANSLATIONS[currentLang].promptBadge;let n=prompt(promptText,'Cash');if(!n) return;badges.push({id:'id_'+Date.now(),label:n,color:'#1e88e5'});document.getElementById('footMid').textContent='✅ '+badges.map(function(b){return b.label;}).join(' | ');render();}
-function quickAdd(){let n=document.getElementById('qaName').value.trim();let p=document.getElementById('qaPrice').value.trim();let b=document.getElementById('qaBadge').value.trim();let kg=parseInt(document.getElementById('qaKg').value,10);let variant=document.getElementById('qaVariant').value;if(!n||!p){alert(TRANSLATIONS[currentLang].alertNamePrice);return}items.push({id:'id_'+Date.now(),name:n.toUpperCase(),price:parseInt(p,10),badge:b.toUpperCase(),kg:kg,variant:variant});document.getElementById('qaName').value='';document.getElementById('qaPrice').value='';document.getElementById('qaBadge').value='';render();document.getElementById('status').textContent='✅ '+n+' ('+kg+'KG) - jetzt speichern!';}
+function delItem(id){items=items.filter(function(i){return i.id!==id;});render();scheduleAutoSave();}
+function delBadge(id){badges=badges.filter(function(b){return b.id!==id;});document.getElementById('footMid').textContent='✅ '+badges.map(function(b){return b.label;}).join(' | ');render();scheduleAutoSave();}
+function addBadge(){let promptText=TRANSLATIONS[currentLang].promptBadge;let n=prompt(promptText,'Cash');if(!n) return;badges.push({id:'id_'+Date.now(),label:n,color:'#1e88e5'});document.getElementById('footMid').textContent='✅ '+badges.map(function(b){return b.label;}).join(' | ');render();scheduleAutoSave();}
+function quickAdd(){let n=document.getElementById('qaName').value.trim();let p=document.getElementById('qaPrice').value.trim();let b=document.getElementById('qaBadge').value.trim();let kg=parseInt(document.getElementById('qaKg').value,10);let variant=document.getElementById('qaVariant').value;if(!n||!p){alert(TRANSLATIONS[currentLang].alertNamePrice);return}items.push({id:'id_'+Date.now(),name:n.toUpperCase(),price:parseInt(p,10),badge:b.toUpperCase(),kg:kg,variant:variant});document.getElementById('qaName').value='';document.getElementById('qaPrice').value='';document.getElementById('qaBadge').value='';render();document.getElementById('status').textContent='✅ '+n+' ('+kg+'KG) hinzugefügt - Auto-Save läuft!';scheduleAutoSave();}
 function copyFB(){let txt=document.getElementById('fbText');txt.select();document.execCommand('copy');alert(TRANSLATIONS[currentLang].copy+'!');}
-function resetToDefault(){editableConfig={hTitle:"MARY GRACE RICE SUPPLY",hAddr:"Wood Town Block 7 Lot 3 Phase 3",mainTitle:"MURANG BIGAS - PRESYO",warnLeft:"⚠ HINDI 20KG, HINDI 10KG - 25KG SAKTO PO!",warnRight:"SACK"};items=[{id:"master",name:"MASTER",badge:"PINAKA MURA",price:1180,variant:"master",kg:25},{id:"sweet",name:"SWEET HASMIN",price:1300,variant:"normal",kg:25},{id:"jasmine",name:"JASMINE ORIGINAL",price:1310,variant:"normal",kg:25},{id:"coco",name:"COCO PANDAN",price:1330,variant:"normal",kg:25},{id:"perfect",name:"PERFECT",price:1340,variant:"normal",kg:25},{id:"aroma",name:"MASTER AROMA",price:1340,variant:"normal",kg:25},{id:"fuji",name:"FUJI",badge:"PREMIUM",price:1400,variant:"fuji",kg:25}];badges=[{id:"b1",label:"GCash Only",color:"#1e88e5"},{id:"b2",label:"FREE DELIVERY",color:"#2e7d32"},{id:"b3",label:"Wood Town",color:"#ff9800"}];render();}
-async function saveToSupabase(){collectEditableFields();let c=getClient();document.getElementById('status').textContent='Speichert alles...';try{let payload={id:1,data:{items:items,badges:badges,editableConfig:editableConfig,showGrundpreis:showGrundpreis,currentLang:currentLang,emojiEnabled:emojiEnabled},updated_at:new Date().toISOString()};let res=await c.from('pricelist_config').upsert(payload,{onConflict:'id'});if(res.error) throw res.error;document.getElementById('status').textContent='✅ Alles gespeichert! '+items.length+' Sorten';}catch(e){document.getElementById('status').textContent='❌ '+e.message;}}
-async function loadFromSupabase(){let c=getClient();document.getElementById('status').textContent='Lädt...';try{let res=await c.from('pricelist_config').select('data').eq('id',1).single();if(res.error) throw res.error;if(res.data && res.data.data){if(res.data.data.items && res.data.data.items.length>0) items=res.data.data.items;if(res.data.data.badges) badges=res.data.data.badges;if(res.data.data.editableConfig){editableConfig=res.data.data.editableConfig;editableConfig.hTitle=editableConfig.hTitle!==undefined?editableConfig.hTitle:"MARY GRACE RICE SUPPLY";editableConfig.hAddr=editableConfig.hAddr!==undefined?editableConfig.hAddr:"Wood Town Block 7 Lot 3 Phase 3";editableConfig.mainTitle=editableConfig.mainTitle!==undefined?editableConfig.mainTitle:"MURANG BIGAS - PRESYO";editableConfig.warnLeft=editableConfig.warnLeft!==undefined?editableConfig.warnLeft:"⚠ HINDI 20KG, HINDI 10KG - 25KG SAKTO PO!";editableConfig.warnRight=editableConfig.warnRight!==undefined?editableConfig.warnRight:"SACK";}if(res.data.data.showGrundpreis!==undefined) showGrundpreis=res.data.data.showGrundpreis;if(res.data.data.currentLang) currentLang=res.data.data.currentLang;if(res.data.data.emojiEnabled!==undefined) emojiEnabled=res.data.data.emojiEnabled;let chk=document.getElementById('grundToggle');if(chk) chk.checked=showGrundpreis;let chkE=document.getElementById('emojiToggle');if(chkE) chkE.checked=emojiEnabled;setLang(currentLang);document.getElementById('status').textContent='✅ Geladen - '+items.length+' Sorten';}else{document.getElementById('status').textContent='ℹ Leer';render();}}catch(e){document.getElementById('status').textContent='❌ '+e.message;render();}}
+function resetToDefault(){if(!confirm('Wirklich zurücksetzen? Alle Daten gehen verloren!')) return;editableConfig={hTitle:"MARY GRACE RICE SUPPLY",hAddr:"Wood Town Block 7 Lot 3 Phase 3",mainTitle:"MURANG BIGAS - PRESYO",warnLeft:"⚠ HINDI 20KG, HINDI 10KG - 25KG SAKTO PO!",warnRight:"SACK"};items=[{id:"master",name:"MASTER",badge:"PINAKA MURA",price:1180,variant:"master",kg:25},{id:"sweet",name:"SWEET HASMIN",price:1300,variant:"normal",kg:25},{id:"jasmine",name:"JASMINE ORIGINAL",price:1310,variant:"normal",kg:25},{id:"coco",name:"COCO PANDAN",price:1330,variant:"normal",kg:25},{id:"perfect",name:"PERFECT",price:1340,variant:"normal",kg:25},{id:"aroma",name:"MASTER AROMA",price:1340,variant:"normal",kg:25},{id:"fuji",name:"FUJI",badge:"PREMIUM",price:1400,variant:"fuji",kg:25}];badges=[{id:"b1",label:"GCash Only",color:"#1e88e5"},{id:"b2",label:"FREE DELIVERY",color:"#2e7d32"},{id:"b3",label:"Wood Town",color:"#ff9800"}];render();scheduleAutoSave();}
+async function saveToSupabase(isAuto){
+  collectEditableFields();
+  let c=getClient();
+  let statusEl=document.getElementById('status');
+  if(!isAuto) statusEl.textContent='⏳ Speichert in Supabase + lokal...';
+  saveToLocalStorage();
+  try{
+    let payload={id:1,data:{items:items,badges:badges,editableConfig:editableConfig,showGrundpreis:showGrundpreis,currentLang:currentLang,emojiEnabled:emojiEnabled,lastSaved:new Date().toISOString()},updated_at:new Date().toISOString()};
+    let res=await c.from('pricelist_config').upsert(payload,{onConflict:'id'});
+    if(res.error) throw res.error;
+    if(!isAuto) statusEl.textContent='✅ In Supabase + lokal gespeichert! '+items.length+' Sorten - bleibt nach Reload erhalten!';
+    updateStorageStatus('✅ Supabase + lokal gespeichert: '+new Date().toLocaleTimeString());
+    let ind=document.getElementById('saveIndicator');
+    if(ind){ind.style.display='inline-block';ind.textContent='✅ Gespeichert';setTimeout(function(){ind.style.display='none';},3000);}
+  }catch(e){
+    if(!isAuto) statusEl.textContent='⚠️ Supabase Fehler: '+e.message+' - aber lokal gespeichert!';
+    updateStorageStatus('⚠️ Supabase Fehler, aber lokal OK: '+e.message);
+  }
+}
+async function loadFromSupabase(){
+  let c=getClient();
+  let statusEl=document.getElementById('status');
+  let loadingText=document.getElementById('loadingText');
+  let loadingStatus=document.getElementById('loadingStatus');
+  let loadingScreen=document.getElementById('loadingScreen');
+  if(statusEl) statusEl.textContent='🔄 Lädt von Supabase...';
+  if(loadingText) loadingText.textContent='Lade Daten aus Supabase...';
+  if(loadingStatus) loadingStatus.textContent='⏳ Verbinde zu Supabase...';
+  try{
+    let res=await c.from('pricelist_config').select('data').eq('id',1).single();
+    if(res.error) throw res.error;
+    if(res.data && res.data.data){
+      if(res.data.data.items && res.data.data.items.length>0) items=res.data.data.items;
+      if(res.data.data.badges) badges=res.data.data.badges;
+      if(res.data.data.editableConfig){
+        editableConfig=res.data.data.editableConfig;
+        editableConfig.hTitle=editableConfig.hTitle!==undefined?editableConfig.hTitle:"MARY GRACE RICE SUPPLY";
+        editableConfig.hAddr=editableConfig.hAddr!==undefined?editableConfig.hAddr:"Wood Town Block 7 Lot 3 Phase 3";
+        editableConfig.mainTitle=editableConfig.mainTitle!==undefined?editableConfig.mainTitle:"MURANG BIGAS - PRESYO";
+        editableConfig.warnLeft=editableConfig.warnLeft!==undefined?editableConfig.warnLeft:"⚠ HINDI 20KG, HINDI 10KG - 25KG SAKTO PO!";
+        editableConfig.warnRight=editableConfig.warnRight!==undefined?editableConfig.warnRight:"SACK";
+      }
+      if(res.data.data.showGrundpreis!==undefined) showGrundpreis=res.data.data.showGrundpreis;
+      if(res.data.data.currentLang) currentLang=res.data.data.currentLang;
+      if(res.data.data.emojiEnabled!==undefined) emojiEnabled=res.data.data.emojiEnabled;
+      let chk=document.getElementById('grundToggle');if(chk) chk.checked=showGrundpreis;
+      let chkE=document.getElementById('emojiToggle');if(chkE) chkE.checked=emojiEnabled;
+      setLang(currentLang);
+      saveToLocalStorage(); // Backup lokal
+      if(statusEl) statusEl.textContent='✅ Aus Supabase geladen: '+items.length+' Sorten - '+ (res.data.data.lastSaved ? 'zuletzt: '+res.data.data.lastSaved : '');
+      if(loadingStatus) loadingStatus.textContent='✅ Supabase: '+items.length+' Sorten geladen';
+      updateStorageStatus('✅ Supabase geladen: '+items.length+' Sorten');
+      return true;
+    }else{
+      if(statusEl) statusEl.textContent='ℹ Supabase leer - nutze Standard';
+      if(loadingStatus) loadingStatus.textContent='ℹ Supabase leer';
+      return false;
+    }
+  }catch(e){
+    if(statusEl) statusEl.textContent='⚠️ Supabase Fehler: '+e.message+' - versuche lokales Backup';
+    if(loadingStatus) loadingStatus.textContent='⚠️ Supabase Fehler: '+e.message;
+    updateStorageStatus('⚠️ Supabase Fehler: '+e.message);
+    // Versuche lokales Backup
+    let localOk=loadFromLocalStorage();
+    if(localOk){
+      if(statusEl) statusEl.textContent+=' | 📦 Lokales Backup geladen!';
+      if(loadingStatus) loadingStatus.textContent+=' | 📦 Lokal geladen';
+      return true;
+    }
+    return false;
+  }
+}
+
+async function initialLoad(){
+  let loadingScreen=document.getElementById('loadingScreen');
+  let loadingText=document.getElementById('loadingText');
+  let loadingStatus=document.getElementById('loadingStatus');
+  // Zeige Loading Screen
+  if(loadingScreen) loadingScreen.classList.remove('hidden');
+  
+  // 1. Versuche zuerst lokales Backup für schnellen Start
+  let hasLocal=loadFromLocalStorage();
+  if(hasLocal){
+    if(loadingStatus) loadingStatus.textContent='📦 Lokales Backup gefunden: '+items.length+' Sorten - prüfe Supabase...';
+  }
+  
+  // 2. Dann lade von Supabase (überschreibt lokal wenn neuer)
+  let supabaseOk=await loadFromSupabase();
+  
+  // 3. Wenn weder Supabase noch lokal, nutze Standard
+  if(!supabaseOk && !hasLocal){
+    if(loadingStatus) loadingStatus.textContent='ℹ Nutze Standard-Daten';
+  }
+  
+  // 4. Jetzt rendern - erst NACHDEM Daten geladen wurden
+  const savedLang=localStorage.getItem('mg_lang')||currentLang;
+  const savedGrund=localStorage.getItem('mg_grund');
+  const savedManual=localStorage.getItem('mg_grund_manual');
+  const savedEmoji=localStorage.getItem('mg_emoji');
+  if(savedManual){manualGrund=true;showGrundpreis=savedGrund==='1';}
+  if(savedEmoji!==null && !supabaseOk){emojiEnabled=savedEmoji==='1';} // Nur wenn nicht aus Supabase
+  
+  setLang(savedLang);
+  if(savedManual && !supabaseOk){let chk=document.getElementById('grundToggle');if(chk) chk.checked=showGrundpreis;updateGrundLabel();}
+  let chkE=document.getElementById('emojiToggle');if(chkE) chkE.checked=emojiEnabled;updateEmojiLabel();
+  
+  dataLoaded=true;
+  render();
+  
+  // 5. Loading Screen ausblenden
+  if(loadingText) loadingText.textContent='✅ Fertig - '+items.length+' Sorten geladen';
+  setTimeout(function(){
+    if(loadingScreen) loadingScreen.classList.add('hidden');
+  }, 800);
+  
+  updateStorageStatus('✅ Initial geladen - Daten bleiben nach Reload erhalten! Supabase + lokal');
+}
+
 function downloadCanvasPNG(){collectEditableFields();let canvas=document.getElementById('priceCanvas');let a=document.createElement('a');a.download=TARGET_FILE;a.href=canvas.toDataURL('image/png');a.click();}
-async function saveAndUploadPNG(){collectEditableFields();let status=document.getElementById('autoStatus');let status2=document.getElementById('status');status.className='status';status.innerHTML='⏳ Speichere alles + PNG...';status2.textContent='⏳ Speichert...';await saveToSupabase();let canvas=document.getElementById('priceCanvas');canvas.toBlob(async function(blob){try{let c=getClient();let res=await c.storage.from(TARGET_BUCKET).upload(TARGET_FILE,blob,{upsert:true,contentType:'image/png',cacheControl:'0'});if(res.error){status.className='status err';status.innerHTML='❌ '+res.error.message;}else{status.className='status ok';status.innerHTML='✅ FERTIG! '+items.length+' Sorten gespeichert!';status2.textContent='✅ Gespeichert!';}}catch(err){status.className='status err';status.innerHTML='❌ '+err.message;}},'image/png');}
+async function saveAndUploadPNG(){
+  collectEditableFields();
+  let status=document.getElementById('autoStatus');let status2=document.getElementById('status');
+  status.className='status';status.innerHTML='⏳ Speichere alles + PNG...';status2.textContent='⏳ Speichert...';
+  await saveToSupabase();
+  let canvas=document.getElementById('priceCanvas');
+  canvas.toBlob(async function(blob){
+    try{
+      let c=getClient();let res=await c.storage.from(TARGET_BUCKET).upload(TARGET_FILE,blob,{upsert:true,contentType:'image/png',cacheControl:'0'});
+      if(res.error){status.className='status err';status.innerHTML='❌ '+res.error.message;}
+      else{status.className='status ok';status.innerHTML='✅ FERTIG! '+items.length+' Sorten gespeichert - bleibt nach Reload!';status2.textContent='✅ Gespeichert!';}
+    }catch(err){status.className='status err';status.innerHTML='❌ '+err.message;}
+  },'image/png');
+}
 document.getElementById('toggle').addEventListener('click',function(){edit=!edit;document.getElementById('toggle').textContent=edit?TRANSLATIONS[currentLang].editOn:TRANSLATIONS[currentLang].editOff;document.getElementById('toggle').className=edit?'edit-toggle on':'edit-toggle';document.getElementById('admin').className=edit?'admin open':'admin';render();});
-const savedLang=localStorage.getItem('mg_lang')||'de';const savedGrund=localStorage.getItem('mg_grund');const savedManual=localStorage.getItem('mg_grund_manual');const savedEmoji=localStorage.getItem('mg_emoji');
-if(savedManual){manualGrund=true;showGrundpreis=savedGrund==='1';}
-if(savedEmoji!==null){emojiEnabled=savedEmoji==='1';}
-setLang(savedLang);
-if(savedManual){let chk=document.getElementById('grundToggle');if(chk) chk.checked=showGrundpreis;updateGrundLabel();}
-let chkE=document.getElementById('emojiToggle');if(chkE) chkE.checked=emojiEnabled;updateEmojiLabel();render();setTimeout(loadFromSupabase,600);
+
+// INITIAL LOAD - Daten erst abfragen bevor Änderungen möglich
+initialLoad();
 </script>
 </body>
 </html>
