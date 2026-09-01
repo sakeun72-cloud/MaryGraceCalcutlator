@@ -373,8 +373,12 @@ async function saveToSupabase(isAuto){
   if(!isAuto) statusEl.textContent='⏳ Speichert mit ArtNr als Referenz...';
   saveToLocalStorage();
   try{
-    // Speichere mit ArtNr als Referenz-Key
-    let payload={id:1,data:{items:items,badges:badges,editableConfig:editableConfig,showGrundpreis:showGrundpreis,emojiEnabled:emojiEnabled,artNrMapping:Object.fromEntries(items.map(i=>[i.artNr,i.price])),lastSaved:new Date().toISOString()},updated_at:new Date().toISOString()};
+    // Speichere mit ArtNr als Referenz-Key - INKLUSIVE NAME!
+    // items enthält schon alles: artNr, name, price, kg, badge, variant
+    // Zusätzlich Mappings für schnelle Übernahme:
+    let artNrMapping = Object.fromEntries(items.map(i=>[i.artNr, i.price])); // Schnell: ArtNr -> Preis
+    let artNrFullMapping = Object.fromEntries(items.map(i=>[i.artNr, {name: i.name, price: i.price, kg: i.kg, badge: i.badge||'', variant: i.variant||'normal'}])); // Vollständig: ArtNr -> {name, price, kg...}
+    let payload={id:1,data:{items:items,badges:badges,editableConfig:editableConfig,showGrundpreis:showGrundpreis,emojiEnabled:emojiEnabled,artNrMapping:artNrMapping,artNrFullMapping:artNrFullMapping,artNrNameMapping:Object.fromEntries(items.map(i=>[i.artNr,i.name])),lastSaved:new Date().toISOString()},updated_at:new Date().toISOString()};
     let res=await c.from('pricelist_config').upsert(payload,{onConflict:'id'});
     if(res.error) throw res.error;
     if(!isAuto) statusEl.textContent='✅ Mit ArtNr gespeichert! '+items.length+' Artikel - ArtNr ist Referenz für Preisübernahme! Bleibt nach Reload!';
