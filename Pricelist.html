@@ -309,15 +309,13 @@ function buildFB(){
       if(emojiEnabled){let e=kg==1?'🍚':kg==5?'🎒':kg==10?'💼':'📦';t+=e+' --- '+kg+'KG SACK '+e+' ---\n';}else{t+='--- '+kg+'KG ---\n';}
       groups[kg].forEach(it=>{
         let emoji="";if(emojiEnabled){if((it.badge||'').toUpperCase().includes('PINAKA MURA')) emoji="🏆 ";else if((it.badge||'').toUpperCase().includes('PREMIUM')) emoji="👑 ";else emoji="🍚 ";}
-        // MIT ARTIKELNUMMER ALS REFERENZ
-        let artNrPart=it.artNr?'['+it.artNr+'] ':'';
-        if(showGrundpreis && it.kg!=1){t+=emoji+artNrPart+it.name+' '+(it.badge||'')+' - '+fmt(it)+' (Grund: ₱'+grundpreisFormatted(it)+' / kg)\n';}else{t+=emoji+artNrPart+it.name+' '+(it.badge||'')+' - '+fmt(it)+'\n';}
+        // OHNE ARTIKELNUMMER IM FACEBOOK POST - ArtNr bleibt nur intern als Referenz
+        if(showGrundpreis && it.kg!=1){t+=emoji+it.name+' '+(it.badge||'')+' - '+fmt(it)+' (Grund: ₱'+grundpreisFormatted(it)+' / kg)\n';}else{t+=emoji+it.name+' '+(it.badge||'')+' - '+fmt(it)+'\n';}
       });
       t+='\n';
     }
   });
   t+=(emojiEnabled?'📩 Pa-reserve na po! m.me/marygrace.rangas 💬\n':'Pa-reserve na po! m.me/marygrace.rangas\n');
-  t+='\n🔑 Referenz: ArtNr = Artikelnummer für Preisübernahme\n';
   document.getElementById('fbText').value=t;
   document.getElementById('fbPreview').textContent=t;
 }
