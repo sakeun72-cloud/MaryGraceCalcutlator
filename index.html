@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="tl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MARY GRACE - Stammdaten</title>
+<title>MARY GRACE - Stammdaten - 8 Larawan</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=JetBrains+Mono:wght@600;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -11,42 +11,57 @@
 body{font-family:Inter,sans-serif;background:#f6f5f2;color:#111;display:flex;min-height:100vh}
 .sidebar{width:300px;background:#0a0a0a;color:#fff;display:flex;flex-direction:column;border-right:1px solid #222;position:fixed;top:0;left:0;bottom:0;z-index:10}
 .sb-head{padding:20px;border-bottom:1px solid #222}
-.sb-head h1{font-weight:900;font-size:16px;letter-spacing:.5px}
+.sb-head h1{font-weight:900;font-size:16px}
 .sb-head p{font-size:11px;opacity:.5;margin-top:4px}
 .search{margin:12px;padding:0 12px}
 .search input{width:100%;background:#1a1a1a;border:1px solid #333;border-radius:8px;padding:8px 12px;color:#fff;font-size:13px;outline:none}
-.search input:focus{border-color:#555}
 .art-list{flex:1;overflow:auto;padding:8px 12px;display:flex;flex-direction:column;gap:4px}
-.art-btn{width:100%;text-align:left;background:transparent;border:1px solid transparent;border-radius:8px;padding:8px 10px;color:#aaa;font-size:13px;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.art-btn{width:100%;text-align:left;background:transparent;border:1px solid transparent;border-radius:8px;padding:8px 10px;color:#aaa;font-size:13px;cursor:pointer}
 .art-btn:hover{background:#1a1a1a;color:#fff}
-.art-btn.active{background:#fff;color:#000;font-weight:700;border-color:#000}
-.art-btn .art-top{display:flex;align-items:center;gap:6px}
+.art-btn.active{background:#fff;color:#000;font-weight:700}
 .art-btn .art-nr{font-family:JetBrains Mono,monospace;font-weight:800;background:#111827;color:#ffb900;padding:2px 6px;border-radius:6px;font-size:11px}
 .art-btn.active .art-nr{background:#000;color:#ffb900}
-.art-btn .art-name{font-weight:700;font-size:12px;text-transform:uppercase;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.art-btn .art-meta{font-size:10px;opacity:.6;display:flex;gap:6px;margin-left:26px}
-.badge{font-size:8px;font-weight:900;padding:1px 5px;border-radius:999px;background:#ffe4c4;color:#92400e}
-.badge.premium{background:#d1fae5;color:#065f46}
-.main{margin-left:300px;flex:1;padding:24px;max-width:1100px}
+.main{margin-left:300px;flex:1;padding:24px;max-width:1200px}
 .top-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px}
 .langs{display:flex;gap:6px}
 .lang-btn{padding:6px 12px;border-radius:999px;border:1px solid #ddd;background:#fff;font-weight:700;font-size:12px;cursor:pointer}
 .lang-btn.active{background:#000;color:#fff;border-color:#000}
-.card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.05);margin-bottom:16px}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:16px}
 .card h3{font-size:12px;font-weight:900;letter-spacing:.5px;opacity:.6;margin-bottom:12px;text-transform:uppercase}
 .input{width:100%;border:1px solid #ddd;border-radius:8px;padding:10px 12px;font-size:14px;font-weight:600;outline:none}
 .input:focus{border-color:#000}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:900px){.sidebar{position:relative;width:100%;height:auto}.main{margin-left:0}.grid2{grid-template-columns:1fr}}
-.bullet{display:flex;gap:8px;align-items:center;margin-bottom:8px}
-.bullet span{width:24px;height:24px;background:#000;color:#fff;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;flex-shrink:0}
-.status{font-size:11px;padding:6px 10px;border-radius:999px;background:#ecfdf5;color:#065f46;font-weight:700;display:inline-flex;gap:6px;align-items:center}
+.status{font-size:11px;padding:6px 10px;border-radius:999px;background:#ecfdf5;color:#065f46;font-weight:700;display:inline-flex;gap:6px}
 .btn{padding:8px 14px;border-radius:999px;font-weight:800;border:2px solid #000;cursor:pointer;font-size:12px;box-shadow:2px 2px 0 #000}
 .btn-black{background:#000;color:#fff}
 .btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 #000}
-.img-box{width:100%;height:160px;border:2px dashed #ddd;border-radius:10px;display:grid;place-items:center;background:#fafafa;cursor:pointer;position:relative;overflow:hidden}
-.img-box img{width:100%;height:100%;object-fit:contain}
-.server-info{font-size:10px;color:#666;font-family:JetBrains Mono,monospace}
+
+/* 8 Bilder Grid */
+.img-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:1100px){.img-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.img-grid{grid-template-columns:1fr}.main{margin-left:0}.sidebar{position:relative;width:100%;height:auto}}
+.img-card{border:2px solid #000;border-radius:12px;overflow:hidden;background:#fff;box-shadow:3px 3px 0 #000;transition:.15s}
+.img-card:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 #000}
+.img-card.head-sack{border-color:#ffb900}
+.img-card.head-hilaw{border-color:#111827}
+.img-card.head-luto{border-color:#10b981}
+.img-card.head-putahe{border-color:#0d5cb6}
+.img-header{padding:8px 10px;display:flex;justify-content:space-between;align-items:center;font-weight:900;font-size:11px;text-transform:uppercase}
+.img-header.sako{background:#fff9c4}
+.img-header.hilaw{background:#111827;color:#ffb900}
+.img-header.luto{background:#ecfdf5}
+.img-header.putahe{background:#e0f2fe;color:#0a2a7a}
+.img-header .num{width:22px;height:22px;background:#000;color:#fff;border-radius:50%;display:grid;place-items:center;font-size:11px}
+.img-header.sako .num{background:#ffb900;color:#000}
+.img-box{width:100%;height:160px;background:#fafafa;display:grid;place-items:center;cursor:pointer;position:relative;overflow:hidden;border-top:1px solid #eee;border-bottom:1px solid #eee}
+.img-box img{width:100%;height:100%;object-fit:cover}
+.img-box .placeholder{font-size:32px;opacity:.2}
+.img-box .overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);color:#fff;display:none;place-items:center;font-weight:800;font-size:12px}
+.img-box:hover .overlay{display:grid}
+.img-footer{padding:8px 10px;display:flex;gap:6px}
+.img-footer button{flex:1;padding:6px;border-radius:999px;border:1px solid #ddd;background:#fff;font-size:10px;font-weight:800;cursor:pointer}
+.img-footer button:hover{background:#000;color:#fff}
+.bullet{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.bullet span{width:24px;height:24px;background:#000;color:#fff;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -54,23 +69,23 @@ body{font-family:Inter,sans-serif;background:#f6f5f2;color:#111;display:flex;min
 <div class="sidebar">
   <div class="sb-head">
     <h1>MARY GRACE - MANDI REIS</h1>
-    <p id="sbSub">Lädt Stammdaten vom Server...</p>
+    <p id="sbSub">Lädt Pricelist vom Server...</p>
     <div style="margin-top:10px;display:flex;gap:6px">
-      <a href="Pricelist.html" class="btn btn-black" style="font-size:10px;text-decoration:none;padding:6px 10px">📋 Pricelist</a>
-      <button class="btn btn-black" style="font-size:10px" onclick="loadAll()">🔄 Reload</button>
+      <a href="Pricelist.html" style="background:#fff;color:#000;padding:6px 10px;border-radius:999px;font-size:10px;font-weight:900;text-decoration:none;border:2px solid #000">📋 Pricelist</a>
+      <button class="btn btn-black" style="font-size:10px;padding:6px 10px" onclick="loadAll()">🔄 Reload</button>
     </div>
-    <div id="serverStatus" class="server-info" style="margin-top:8px">Supabase: ...</div>
+    <div id="serverStatus" style="font-size:9px;font-family:JetBrains Mono,monospace;margin-top:8px;opacity:.7">...</div>
   </div>
-  <div class="search"><input id="searchInp" placeholder="Suche Art-Nr oder Name..." oninput="filterList()"></div>
+  <div class="search"><input id="searchInp" placeholder="Hanapin Art-Nr o Pangalan..." oninput="renderList()"></div>
   <div class="art-list" id="artList"></div>
 </div>
 
 <div class="main">
   <div class="top-nav">
     <div style="display:flex;align-items:center;gap:10px">
-      <div style="font-size:11px;letter-spacing:.1em;opacity:.5;font-weight:700">ARTIKEL</div>
+      <div style="font-size:11px;opacity:.5;font-weight:700;letter-spacing:.1em">ARTIKULO</div>
       <div id="curArt" style="font-weight:900;font-family:JetBrains Mono,monospace;background:#000;color:#ffb900;padding:4px 10px;border-radius:8px">-</div>
-      <div id="saveStatus" class="status">⏳ Lädt...</div>
+      <div id="saveStatus" class="status">⏳ Naglo-load...</div>
     </div>
     <div class="langs">
       <button class="lang-btn active" data-lang="TL" onclick="setLang('TL')">TL</button>
@@ -80,38 +95,96 @@ body{font-family:Inter,sans-serif;background:#f6f5f2;color:#111;display:flex;min
   </div>
 
   <div class="card">
-    <h3>Titel Kurz (<span id="langLabel">TL</span>) - kommt aus Pricelist Name</h3>
-    <input id="titelKurz" class="input" placeholder="z.B. MASTER AROMA">
-    <div style="margin-top:8px;font-size:11px;opacity:.5">Wird automatisch aus Pricelist übernommen, kann hier überschrieben werden und in produktdaten gespeichert werden.</div>
+    <h3>Maikling Pamagat (<span id="langLabel">TL</span>) - Mula sa Pricelist</h3>
+    <input id="titelKurz" class="input" placeholder="Hal. MASTER AROMA">
   </div>
 
   <div class="card">
-    <h3>Titel Lang (<span class="langLabel2">TL</span>)</h3>
-    <input id="titelLang" class="input" placeholder="Premium Mandi Reis...">
+    <h3>Mahabang Pamagat (<span class="langLabel2">TL</span>)</h3>
+    <input id="titelLang" class="input" placeholder="Premium Mandi Bigas...">
   </div>
 
-  <div class="grid2">
-    <div class="card">
-      <h3>Bilder - 160x160</h3>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-        <div><div style="font-size:10px;font-weight:800;margin-bottom:4px">SACK</div><div class="img-box" id="imgSack"><span style="opacity:.3">📷</span></div></div>
-        <div><div style="font-size:10px;font-weight:800;margin-bottom:4px">ROH</div><div class="img-box" id="imgRoh"><span style="opacity:.3">📷</span></div></div>
-        <div><div style="font-size:10px;font-weight:800;margin-bottom:4px">GEKOCHT</div><div class="img-box" id="imgGekocht"><span style="opacity:.3">📷</span></div></div>
-      </div>
+
+  <div class="card" style="border-color:#0d5cb6;background:#f0f7ff">
+    <h3 style="color:#0a2a7a">💰 Presyo mula sa Pricelist (Server) - Hindi na kailangan i-type!</h3>
+    <div id="priceDetail" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;font-size:13px">
+      <div style="background:#fff;padding:10px;border-radius:8px;border:1px solid #ddd"><div style="font-size:10px;opacity:.6;font-weight:800">ARTIKEL NUMMER</div><div id="pArt" style="font-weight:900;font-family:JetBrains Mono,monospace">-</div></div>
+      <div style="background:#fff;padding:10px;border-radius:8px;border:1px solid #ddd"><div style="font-size:10px;opacity:.6;font-weight:800">PANGALAN</div><div id="pName" style="font-weight:900;text-transform:uppercase">-</div></div>
+      <div style="background:#fff;padding:10px;border-radius:8px;border:2px solid #000"><div style="font-size:10px;opacity:.6;font-weight:800">PRESYO</div><div id="pPrice" style="font-weight:900;color:#0d5cb6;font-size:18px">-</div><div id="pKg" style="font-size:11px;opacity:.6">- / kg</div></div>
+      <div style="background:#fff;padding:10px;border-radius:8px;border:1px solid #ddd"><div style="font-size:10px;opacity:.6;font-weight:800">BADGE / VARIANTE</div><div id="pBadge" style="font-weight:800">-</div><div id="pVar" style="font-size:11px;opacity:.6">-</div></div>
     </div>
-    <div class="card">
-      <h3>Info aus Pricelist (Server)</h3>
-      <div id="priceInfo" style="font-size:13px;line-height:1.6">
-        <div>ArtNr: -</div>
-        <div>Name: -</div>
-        <div>Preis: -</div>
-        <div>KG: -</div>
-        <div>Badge: -</div>
-      </div>
-      <div style="margin-top:12px">
-        <button class="btn btn-black" onclick="saveProdukt()">💾 In produktdaten speichern</button>
-      </div>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+      <div style="font-size:11px;background:#111827;color:#ffb900;padding:4px 10px;border-radius:999px;font-family:JetBrains Mono,monospace" id="pSource">Source: pricelist_config id=1</div>
+      <div style="font-size:11px;background:#ecfdf5;color:#065f46;padding:4px 10px;border-radius:999px;font-weight:700" id="pGrund">Grundpreis: -</div>
+      <button class="btn btn-black" style="font-size:10px;padding:4px 10px" onclick="syncPriceToProdukt()">💾 Presyo i-save sa produktdaten</button>
     </div>
+    <div style="margin-top:8px;font-size:10px;opacity:.6">* Ang presyo ay nanggagaling mismo sa iyong Pricelist.html (Supabase pricelist_config). Kapag binago mo ang presyo doon at nag-save, mag-a-update din dito sa loob ng 15 segundo.</div>
+  </div>
+
+
+  <!-- 8 Bilder - Tagalog Bezeichnung -->
+  <div class="card">
+    <h3>8 Larawan - Sako, Hilaw, Luto, at mga Putahe (Tagalog)</h3>
+    <div class="img-grid">
+
+      <!-- 1 SAKO -->
+      <div class="img-card head-sack">
+        <div class="img-header sako"><div style="display:flex;align-items:center;gap:6px"><span class="num">1</span> Sako</div><span style="font-size:9px;background:#000;color:#ffb900;padding:2px 6px;border-radius:999px">SACK</span></div>
+        <div class="img-box" id="box-sack" onclick="triggerUpload('sack')"><span class="placeholder">📦</span><div class="overlay">I-upload</div></div>
+        <div class="img-footer"><button onclick="triggerUpload('sack')">📤 Mag-upload</button><button onclick="removeImg('sack')">🗑️ Burahin</button></div>
+      </div>
+
+      <!-- 2 HILAW -->
+      <div class="img-card head-hilaw">
+        <div class="img-header hilaw"><div style="display:flex;align-items:center;gap:6px"><span class="num">2</span> Hilaw na Bigas</div><span style="font-size:9px;background:#fff;color:#000;padding:2px 6px;border-radius:999px">ROH</span></div>
+        <div class="img-box" id="box-roh" onclick="triggerUpload('roh')"><span class="placeholder">🌾</span><div class="overlay">I-upload</div></div>
+        <div class="img-footer"><button onclick="triggerUpload('roh')">📤 Mag-upload</button><button onclick="removeImg('roh')">🗑️ Burahin</button></div>
+      </div>
+
+      <!-- 3 LUTONG BIGAS -->
+      <div class="img-card head-luto">
+        <div class="img-header luto"><div style="display:flex;align-items:center;gap:6px"><span class="num">3</span> Lutong Bigas</div><span style="font-size:9px;background:#10b981;color:#fff;padding:2px 6px;border-radius:999px">GEKOCHT</span></div>
+        <div class="img-box" id="box-gekocht" onclick="triggerUpload('gekocht')"><span class="placeholder">🍚</span><div class="overlay">I-upload</div></div>
+        <div class="img-footer"><button onclick="triggerUpload('gekocht')">📤 Mag-upload</button><button onclick="removeImg('gekocht')">🗑️ Burahin</button></div>
+      </div>
+
+      <!-- 4 PUTAHE 1 -->
+      <div class="img-card head-putahe">
+        <div class="img-header putahe"><div style="display:flex;align-items:center;gap:6px"><span class="num">4</span> Putahe 1</div><span style="font-size:9px;background:#0d5cb6;color:#fff;padding:2px 6px;border-radius:999px">ULAM</span></div>
+        <div class="img-box" id="box-putahe1" onclick="triggerUpload('putahe1')"><span class="placeholder">🍛</span><div class="overlay">I-upload</div></div>
+        <div class="img-footer"><button onclick="triggerUpload('putahe1')">📤 Mag-upload</button><button onclick="removeImg('putahe1')">🗑️ Burahin</button></div>
+      </div>
+
+      <!-- 5 PUTAHE 2 -->
+      <div class="img-card head-putahe">
+        <div class="img-header putahe"><div style="display:flex;align-items:center;gap:6px"><span class="num">5</span> Putahe 2</div><span style="font-size:9px;background:#0d5cb6;color:#fff;padding:2px 6px;border-radius:999px">ULAM</span></div>
+        <div class="img-box" id="box-putahe2" onclick="triggerUpload('putahe2')"><span class="placeholder">🍲</span><div class="overlay">I-upload</div></div>
+        <div class="img-footer"><button onclick="triggerUpload('putahe2')">📤 Mag-upload</button><button onclick="removeImg('putahe2')">🗑️ Burahin</button></div>
+      </div>
+
+      <!-- 6 PUTAHE 3 -->
+      <div class="img-card head-putahe">
+        <div class="img-header putahe"><div style="display:flex;align-items:center;gap:6px"><span class="num">6</span> Putahe 3</div><span style="font-size:9px;background:#0d5cb6;color:#fff;padding:2px 6px;border-radius:999px">ULAM</span></div>
+        <div class="img-box" id="box-putahe3" onclick="triggerUpload('putahe3')"><span class="placeholder">🥘</span><div class="overlay">I-upload</div></div>
+        <div class="img-footer"><button onclick="triggerUpload('putahe3')">📤 Mag-upload</button><button onclick="removeImg('putahe3')">🗑️ Burahin</button></div>
+      </div>
+
+      <!-- 7 PUTAHE 4 -->
+      <div class="img-card head-putahe">
+        <div class="img-header putahe"><div style="display:flex;align-items:center;gap:6px"><span class="num">7</span> Putahe 4</div><span style="font-size:9px;background:#0d5cb6;color:#fff;padding:2px 6px;border-radius:999px">ULAM</span></div>
+        <div class="img-box" id="box-putahe4" onclick="triggerUpload('putahe4')"><span class="placeholder">🍜</span><div class="overlay">I-upload</div></div>
+        <div class="img-footer"><button onclick="triggerUpload('putahe4')">📤 Mag-upload</button><button onclick="removeImg('putahe4')">🗑️ Burahin</button></div>
+      </div>
+
+      <!-- 8 PUTAHE 5 -->
+      <div class="img-card head-putahe">
+        <div class="img-header putahe"><div style="display:flex;align-items:center;gap:6px"><span class="num">8</span> Putahe 5</div><span style="font-size:9px;background:#0d5cb6;color:#fff;padding:2px 6px;border-radius:999px">ULAM</span></div>
+        <div class="img-box" id="box-putahe5" onclick="triggerUpload('putahe5')"><span class="placeholder">🍱</span><div class="overlay">I-upload</div></div>
+        <div class="img-footer"><button onclick="triggerUpload('putahe5')">📤 Mag-upload</button><button onclick="removeImg('putahe5')">🗑️ Burahin</button></div>
+      </div>
+
+    </div>
+    <div style="margin-top:10px;font-size:11px;opacity:.6">Lahat ng larawan ay naka-save sa Supabase Storage <code>sack-bilder</code> at sa <code>produktdaten</code> table. 1=Sako, 2=Hilaw, 3=Luto, 4-8=Mga Putahe.</div>
   </div>
 
   <div class="card">
@@ -119,76 +192,66 @@ body{font-family:Inter,sans-serif;background:#f6f5f2;color:#111;display:flex;min
     <div id="bullets"></div>
   </div>
 
-  <div class="card" style="background:#111;color:#fff">
-    <h3 style="color:#fff;opacity:.6">Debug - Server Pfad</h3>
-    <div class="server-info" style="color:#aaa">
-      <div>Pricelist Pfad: pricelist_config id=1 data.items (wie Pricelist.html)</div>
-      <div>Produktdaten Pfad: produktdaten art_nr=eq.MG-xxx</div>
-      <div id="debugLog"></div>
-    </div>
-  </div>
+  <input type="file" id="fileInput" accept="image/*" style="display:none">
 </div>
 
 <script>
 const SB_URL="https://crdtuptjybxbsezxtksp.supabase.co";
 const SB_KEY="sb_publishable_GU6AAlF0zc3LB4hFlKK0fw_TNxo9z7q";
+const BUCKET="sack-bilder";
 let sb=null;
-let stammdaten=[]; // from pricelist_config
+let stammdaten=[];
 let curArtNr=null;
 let curLang='TL';
-let curProdukt=null;
-let saveTimeout=null;
+let curImages={}; // {sack, roh, gekocht, putahe1...5}
+let uploadTarget=null;
 
 function getClient(){
   if(sb) return sb;
-  if(!window.supabase){ console.warn("no supabase"); return null; }
+  if(!window.supabase) return null;
   const u=SB_URL.replace(/\/rest\/v1\/?$/,'').replace(/\/$/,'');
   sb=window.supabase.createClient(u,SB_KEY);
   return sb;
 }
 
+
+async function syncPriceToProdukt(){
+  if(!curArtNr) return;
+  let data=stammdaten.find(x=>x.art_nr===curArtNr);
+  if(!data) return;
+  curImages._price=data.price;
+  curImages._kg=data.kg;
+  await saveProdukt();
+  document.getElementById('saveStatus').textContent='✓ Presyo na-save: ₱'+data.price;
+}
+
 async function loadAll(){
-  document.getElementById('serverStatus').textContent='⏳ Lädt pricelist_config...';
-  document.getElementById('saveStatus').textContent='⏳ Lädt...';
+  document.getElementById('serverStatus').textContent='⏳ Kumukuha ng pricelist_config...';
   try{
     let client=getClient();
     let items=null;
     if(client){
       let res=await client.from('pricelist_config').select('data').eq('id',1).single();
-      if(res.error) throw res.error;
-      items=res.data?.data?.items||[];
-    }else{
-      let r=await fetch(SB_URL+"/rest/v1/pricelist_config?select=data&id=eq.1",{headers:{apikey:SB_KEY,Authorization:"Bearer "+SB_KEY}});
-      let j=await r.json();
-      items=j[0]?.data?.items||[];
+      if(!res.error) items=res.data?.data?.items;
     }
-    if(!items || items.length===0) throw new Error("keine items");
-
+    if(!items){
+      let r=await fetch(SB_URL+"/rest/v1/pricelist_config?select=data&id=eq.1",{headers:{apikey:SB_KEY,Authorization:"Bearer "+SB_KEY}});
+      let j=await r.json(); items=j[0]?.data?.items;
+    }
     stammdaten=items.map(it=>({
-      art_nr: (it.artNr||it.art_nr||"").toUpperCase(),
-      name: it.name,
-      price: it.price,
-      kg: it.kg,
-      badge: it.badge||"",
-      variant: it.variant||"normal",
-      artNr: (it.artNr||it.art_nr||"").toUpperCase()
+      art_nr:(it.artNr||it.art_nr||"").toUpperCase(),
+      name:it.name,
+      price:it.price,
+      kg:it.kg,
+      badge:it.badge||""
     })).filter(x=>x.art_nr).sort((a,b)=>a.art_nr.localeCompare(b.art_nr));
 
-    console.log("✓ Pricelist vom Server:", stammdaten);
-    document.getElementById('sbSub').textContent=stammdaten.length+" Artikel vom Server (pricelist_config)";
-    document.getElementById('serverStatus').textContent="✓ Server: "+stammdaten.length+" Artikel | "+new Date().toLocaleTimeString();
+    document.getElementById('sbSub').textContent=stammdaten.length+" produkto mula sa server";
+    document.getElementById('serverStatus').textContent="✓ "+stammdaten.length+" artikulo | "+new Date().toLocaleTimeString();
     renderList();
-
-    if(!curArtNr && stammdaten.length>0){
-      selectArt(stammdaten[0].art_nr);
-    }else if(curArtNr){
-      selectArt(curArtNr);
-    }
-
+    if(!curArtNr && stammdaten.length>0) selectArt(stammdaten[0].art_nr);
   }catch(e){
-    console.error(e);
-    document.getElementById('serverStatus').textContent="⚠️ Fehler: "+e.message;
-    document.getElementById('saveStatus').textContent="⚠️ Fehler";
+    document.getElementById('serverStatus').textContent="⚠️ "+e.message;
   }
 }
 
@@ -200,77 +263,71 @@ function renderList(){
     if(q && !(it.art_nr.toLowerCase().includes(q) || it.name.toLowerCase().includes(q))) return;
     let btn=document.createElement('button');
     btn.className='art-btn'+(it.art_nr===curArtNr?' active':'');
-    let badgeHtml=it.badge?`<span class="badge ${it.badge.toLowerCase().includes('premium')?'premium':''}">${it.badge}</span>`:'';
-    btn.innerHTML=`
-      <div class="art-top">
-        <span class="art-nr">${it.art_nr}</span>
-        <span class="art-name">${it.name}</span>
-      </div>
-      <div class="art-meta">
-        <span>${it.kg}KG SAKTO</span>
-        <span style="color:#0d5cb6;font-weight:800">₱${it.price} / ${it.kg}kg</span>
-        ${badgeHtml}
-      </div>
-    `;
+    btn.innerHTML=`<div style="display:flex;gap:6px;align-items:center"><span class="art-nr">${it.art_nr}</span><span style="font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${it.name}</span></div><div style="font-size:10px;opacity:.6;margin-left:28px">${it.kg}KG • ₱${it.price}</div>`;
     btn.onclick=()=>selectArt(it.art_nr);
     cont.appendChild(btn);
   });
 }
-
-function filterList(){ renderList(); }
 
 async function selectArt(artNr){
   curArtNr=artNr;
   document.getElementById('curArt').textContent=artNr;
   renderList();
   let data=stammdaten.find(x=>x.art_nr===artNr);
-  if(!data) return;
-  document.getElementById('priceInfo').innerHTML=`
-    <div><b>ArtNr:</b> ${data.art_nr}</div>
-    <div><b>Name (aus Pricelist):</b> ${data.name}</div>
-    <div><b>Preis:</b> ₱${data.price} / ${data.kg}kg</div>
-    <div><b>KG:</b> ${data.kg}KG SAKTO</div>
-    <div><b>Badge:</b> ${data.badge||'-'}</div>
-    <div><b>Variant:</b> ${data.variant}</div>
-  `;
-  document.getElementById('titelKurz').value=data.name;
-  // Lade zusätzlich produktdaten falls vorhanden
+  document.getElementById('titelKurz').value=data?.name||"";
+  document.getElementById('pArt').textContent=data.art_nr;
+  document.getElementById('pName').textContent=data.name;
+  document.getElementById('pPrice').textContent="₱"+data.price.toLocaleString('en-PH');
+  document.getElementById('pKg').textContent=data.kg+"KG SAKTO";
+  document.getElementById('pBadge').textContent=data.badge||"-";
+  document.getElementById('pVar').textContent=data.variant||"normal";
+  document.getElementById('pBadge').innerHTML=data.badge?`<span style="background:#ffe4c4;padding:2px 6px;border-radius:999px;font-size:10px">${data.badge}</span>`:"-";
+  let grund=data.price/data.kg;
+  document.getElementById('pGrund').textContent="Grundpreis: ₱"+grund.toFixed(2)+" / kg";
+
+  document.getElementById('titelLang').value=`Premium ${data?.name||artNr} - ${data?.kg||25}kg Sako`;
   await loadProduktdaten(artNr);
 }
 
 async function loadProduktdaten(artNr){
-  document.getElementById('saveStatus').textContent='⏳ Lädt produktdaten...';
+  document.getElementById('saveStatus').textContent='⏳ Naglo-load...';
+  curImages={};
   try{
     let client=getClient();
     let row=null;
     if(client){
       let res=await client.from('produktdaten').select('*').eq('art_nr',artNr).single();
       if(!res.error) row=res.data;
-    }else{
+    }
+    if(!row){
       let r=await fetch(`${SB_URL}/rest/v1/produktdaten?art_nr=eq.${artNr}&select=*`,{headers:{apikey:SB_KEY,Authorization:"Bearer "+SB_KEY}});
       if(r.ok){ let j=await r.json(); row=j[0]; }
     }
+
     if(row){
-      curProdukt=row;
-      let lang=curLang;
-      let kurz=row['titel_kurz_'+lang.toLowerCase()] || row.titel_kurz_tl || row.titel_kurz_en || row.titel_kurz_de || stammdaten.find(x=>x.art_nr===artNr)?.name || "";
+      // alte Felder
+      curImages.sack=row.bild_sack||"";
+      curImages.roh=row.bild_roh||"";
+      curImages.gekocht=row.bild_gekocht||"";
+      // neue: aus data_json
+      let dj=row.data_json;
+      try{ if(typeof dj==='string') dj=JSON.parse(dj); }catch{}
+      if(dj?.images){
+        Object.assign(curImages, dj.images);
+      }
+      // Titel
+      let lang=curLang.toLowerCase();
+      let kurz=row['titel_kurz_'+lang]||row.titel_kurz_tl||row.titel_kurz_en||row.titel_kurz_de||stammdaten.find(x=>x.art_nr===artNr)?.name||"";
       document.getElementById('titelKurz').value=kurz;
-      let langKey='titel_lang_'+lang.toLowerCase();
-      document.getElementById('titelLang').value=row[langKey]||row.titel_lang_tl||row.titel_lang_en||row.titel_lang_de||`Premium ${kurz} - ${row.kg||25}kg Sack`;
-      // bullets
-      let bullets=row['bullets_'+lang.toLowerCase()]||row.bullets_tl||[];
+      let bullets=row['bullets_'+lang]||row.bullets_tl||[];
       renderBullets(bullets);
-      document.getElementById('saveStatus').textContent='✓ Server verbunden';
-      document.getElementById('debugLog').textContent=JSON.stringify(row).substring(0,300)+"...";
+      document.getElementById('saveStatus').textContent='✓ Naka-connect sa server';
     }else{
-      curProdukt=null;
-      let fallback=stammdaten.find(x=>x.art_nr===artNr);
-      document.getElementById('titelLang').value=`Premium ${fallback?.name||artNr} - ${fallback?.kg||25}kg Sack`;
       renderBullets(["Long grain premium","Mabango at buhaghag","25kg sako","Para sa Mandi","Direct import"]);
-      document.getElementById('saveStatus').textContent='✓ Neu (noch nicht in produktdaten)';
+      document.getElementById('saveStatus').textContent='✓ Bago (wala pa sa produktdaten)';
     }
+    renderImages();
   }catch(e){
-    console.warn(e);
     document.getElementById('saveStatus').textContent='⚠️ '+e.message;
   }
 }
@@ -278,41 +335,108 @@ async function loadProduktdaten(artNr){
 function renderBullets(arr){
   let cont=document.getElementById('bullets');
   cont.innerHTML="";
-  (arr||[]).slice(0,5).forEach((txt,i)=>{
+  let list=arr||[];
+  for(let i=0;i<5;i++){
     let div=document.createElement('div');
     div.className='bullet';
-    div.innerHTML=`<span>${i+1}</span><input class="input" value="${txt}" oninput="autoSave()">`;
-    cont.appendChild(div);
-  });
-  // Falls weniger als 5, fülle auf
-  for(let i=(arr?.length||0); i<5; i++){
-    let div=document.createElement('div');
-    div.className='bullet';
-    div.innerHTML=`<span>${i+1}</span><input class="input" placeholder="Bullet ${i+1}" oninput="autoSave()">`;
+    div.innerHTML=`<span>${i+1}</span><input class="input" value="${(list[i]||'').replace(/"/g,'&quot;')}" oninput="autoSave()">`;
     cont.appendChild(div);
   }
+}
+
+function renderImages(){
+  const map={
+    sack:'box-sack',
+    roh:'box-roh',
+    gekocht:'box-gekocht',
+    putahe1:'box-putahe1',
+    putahe2:'box-putahe2',
+    putahe3:'box-putahe3',
+    putahe4:'box-putahe4',
+    putahe5:'box-putahe5'
+  };
+  Object.keys(map).forEach(key=>{
+    let box=document.getElementById(map[key]);
+    let url=curImages[key];
+    if(url){
+      box.innerHTML=`<img src="${url}" alt="${key}"><div class="overlay">Palitan</div>`;
+    }else{
+      let icons={sack:'📦',roh:'🌾',gekocht:'🍚',putahe1:'🍛',putahe2:'🍲',putahe3:'🥘',putahe4:'🍜',putahe5:'🍱'};
+      box.innerHTML=`<span class="placeholder">${icons[key]||'📷'}</span><div class="overlay">I-upload</div>`;
+    }
+  });
+}
+
+function triggerUpload(target){
+  if(!curArtNr){ alert("Pumili muna ng artikulo!"); return; }
+  uploadTarget=target;
+  document.getElementById('fileInput').click();
+}
+
+document.getElementById('fileInput').addEventListener('change', async (e)=>{
+  let file=e.target.files[0];
+  if(!file) return;
+  if(!curArtNr) return;
+  let target=uploadTarget;
+  document.getElementById('saveStatus').textContent='⏳ Ina-upload ang '+target+'...';
+
+  try{
+    let client=getClient();
+    let fileName=`${curArtNr}/${target}_${Date.now()}.${file.name.split('.').pop()}`;
+    let publicUrl="";
+
+    if(client){
+      let up=await client.storage.from(BUCKET).upload(fileName, file, {upsert:true, contentType:file.type});
+      if(up.error) throw up.error;
+      let pub=client.storage.from(BUCKET).getPublicUrl(fileName);
+      publicUrl=pub.data.publicUrl;
+    }else{
+      // fallback: local blob
+      publicUrl=URL.createObjectURL(file);
+    }
+
+    curImages[target]=publicUrl;
+    renderImages();
+    await saveProdukt();
+    document.getElementById('saveStatus').textContent='✓ Na-upload: '+target;
+  }catch(err){
+    document.getElementById('saveStatus').textContent='❌ '+err.message;
+    console.error(err);
+  }
+  e.target.value="";
+});
+
+async function removeImg(target){
+  if(!curImages[target]) return;
+  if(!confirm("Burahin ang larawan na "+target+"?")) return;
+  curImages[target]="";
+  renderImages();
+  await saveProdukt();
 }
 
 function setLang(l){
   curLang=l;
   document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active', b.dataset.lang===l));
   document.getElementById('langLabel').textContent=l;
-  document.querySelectorAll('.langLabel2').forEach(e=>e.textContent=l);
   if(curArtNr) loadProduktdaten(curArtNr);
 }
 
+let saveTO=null;
 function autoSave(){
-  clearTimeout(saveTimeout);
-  document.getElementById('saveStatus').textContent='⏳ Speichert...';
-  saveTimeout=setTimeout(saveProdukt,800);
+  clearTimeout(saveTO);
+  document.getElementById('saveStatus').textContent='⏳ Auto-save...';
+  saveTO=setTimeout(saveProdukt,800);
 }
+document.getElementById('titelKurz').addEventListener('input', autoSave);
+document.getElementById('titelLang').addEventListener('input', autoSave);
 
 async function saveProdukt(){
   if(!curArtNr) return;
-  let client=getClient();
   let kurz=document.getElementById('titelKurz').value.trim();
   let lang=document.getElementById('titelLang').value.trim();
   let bullets=[...document.querySelectorAll('#bullets input')].map(i=>i.value.trim()).filter(Boolean);
+
+  // Speichere 8 Bilder: 3 alte Spalten + 5 neue in data_json
   let payload={
     art_nr: curArtNr,
     titel_kurz_tl: curLang==='TL'?kurz:undefined,
@@ -322,30 +446,44 @@ async function saveProdukt(){
     titel_lang_de: curLang==='DE'?lang:undefined,
     titel_lang_en: curLang==='EN'?lang:undefined,
     bullets_tl: curLang==='TL'?bullets:undefined,
-    bullets_de: curLang==='DE'?bullets:undefined,
-    bullets_en: curLang==='EN'?bullets:undefined,
+    bild_sack: curImages.sack||"",
+    bild_roh: curImages.roh||"",
+    bild_gekocht: curImages.gekocht||"",
+    data_json: {
+      images: curImages,
+      // Tagalog labels für Frontend
+      image_labels: {
+        sack: "Sako",
+        roh: "Hilaw na Bigas",
+        gekocht: "Lutong Bigas",
+        putahe1: "Putahe 1",
+        putahe2: "Putahe 2",
+        putahe3: "Putahe 3",
+        putahe4: "Putahe 4",
+        putahe5: "Putahe 5"
+      },
+      titel_kurz: {[curLang]: kurz},
+      titel_lang: {[curLang]: lang},
+      bullets: {[curLang]: bullets}
+    },
     updated_at: new Date().toISOString()
   };
-  // Entferne undefined
   Object.keys(payload).forEach(k=>payload[k]===undefined&&delete payload[k]);
 
   try{
-    let res;
+    let client=getClient();
     if(client){
-      res=await client.from('produktdaten').upsert(payload,{onConflict:'art_nr'});
+      let res=await client.from('produktdaten').upsert(payload,{onConflict:'art_nr'});
       if(res.error) throw res.error;
     }else{
       let r=await fetch(SB_URL+"/rest/v1/produktdaten?on_conflict=art_nr",{method:"POST",headers:{apikey:SB_KEY,Authorization:"Bearer "+SB_KEY,"Content-Type":"application/json",Prefer:"resolution=merge-duplicates"},body:JSON.stringify(payload)});
       if(!r.ok) throw new Error(await r.text());
     }
-    document.getElementById('saveStatus').textContent='✓ Gespeichert '+new Date().toLocaleTimeString();
+    document.getElementById('saveStatus').textContent='✓ Na-save '+new Date().toLocaleTimeString();
   }catch(e){
     document.getElementById('saveStatus').textContent='❌ '+e.message;
   }
 }
-
-document.getElementById('titelKurz').addEventListener('input', autoSave);
-document.getElementById('titelLang').addEventListener('input', autoSave);
 
 loadAll();
 setInterval(loadAll, 20000);
